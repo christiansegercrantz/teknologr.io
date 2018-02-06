@@ -168,7 +168,8 @@ def functionary(request, functionarytype_id):
     form = FunctionaryTypeForm(instance=functionarytype)
 
     # Get functionaries of functionary type
-    context['functionaries'] = Functionary.objects.filter(functionarytype__id=functionarytype_id).order_by('-begin_date')
+    context['functionaries'] = Functionary.objects.filter(
+        functionarytype__id=functionarytype_id).order_by('-begin_date')
     context['functionaryTypeForm'] = form
     context['addfunctionaryform'] = FunctionaryForm(initial={
         "functionarytype": functionarytype_id,

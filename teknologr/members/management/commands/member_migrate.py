@@ -52,6 +52,7 @@ def get_country(country):
         return "DE"
     return ""
 
+
 countries = {
     "Belgium": "BE",
     "Chile": "CL",
@@ -92,7 +93,8 @@ def get_address_country(country):
 
 decorationnames = {
     "Förtjänsttecken": ["Förtjänsttecken", "TF:s förtjänsttecken", "Förtjänstecken", "Fortjansttecken"],
-    "Hederstecken i silver": ["HTsilver", "HT silver", "HT Silver", "Hederstecken i silver", "Hedersmärke i silver", "TFs hedersmärke i silver", "hederstecken i silver"],
+    "Hederstecken i silver": ["HTsilver", "HT silver", "HT Silver", "Hederstecken i silver",
+                              "Hedersmärke i silver", "TFs hedersmärke i silver", "hederstecken i silver"],
     "Hederstecken i guld": ["HTguld", "HT guld", "Hedersmärke i guld", "Hedersmärke i Guld"],
     "Hedersmedlem": ["Hedersmedlem"],
     "Stavans kamratskapsmärke": ["Stavans kamratskapsmärke"]
@@ -116,7 +118,7 @@ def get_decorations(notes):
                     else:
                         year = "None"
                     if year[0] == '(':
-                        year = year[1:-1] # Remove parentheses
+                        year = year[1:-1]  # Remove parentheses
                     if len(year) == 2:
                         if year[0] == '0' or year[0] == '1':
                             # We assume no two digit year entries from 1900s or 1910s
@@ -140,6 +142,7 @@ def get_enrol_year(year):
 
 def get_bool(val):
     return False if val is None or val is "" else bool(int(val))
+
 
 exceptions = [
     "Aalto-insamlingsgrupp",

@@ -16,4 +16,3 @@ def findMembers(query, count=50):
         return []  # No words in query (only spaces?)
 
     return Member.objects.filter(*args).order_by('surname', 'given_names')[:count]
-

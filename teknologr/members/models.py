@@ -67,7 +67,6 @@ class Member(SuperClass):
     def __str__(self):
         return self.full_name
 
-
     def _get_full_address(self):
         country = 'Finland'
         if self.country.name:
@@ -115,16 +114,14 @@ class Member(SuperClass):
 
         return None
 
-
     def shouldBeStalm(self):
         ''' Used to find Juniorstalmar members that should magically become stalmar somehow '''
-
-        return self.isValidMember() != None and next((x for x in MemberType.objects.filter(member=self) if x.type == "JS"), None) != None
+        return self.isValidMember() is not None and \
+            next((x for x in MemberType.objects.filter(member=self) if x.type == "JS"), None) is not None
 
     def isValidMember(self):
         memberType = self.getMostRecentMemberType()
-        return memberType != None and (memberType.type == "OM" or memberType.type == "ST")
-
+        return memberType is not None and (memberType.type == "OM" or memberType.type == "ST")
 
 
 class DecorationOwnership(SuperClass):
