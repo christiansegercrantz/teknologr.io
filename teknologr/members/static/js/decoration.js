@@ -29,7 +29,7 @@ $(document).ready(function() {
 			});
  
 			request.done(function() { 
-				window.location = "/decorations/";
+				window.location = "/admin/decorations/";
 			});
 
 			request.fail(function( jqHXR, textStatus ){
@@ -66,7 +66,7 @@ $(document).ready(function() {
 			});
 
 			request.done(function() { 
-				window.location = "/decorations/" + decorationid + "/"; 
+				window.location = "/admin/decorations/" + decorationid + "/"; 
 			});
 
 			request.fail(function( jqHXR, textStatus ){

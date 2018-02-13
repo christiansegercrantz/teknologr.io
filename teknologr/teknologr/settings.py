@@ -158,7 +158,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/members/'
+LOGIN_REDIRECT_URL = '/'
 
 # REST Framework settings
 # TODO: provide GET access to certain users for non-admins

@@ -27,7 +27,7 @@ $(document).ready(function() {
 		});
 
 		request.done(function(msg) {
-			window.location = "/"+ active +"/" + msg.id + "/";
+			window.location = "/admin/"+ active +"/" + msg.id + "/";
 		});
 
 		request.fail(function( jqHXR, textStatus ){
@@ -50,7 +50,7 @@ $(document).ready(function() {
 				}).done(function(data) {
 					$("#side-objects").empty();
 					$.each(data, function(i, item) {
-						var a = '<a class="list-group-item" href="/members/'+ item.pk +'/">'+ item.value +'</a>'
+						var a = '<a class="list-group-item" href="/admin/members/'+ item.pk +'/">'+ item.value +'</a>'
 						$("#side-objects").append(a);
 					});
 				});

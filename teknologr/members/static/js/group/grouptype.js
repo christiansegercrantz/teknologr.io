@@ -29,7 +29,7 @@ $(document).ready(function() {
 			});
  
 			request.done(function() { 
-				window.location = "/groups/"; 
+				window.location = "/admin/groups/"; 
 			});
 
 			request.fail(function( jqHXR, textStatus ){

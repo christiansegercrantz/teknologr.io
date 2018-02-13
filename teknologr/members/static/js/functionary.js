@@ -29,7 +29,7 @@ $(document).ready(function() {
 			});
  
 			request.done(function() { 
-				window.location = "/functionaries/"; 
+				window.location = "/admin/functionaries/"; 
 			});
 
 			request.fail(function( jqHXR, textStatus ){
@@ -66,7 +66,7 @@ $(document).ready(function() {
 			});
 
 			request.done(function() { 
-				window.location = "/functionaries/" + functionaryTypeID + "/"; 
+				window.location = "/admin/functionaries/" + functionaryTypeID + "/"; 
 			});
 
 			request.fail(function( jqHXR, textStatus ){
