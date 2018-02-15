@@ -1,0 +1,46 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="searchbar">
+        <div class="col-sm-12 col-md-8 col-md-offset-2">
+            <div class="input-group" id="adv-search">
+                <input type="text" class="form-control" placeholder="Sök personer" />
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="alphabet">
+        {% for letter in abc %}
+        <a href="#{{letter}}">{{letter}}</a>
+        {% endfor %}
+    </div>
+</div>
+<div class="row">
+    <div class="people">
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Namn</th>
+                    <th>Telefonnummer</th>
+                    <th>E-post</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for person in persons %}
+                <tr>
+                    <td>{{person.full_name}}</td>
+                    <td>{{person.phone}}</td>
+                    <td>{{person.email}}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
