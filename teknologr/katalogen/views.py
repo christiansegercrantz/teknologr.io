@@ -31,8 +31,8 @@ def search(request):
 
 
 def profile(request, member_id):
+    # TODO: Check if user has permission to see profile, either public profile or own profile
     context = _get_base_context()
-    # TODO: implement
     context['person'] = get_object_or_404(Member, id=member_id)
     return render(request, 'profile.html', context)
 
