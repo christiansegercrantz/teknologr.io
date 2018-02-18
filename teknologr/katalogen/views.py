@@ -39,9 +39,9 @@ def profile(request, member_id):
     context = _get_base_context()
     person = get_object_or_404(Member, id=member_id)
     context['person'] = person
-    context['functionaries'] = Functionary.objects.filter(member__id=person.id)
-    context['groups'] = GroupMembership.objects.filter(member__id=person.id)
-    context['decorations'] = DecorationOwnership.objects.filter(member__id=person.id)
+    context['functionaries'] = Functionary.objects.filter(member__id=person.id).order_by('-end_date')
+    context['groups'] = GroupMembership.objects.filter(member__id=person.id).order_by('-group__end_date')
+    context['decorations'] = DecorationOwnership.objects.filter(member__id=person.id).order_by('acquired')
     return render(request, 'profile.html', context)
 
 
