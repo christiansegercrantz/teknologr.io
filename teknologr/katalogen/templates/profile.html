@@ -4,4 +4,122 @@
 
 <h1 class="page-header">{{person.full_name}}</h1>
 
+<div class="container-fluid">
+<div class="row">
+  <div class="col-md-7">
+    <table class="table">
+      <tbody>
+        <tr>
+          <th>Tilltalsnamn</th>
+          <td>{{person.preferred_name}}</td>
+        </tr>
+        <tr>
+          <th>Smeknamn</th>
+          <td>{{person.nickname}}</td>
+        </tr>
+        <tr>
+          <th>Telefonnummer</th>
+          <td>
+          {% if person.mobile_phone %}
+            {{person.mobile_phone}}
+          {% else %}
+            {{person.phone}}
+          {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>E-postadress</th>
+          <td>{{person.email}}</td>
+        </tr>
+        <tr>
+          <th>Hemsida</th>
+          <td>{{person.url}}</td>
+        </tr>
+        <tr>
+          <th>Studieprogram</th>
+          <td>{{person.degree_programme}}</td>
+        </tr>
+        <tr>
+          <th>Phuxår</th>
+          <td>{{person.enrolment_year}}</td>
+        </tr>
+        <tr>
+          <th>Färdigbliven</th>
+          <td>
+          {% if person.graduated %}
+            {% if person.graduated_year %}
+                {{person.graduated_year}}
+            {% else %}
+                Ja
+            {% endif %}
+          {% else %}
+            Nej
+          {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>Hemadress</th>
+          <td>{{person.street_address}}</td>
+        </tr>
+        <tr>
+          <th>Postnummer</th>
+          <td>{{person.postal_code}}</td>
+        </tr>
+        <tr>
+          <th>Stad</th>
+          <td>{{person.city}}</td>
+        </tr>
+        <tr>
+          <th>Land</th>
+          <td>{{person.country.name}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="col-md-5">
+    <h3>Poster</h3>
+    <table class="table table-condensed">
+    {% for functionary in functionaries %}
+    <tr>
+        <td>
+        {{ functionary.functionarytype.name }}
+        </td>
+        <td align="right">
+        {{ functionary.begin_date }} - {{ functionary.end_date }}
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+    <h3>Grupper</h3>
+    <table class="table table-condensed">
+    {% for group in groups %}
+    <tr>
+        <td>
+        {{ group.group.grouptype.name }}
+        </td>
+        <td align="right">
+        {{ group.group.begin_date }} - {{ group.group.end_date }}
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+    <h3>Hedersbetygelser</h3>
+    <table class="table table-condensed">
+    {% for decoration in decorations %}
+    <tr>
+        <td>
+        {{ decoration.decoration.name }}
+        </td>
+        <td align="right">
+        {{ decoration.acquired }}
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+  </div>
+</div>
+</div>
+
 {% endblock %}
