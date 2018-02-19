@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
 from members.models import *
 from django.db.models import Q
 from functools import reduce
@@ -52,7 +52,7 @@ def profile(request, member_id):
         context['decorations'] = DecorationOwnership.objects.filter(member__id=person.id).order_by('acquired')
         return render(request, 'profile.html', context)
     else:
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
 
 @login_required
