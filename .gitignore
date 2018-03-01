@@ -76,7 +76,7 @@ bin/
 include/
 share/
 pip-*
-
+venv/
 
 # SQLite db
 db.sqlite3
