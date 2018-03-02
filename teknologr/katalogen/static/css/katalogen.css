@@ -3,14 +3,14 @@ body {
 }
 
 .searchbar {
-    padding: 20px 15px;
+    padding: 20px 15px 0 15px;
     text-align: center;
 }
 
 .alphabet {
-    padding: 20px 15px;
+    padding: 20px;
     text-align: center;
-    font-size: 22px;
+    font-size: 130%;
 }
 
 .home-info {
