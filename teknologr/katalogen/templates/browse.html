@@ -1,0 +1,45 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row">
+    {% if home %}
+    <div class="home-info">
+        <h1>Katalogen på nätet</h1>
+        <p class="lead">
+            Bläddra i Teknologföreningens medlemsregister.<br/>
+            Du kan söka efter personer med sökfältet ovan, eller se din egen profil via menyn.<br/>
+            Endast personer som tillåtit utgivning av sina personuppgifter kan ses på denna sida.<br/>
+            Man kan dock alltid se sin egen profil.
+        </p>
+    </div>
+    {% else %}
+    <div class="people">
+        {% if persons %}
+        <table class="table table-condensed table-striped">
+            <thead>
+                <tr>
+                    <th>Namn</th>
+                    <th>Telefonnummer</th>
+                    <th>E-post</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for person in persons %}
+                <tr>
+                    <td><a href="{% url 'katalogen.views.profile' person.id %}">{{person.full_name}}</a></td>
+                    <td>{{person.phone}}</td>
+                    <td><a href="mailto:{{person.email}}">{{person.email}}</a>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="home-info lead">
+            Inga personer hittades.
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

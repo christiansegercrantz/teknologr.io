@@ -1,8 +1,8 @@
 <ul class="nav nav-pills">
-  <li {% if side.active == "members" %} class="active" {% endif %}><a href="/members/">Medlemmar</a></li>
-  <li {% if side.active == "groups" %} class="active" {% endif %}><a href="/groups/">Grupper</a></li>
-  <li {% if side.active == "functionaries" %} class="active" {% endif %}><a href="/functionaries/">Poster</a></li>
-  <li {% if side.active == "decorations" %} class="active" {% endif %}><a href="/decorations/">Betygelser</a></li>
+  <li {% if side.active == "members" %} class="active" {% endif %}><a href="/admin/members/">Medlemmar</a></li>
+  <li {% if side.active == "groups" %} class="active" {% endif %}><a href="/admin/groups/">Grupper</a></li>
+  <li {% if side.active == "functionaries" %} class="active" {% endif %}><a href="/admin/functionaries/">Poster</a></li>
+  <li {% if side.active == "decorations" %} class="active" {% endif %}><a href="/admin/decorations/">Betygelser</a></li>
 </ul>
 <br>
 <ul class="list-inline">
@@ -16,7 +16,7 @@
 <br>
 <div id="side-objects" class="list-group">
   {% for obj in side.objects %}
-  <a class="side-object list-group-item{% ifequal obj.id side.active_obj %} active {% endifequal %}" href="/{{side.active}}/{{obj.id}}/">{{obj.name|default:"Namnlös"}}</a>
+  <a class="side-object list-group-item{% ifequal obj.id side.active_obj %} active {% endifequal %}" href="/admin/{{side.active}}/{{obj.id}}/">{{obj.name|default:"Namnlös"}}</a>
   {% empty %}
   <span class="text-muted">Skriv i sökfältet för att visa medlemmar</span>
   {% endfor %}

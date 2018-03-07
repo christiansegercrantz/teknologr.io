@@ -32,7 +32,7 @@ $(document).ready(function() {
 			})
 
 			request.done(function() {
-				window.location = "/groups/" + grouptype_id + "/"; 
+				window.location = "/admin/groups/" + grouptype_id + "/"; 
 			});
 
 			request.fail(function( jqHXR, textStatus ){

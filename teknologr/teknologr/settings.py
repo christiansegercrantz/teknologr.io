@@ -47,7 +47,6 @@ ALLOWED_HOSTS = ['localhost']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -57,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'ajax_select',
     'members',
+    'katalogen',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -158,7 +158,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/members/'
+LOGIN_REDIRECT_URL = '/'
 
 # REST Framework settings
 # TODO: provide GET access to certain users for non-admins

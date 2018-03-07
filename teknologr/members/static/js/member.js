@@ -30,7 +30,7 @@ $(document).ready(function() {
 			});
  
 			request.done(function() { 
-				window.location = "/members/"; 
+				window.location = "/admin/members/"; 
 			});
 
 			request.fail(function( jqHXR, textStatus ){
@@ -63,7 +63,7 @@ $(document).ready(function() {
 
 	$('.editMemberType').click(function(){
 		var id = $(this).data('id');
-		$("#editMemberTypeModal .modal-body").load("/membertype/" + id + "/form/", function() {
+		$("#editMemberTypeModal .modal-body").load("/admin/membertype/" + id + "/form/", function() {
 			$("#editmembertypeform").submit(function(event){
 				var data = $(this).serialize();
 				var request = $.ajax({

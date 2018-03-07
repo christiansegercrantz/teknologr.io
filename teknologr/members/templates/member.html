@@ -15,7 +15,7 @@
   {% endif %}
 <div class="row form-group">
   <div class="col-md-8">
-    <form id="memberform" autocomplete="off" role ="form" action="/members/{{member.id}}/" method="post">
+    <form id="memberform" autocomplete="off" role ="form" action="/admin/members/{{member.id}}/" method="post">
     {% csrf_token %}
     <div class="row form-group">
       <div class="col-md-4">
@@ -257,7 +257,7 @@
       <td>
         <span class="glyphicon glyphicon-remove text-danger removeFunctionary" role="button" data-id="{{ functionary.id }}"></span>
       </td>
-    	<td><a href="/functionaries/{{functionary.id}}/">{{functionary.functionarytype.name}}</a></td>
+    	<td><a href="/admin/functionaries/{{functionary.id}}/">{{functionary.functionarytype.name}}</a></td>
     	<td>{{functionary.begin_date}}</td>
     	<td>{{functionary.end_date}}</td>
     </tr>
@@ -283,7 +283,7 @@
         <span class="glyphicon glyphicon-remove text-danger removeGroup" role="button" data-id="{{ membership.id }}"></span>
       </td>
     <td>
-      <a href="/groups/{{membership.group.grouptype.id}}/{{membership.group.id}}/">{{membership.group.grouptype.name}}</a>
+      <a href="/admin/groups/{{membership.group.grouptype.id}}/{{membership.group.id}}/">{{membership.group.grouptype.name}}</a>
     </td>
     <td>
       {{membership.group.begin_date}}

@@ -47,7 +47,7 @@
         <tr {% if group.id == subgroup.id %} class="active" {% endif %}>
           <td>{{subgroup.begin_date}}</td>
           <td>{{subgroup.end_date}}</td>
-          <td><a class="glyphicon glyphicon-edit text-info" href="/groups/{{grouptype.id}}/{{subgroup.id}}/"></a></td>
+          <td><a class="glyphicon glyphicon-edit text-info" href="/admin/groups/{{grouptype.id}}/{{subgroup.id}}/"></a></td>
           <td><span class="glyphicon glyphicon-remove text-danger removeGroup" role="button" data-id="{{ subgroup.id }}" data-grouptype_id="{{grouptype.id}}"></span></td>
         </tr>
       {% endfor %}
@@ -75,7 +75,7 @@
         <span class="glyphicon glyphicon-remove text-danger removeMembership" role="button" data-id="{{ membership.id }}"></span>
       </td>
       <td>
-        <a href="/members/{{membership.member.id}}">{{membership.member.full_name}}</a>
+        <a href="/admin/members/{{membership.member.id}}">{{membership.member.full_name}}</a>
       </td></tr>
       {% endfor %}
     </table>
