@@ -28,7 +28,7 @@
                 <tr>
                     <td><a href="{% url 'katalogen.views.profile' person.id %}">{{person.full_name}}</a></td>
                     <td>{{person.phone}}</td>
-                    <td>{{person.email}}
+                    <td><a href="mailto:{{person.email}}">{{person.email}}</a>
                 </tr>
                 {% endfor %}
             </tbody>
