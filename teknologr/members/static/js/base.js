@@ -45,7 +45,7 @@ $(document).ready(function() {
 			timer && clearTimeout(timer);
 			timer = setTimeout(function(){
 				$.ajax({
-					url: "/ajax_select/ajax_lookup/member?term=" + filter,
+					url: "/admin/ajax_select/ajax_lookup/member?term=" + filter,
 					method: "GET",
 				}).done(function(data) {
 					$("#side-objects").empty();
