@@ -12,7 +12,7 @@ def _get_base_context():
 
 
 def _get_consenting_persons():
-    return Member.objects.filter(allow_publish_info=True)
+    return Member.objects.filter(allow_publish_info=True).filter(dead=False)
 
 
 def _filter_valid_members(member_query):
