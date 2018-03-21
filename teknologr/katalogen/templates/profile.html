@@ -63,19 +63,11 @@
         </tr>
         <tr>
           <th>Hemadress</th>
-          <td>{{person.street_address}}</td>
-        </tr>
-        <tr>
-          <th>Postnummer</th>
-          <td>{{person.postal_code}}</td>
-        </tr>
-        <tr>
-          <th>Stad</th>
-          <td>{{person.city}}</td>
-        </tr>
-        <tr>
-          <th>Land</th>
-          <td>{{person.country.name}}</td>
+          <td>
+            {{person.street_address}}<br/>
+            {{person.postal_code}} {{person.city}}<br/>
+            {{person.country.name}}
+          </td>
         </tr>
         <tr>
           <th>Medlemskapstyp</th>
