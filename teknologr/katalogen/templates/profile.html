@@ -77,6 +77,16 @@
           <th>Land</th>
           <td>{{person.country.name}}</td>
         </tr>
+        <tr>
+          <th>Medlemskapstyp</th>
+          <td>
+          {% if person.current_member_type %}
+            {{ person.current_member_type }}
+          {% else %}
+            Ej medlem
+          {% endif %}
+          </td>
+        </tr>
       </tbody>
     </table>
 
