@@ -104,6 +104,11 @@
         {{ functionary.begin_date }} - {{ functionary.end_date }}
         </td>
     </tr>
+    {% empty %}
+    <tr>
+        <td>Inga poster. </td>
+        <td align="right"></td>
+    </tr>
     {% endfor %}
     </table>
     <h3>Grupper</h3>
@@ -117,6 +122,11 @@
         {{ group.group.begin_date }} - {{ group.group.end_date }}
         </td>
     </tr>
+    {% empty %}
+    <tr>
+        <td>Inga grupper. </td>
+        <td align="right"></td>
+    </tr>
     {% endfor %}
     </table>
     <h3>Hedersbetygelser</h3>
@@ -129,6 +139,11 @@
         <td align="right">
         {{ decoration.acquired }}
         </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td>Inga hedersbetygelser. </td>
+        <td align="right"></td>
     </tr>
     {% endfor %}
     </table>
