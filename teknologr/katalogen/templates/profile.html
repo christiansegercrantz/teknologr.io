@@ -41,7 +41,11 @@
         </tr>
         <tr>
           <th>Phuxår</th>
-          <td>{{person.enrolment_year}}</td>
+          <td>
+          {% if person.enrolment_year %}
+            {{person.enrolment_year}}
+          {% endif %}
+          </td>
         </tr>
         <tr>
           <th>Färdigbliven</th>
