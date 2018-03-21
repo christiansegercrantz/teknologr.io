@@ -74,9 +74,9 @@ class Member(SuperClass):
         return "%s, %s, %s, %s" % (self.street_address, self.postal_code, self.city, country)
 
     def save(self, *args, **kwargs):
-        if self.username == '':
+        if not self.username:
             self.username = None
-        if self.student_id == '':
+        if not self.student_id:
             self.student_id = None
         if not self.preferred_name:
             self.preferred_name = self.given_names.split()[0]
