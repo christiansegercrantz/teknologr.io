@@ -16,7 +16,7 @@ class SuperClass(models.Model):
 class Member(SuperClass):
     GENDER_CHOICES = (("UN", "Okänd"), ("M", "Man"), ("F", "Kvinna"))
     given_names = models.CharField(max_length=64, blank=False, null=False, default="UNKNOWN")
-    preferred_name = models.CharField(max_length=32, blank=False, null=False, default="UNKNOWN")
+    preferred_name = models.CharField(max_length=32, blank=True, null=False, default="")
     surname = models.CharField(max_length=32, blank=False, null=False, default="UNKNOWN")
     maiden_name = models.CharField(max_length=32, blank=True, null=False, default="")
     nickname = models.CharField(max_length=32, blank=True, null=False, default="")
@@ -57,7 +57,7 @@ class Member(SuperClass):
         return "%s %s" % (self.given_names, self.surname)
 
     def _get_full_preferred_name(self):
-        first_name = self.preferred_name if self.preferred_name != "UNKNOWN" else self.given_names.split()[0]
+        first_name = self.preferred_name if self.preferred_name else self.given_names.split()[0]
         return "%s %s" % (first_name, self.surname)
 
     full_name = property(_get_full_name)
@@ -74,10 +74,12 @@ class Member(SuperClass):
         return "%s, %s, %s, %s" % (self.street_address, self.postal_code, self.city, country)
 
     def save(self, *args, **kwargs):
-        if self.username == '':
+        if not self.username:
             self.username = None
-        if self.student_id == '':
+        if not self.student_id:
             self.student_id = None
+        if not self.preferred_name:
+            self.preferred_name = self.given_names.split()[0]
 
         # Sync email to LDAP if changed
         error = None
