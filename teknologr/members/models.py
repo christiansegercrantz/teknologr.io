@@ -60,9 +60,18 @@ class Member(SuperClass):
         first_name = self.preferred_name if self.preferred_name else self.given_names.split()[0]
         return "%s %s" % (first_name, self.surname)
 
+    def _get_most_recent_member_type_name(self):
+        member_type = self.getMostRecentMemberType()
+
+        if member_type:
+            return member_type.get_type_display()
+        else:
+            return ""
+
     full_name = property(_get_full_name)
     name = property(_get_full_name)
     full_preferred_name = property(_get_full_preferred_name)
+    current_member_type = property(_get_most_recent_member_type_name)
 
     def __str__(self):
         return self.full_name
@@ -100,7 +109,6 @@ class Member(SuperClass):
             raise error
 
     def getMostRecentMemberType(self):
-
         types = MemberType.objects.filter(member=self).order_by()
 
         if (len(types)) == 0:

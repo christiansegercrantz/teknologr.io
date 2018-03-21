@@ -6,6 +6,7 @@
 <h1 class="page-header">{{person.full_name}}</h1>
 <div class="row">
   <div class="col-md-7">
+    <h3>Basuppgifter</h3>
     <table class="table table-striped">
       <tbody>
         <tr>
@@ -40,7 +41,11 @@
         </tr>
         <tr>
           <th>Phuxår</th>
-          <td>{{person.enrolment_year}}</td>
+          <td>
+          {% if person.enrolment_year %}
+            {{person.enrolment_year}}
+          {% endif %}
+          </td>
         </tr>
         <tr>
           <th>Färdigbliven</th>
@@ -71,6 +76,16 @@
         <tr>
           <th>Land</th>
           <td>{{person.country.name}}</td>
+        </tr>
+        <tr>
+          <th>Medlemskapstyp</th>
+          <td>
+          {% if person.current_member_type %}
+            {{ person.current_member_type }}
+          {% else %}
+            Ej medlem
+          {% endif %}
+          </td>
         </tr>
       </tbody>
     </table>
