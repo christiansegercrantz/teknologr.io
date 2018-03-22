@@ -51,7 +51,7 @@ def profile(request, member_id):
     # User may view consenting profiles or their own
     # NOTE: there is a small security risk here if the members database is not in sync with the LDAP database
     if ((person.allow_publish_info and person.isValidMember() and not person.dead) or
-        person.username == request.user.username):
+            person.username == request.user.username):
         context['person'] = person
         context['functionaries'] = Functionary.objects.filter(member__id=person.id).order_by('-end_date')
         context['groups'] = GroupMembership.objects.filter(member__id=person.id).order_by('-group__end_date')
