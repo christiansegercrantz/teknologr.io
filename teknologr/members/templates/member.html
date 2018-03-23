@@ -3,240 +3,297 @@
 
 {% block main %}
 <div class="container-fluid">
-<h1 class="page-header">{{member.full_name}}&nbsp;<a href="/api/members/{{member.id}}/" class="btn btn-default apibtn">API länk</a> <a href="/api/htkdump/{{member.id}}" class="btn btn-default apibtn">HTK dump</a></h1>
+  <h1 class="page-header">
+    {{member.full_name}}
+    <a href="/api/members/{{member.id}}/" class="btn btn-default apibtn">API länk</a>
+    <a href="/api/htkdump/{{member.id}}" class="btn btn-default apibtn">HTK dump</a>
+  </h1>
   {% if result %}
-	<div class="row">
-    {% if result == 'success' %}
-    <div class="col-md-12 alert alert-success" role="alert"> <strong>Ändringarna sparade</strong> </div>
-    {% else %}
-    <div class="col-md-12 alert alert-danger" role="alert"> <strong>Ett fel uppstod, kontrollera fälten</strong> </div>
-    {% endif %}
+	 <div class="row">
+      {% if result == 'success' %}
+        <div class="col-md-12 alert alert-success" role="alert"><strong>Ändringarna sparade</strong></div>
+      {% else %}
+        <div class="col-md-12 alert alert-danger" role="alert"><strong>Ett fel uppstod, kontrollera fälten</strong></div>
+      {% endif %}
     </div>
   {% endif %}
-<div class="row form-group">
-  <div class="col-md-8">
-    <form id="memberform" autocomplete="off" role ="form" action="/admin/members/{{member.id}}/" method="post">
-    {% csrf_token %}
-    <div class="row form-group">
-      <div class="col-md-4">
-        <label for="{{form.surname.id_for_label}}">Efternamn</label>
-        {%if form.surname.errors %}<div class="alert alert-danger">{{form.surname.errors}}</div>{%endif%}
-        {{form.surname}}
-      </div>
-      <div class="col-md-5">
-        <label for="{{form.given_names.id_for_label}}">Förnamn</label>
-        {%if form.given_names.errors %}<div class="alert alert-danger">{{form.given_names.errors}}</div>{%endif%}
-        {{form.given_names}}
-      </div>
-      <div class="col-md-3">
-        <label for="{{form.preferred_name.id_for_label}}">Tilltalsnamn</label>
-        {%if form.preferred_name.errors %}<div class="alert alert-danger">{{form.preferred_name.errors}}</div>{%endif%}
-        {{form.preferred_name}}
-      </div>
+  <div class="row form-group">
+    <!-- Person info -->
+    <div class="col-md-8">
+      <form id="memberform" autocomplete="off" role ="form" action="/admin/members/{{member.id}}/" method="post">
+        {% csrf_token %}
+        <div class="row form-group">
+          <div class="col-md-4">
+            <label for="{{form.surname.id_for_label}}">Efternamn</label>
+            {%if form.surname.errors %}
+              <div class="alert alert-danger">{{form.surname.errors}}</div>
+            {%endif%}
+            {{form.surname}}
+          </div>
+          <div class="col-md-5">
+            <label for="{{form.given_names.id_for_label}}">Förnamn</label>
+            {% if form.given_names.errors %}
+              <div class="alert alert-danger">{{form.given_names.errors}}</div>
+            {%endif%}
+            {{form.given_names}}
+          </div>
+          <div class="col-md-3">
+            <label for="{{form.preferred_name.id_for_label}}">Tilltalsnamn</label>
+            {%if form.preferred_name.errors %}
+              <div class="alert alert-danger">{{form.preferred_name.errors}}</div>
+            {%endif%}
+            {{form.preferred_name}}
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-md-4">
+            <label for="{{form.nickname.id_for_label}}">Smeknamn</label>
+            {%if form.nickname.errors %}
+              <div class="alert alert-danger">{{form.nickname.errors}}</div>
+            {%endif%}
+            {{form.nickname}}
+          </div>
+          <div class="col-md-5">
+            <label for="{{form.maiden_name.id_for_label}}">Tidigare efternamn</label>
+            {%if form.maiden_name.errors %}
+              <div class="alert alert-danger">{{form.maiden_name.errors}}</div>
+            {%endif%}
+            {{form.maiden_name}}
+          </div>
+          <div class="col-md-3">
+            <label for="{{form.gender.id_for_label}}">Kön</label>
+            {%if form.gender.errors %}
+              <div class="alert alert-danger">{{form.gender.errors}}</div>
+            {%endif%}
+            {{form.gender}}
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-md-7">
+            <label for="{{form.street_address.id_for_label}}">Gatuadress</label>
+            {%if form.street_address.errors %}
+              <div class="alert alert-danger">{{form.street_address.errors}}</div>
+            {%endif%}
+            {{form.street_address}}
+          </div>
+          <div class="col-md-2">
+            <label for="{{form.postal_code.id_for_label}}">Postnummer</label>
+            {%if form.postal_code.errors %}
+              <div class="alert alert-danger">{{form.postal_code.errors}}</div>
+            {%endif%}
+            {{form.postal_code}}
+          </div>
+          <div class="col-md-3">
+            <label for="{{form.city.id_for_label}}">Postanstalt</label>
+            {%if form.city.errors %}
+              <div class="alert alert-danger">{{form.city.errors}}</div>
+            {%endif%}
+            {{form.city}}
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-md-6">
+            <label for="{{form.country.id_for_label}}">Land</label>
+            {%if form.country.errors %}
+              <div class="alert alert-danger">{{form.country.errors}}</div>
+            {%endif%}
+            {{form.country}}
+          </div>
+          <div class="col-md-6">
+            <label for="{{form.nationality.id_for_label}}">Nationalitet</label>
+            {%if form.nationality.errors %}
+              <div class="alert alert-danger">{{form.nationality.errors}}</div>
+            {%endif%}
+            {{form.nationality}}
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-md-3">
+            <label for="{{form.mobile_phone.id_for_label}}">Telefonnummer</label>
+            {%if form.phone.errors %}
+              <div class="alert alert-danger">{{form.phone.errors}}</div>
+            {%endif%}
+            {{form.phone}}
+          </div>
+          <div class="col-md-3">
+            <label for="{{form.mobile_phone.id_for_label}}">Mobiltelefonnummer</label>
+            {%if form.mobile_phone.errors %}
+              <div class="alert alert-danger">{{form.mobile_phone.errors}}</div>
+            {%endif%}
+            {{form.mobile_phone}}
+          </div>
+          <div class="col-md-6">
+            <label for="{{form.email.id_for_label}}">E-postadress</label>
+            {%if form.email.errors %}
+              <div class="alert alert-danger">{{form.email.errors}}</div>
+            {%endif%}
+            {{form.email}}
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-md-3">
+            <label for="{{form.student_id.id_for_label}}">Studienummer</label>
+            {%if form.student_id.errors %}
+              <div class="alert alert-danger">{{form.student_id.errors}}</div>
+            {%endif%}
+            {{form.student_id}}
+          </div>
+          <div class="col-md-4">
+            <label for="{{form.birth_date.id_for_label}}">Födelsedatum</label>
+            {%if form.birth_date.errors %}
+              <div class="alert alert-danger">{{form.birth_date.errors}}</div>
+            {%endif%}
+            {{form.birth_date}}
+          </div>
+          <div class="col-md-5">
+            <label for="{{form.enrolment_year.id_for_label}}">Inskrivningsår vid Aalto</label>
+            {%if form.enrolment_year.errors %}
+              <div class="alert alert-danger">{{form.enrolment_year.errors}}</div>
+            {%endif%}
+            {{form.enrolment_year}}
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-md-6">
+            <label for="{{form.degree_programme.id_for_label}}">Studieinriktning</label>
+            <a href="https://wiki.teknologforeningen.fi/itwiki/index.php/Medlemsregister#Studieprogramslistan" target="_blank" class="glyphicon glyphicon-info-sign text-info" data-toggle="tooltip" data-original-title="Välj alltid om möjligt ett alternativ från listan. Om listan behöver ändras, klicka på denna ikon för att se instruktioner till det."></a>
+            {%if form.degree_programme.errors %}
+              <div class="alert alert-danger">{{form.degree_programme.errors}}</div>
+            {%endif%}
+            <select id="{{form.degree_programme.auto_id}}" autocomplete="off" class="form-control es-input" name="{{form.degree_programme.html_name}}">
+              {% for option in programmes %}
+                <option{% if option == form.degree_programme.value %} selected {% endif %}>{{option}}</option>
+              {% endfor %}
+              {% if form.degree_programme.value not in programmes %}
+                <option selected>{{form.degree_programme.value}}</option>
+              {% endif %}
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-check-label" for="{{form.graduated.id_for_label}}">
+              {%if form.graduated.errors %}
+                <div class="alert alert-danger">{{form.graduated.errors}}</div>
+              {%endif%}
+              {{form.graduated}} Utexaminerad
+            </label>
+          </div>
+          <div class="col-md-3">
+            <label for="{{form.graduated_year.id_for_label}}">År Utexaminerad</label>
+            {%if form.graduated_year.errors %}
+              <div class="alert alert-danger">{{form.graduated_year.errors}}</div>
+            {%endif%}
+            {{form.graduated_year}}
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-md-4">
+            <label class="form-check-label" for="{{form.subscribed_to_modulen.id_for_label}}">
+              {%if form.subscribed_to_modulen.errors %}
+                <div class="alert alert-danger">{{form.subscribed_to_modulen.errors}}</div>
+              {%endif%}
+              {{form.subscribed_to_modulen}} Vill ha modulen hemskickad
+            </label>
+          </div>
+          <div class="col-md-4 form-check">
+            <label class="form-check-label" for="{{form.allow_publish_info.id_for_label}}">
+              {%if form.allow_publish_info.errors %}
+                <div class="alert alert-danger">{{form.allow_publish_info.errors}}</div>
+              {%endif%}
+              {{form.allow_publish_info}} Tillåter utlämning av uppgifter
+            </label>
+          </div>
+          <div class="col-md-4 form-check">
+            <label class="form-check-label" for="{{form.dead.id_for_label}}">
+              {%if form.dead.errors %}
+                <div class="alert alert-danger">{{form.dead.errors}}</div>
+              {%endif%}
+              {{form.dead}} Avliden
+            </label>
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class ="col-md-8">
+            <label for="{{form.url.id_for_label}}">Hemsida</label>
+            {%if form.url.errors %}
+              <div class="alert alert-danger">{{form.url.errors}}</div>
+            {%endif%}
+            {{form.url}}
+          </div>
+          <div class ="col-md-4">
+            <label for="{{form.crm_id.id_for_label}}">CRM id</label>
+            {%if form.crm_id.errors %}
+              <div class="alert alert-danger">{{form.crm_id.errors}}</div>
+            {%endif%}
+            {{form.crm_id}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <label for="{{form.comment.id_for_label}}">Kommentar</label>
+            {%if form.comment.errors %}
+              <div class="alert alert-danger">{{form.comment.errors}}</div>
+            {%endif%}
+            {{form.comment}}
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-md-12">
+            <button type="submit" class="btn btn-success">Spara</button>
+            &nbsp;&nbsp;&nbsp;
+            <button id="deletemember" class="btn btn-danger" data-id={{member.id}}>Radera</button>
+          </div>
+        </div>
+      </form>
     </div>
-    <div class="row form-group">
-      <div class="col-md-4">
-        <label for="{{form.nickname.id_for_label}}">Smeknamn</label>
-        {%if form.nickname.errors %}<div class="alert alert-danger">{{form.nickname.errors}}</div>{%endif%}
-        {{form.nickname}}
-      </div>
-      <div class="col-md-5">
-        <label for="{{form.maiden_name.id_for_label}}">Tidigare efternamn</label>
-        {%if form.maiden_name.errors %}<div class="alert alert-danger">{{form.maiden_name.errors}}</div>{%endif%}
-        {{form.maiden_name}}
-      </div>
-      <div class="col-md-3">
-        <label for="{{form.gender.id_for_label}}">Kön</label>
-        {%if form.gender.errors %}<div class="alert alert-danger">{{form.gender.errors}}</div>{%endif%}
-        {{form.gender}}
-      </div>
-    </div>
-    <div class="row form-group">
-      <div class="col-md-7">
-        <label for="{{form.street_address.id_for_label}}">Gatuadress</label>
-        {%if form.street_address.errors %}<div class="alert alert-danger">{{form.street_address.errors}}</div>{%endif%}
-        {{form.street_address}}
-      </div>
-      <div class="col-md-2">
-        <label for="{{form.postal_code.id_for_label}}">Postnummer</label>
-        {%if form.postal_code.errors %}<div class="alert alert-danger">{{form.postal_code.errors}}</div>{%endif%}
-        {{form.postal_code}}
-      </div>
-      <div class="col-md-3">
-        <label for="{{form.city.id_for_label}}">Postanstalt</label>
-        {%if form.city.errors %}<div class="alert alert-danger">{{form.city.errors}}</div>{%endif%}
-        {{form.city}}
-      </div>
-    </div>
-    <div class="row form-group">
-      <div class="col-md-6">
-        <label for="{{form.country.id_for_label}}">Land</label>
-        {%if form.country.errors %}<div class="alert alert-danger">{{form.country.errors}}</div>{%endif%}
-        {{form.country}}
-      </div>
-      <div class="col-md-6">
-        <label for="{{form.nationality.id_for_label}}">Nationalitet</label>
-        {%if form.nationality.errors %}<div class="alert alert-danger">{{form.nationality.errors}}</div>{%endif%}
-        {{form.nationality}}
-      </div>
-    </div>
-    <div class="row form-group">
-      <div class="col-md-3">
-        <label for="{{form.mobile_phone.id_for_label}}">Telefonnummer</label>
-        {%if form.phone.errors %}<div class="alert alert-danger">{{form.phone.errors}}</div>{%endif%}
-        {{form.phone}}
-      </div>
-      <div class="col-md-3">
-        <label for="{{form.mobile_phone.id_for_label}}">Mobiltelefonnummer</label>
-        {%if form.mobile_phone.errors %}<div class="alert alert-danger">{{form.mobile_phone.errors}}</div>{%endif%}
-        {{form.mobile_phone}}
-      </div>
-      <div class="col-md-6">
-        <label for="{{form.email.id_for_label}}">E-postadress</label>
-        {%if form.email.errors %}<div class="alert alert-danger">{{form.email.errors}}</div>{%endif%}
-        {{form.email}}
-      </div>
-    </div>
-    <div class="row form-group">
-      <div class="col-md-3">
-        <label for="{{form.student_id.id_for_label}}">Studienummer</label>
-        {%if form.student_id.errors %}<div class="alert alert-danger">{{form.student_id.errors}}</div>{%endif%}
-        {{form.student_id}}
-      </div>
-      <div class="col-md-4">
-        <label for="{{form.birth_date.id_for_label}}">Födelsedatum</label>
-        {%if form.birth_date.errors %}<div class="alert alert-danger">{{form.birth_date.errors}}</div>{%endif%}
-        {{form.birth_date}}
-      </div>
-      <div class="col-md-5">
-        <label for="{{form.enrolment_year.id_for_label}}">Inskrivningsår vid Aalto</label>
-        {%if form.enrolment_year.errors %}<div class="alert alert-danger">{{form.enrolment_year.errors}}</div>{%endif%}
-        {{form.enrolment_year}}
-      </div>
-    </div>
-    <div class="row form-group">
-      <div class="col-md-6">
-        <label for="{{form.degree_programme.id_for_label}}">Studieinriktning</label>
-        <a href="https://wiki.teknologforeningen.fi/itwiki/index.php/Medlemsregister#Studieprogramslistan" target="_blank" class="glyphicon glyphicon-info-sign text-info" data-toggle="tooltip" data-original-title="Välj alltid om möjligt ett alternativ från listan. Om listan behöver ändras, klicka på denna ikon för att se instruktioner till det."></a>
-        {%if form.degree_programme.errors %}<div class="alert alert-danger">{{form.degree_programme.errors}}</div>{%endif%}
-        <select id="{{form.degree_programme.auto_id}}" autocomplete="off" class="form-control es-input" name="{{form.degree_programme.html_name}}">
-          {% for option in programmes %}
-          <option{% if option == form.degree_programme.value %} selected {% endif %}>{{option}}</option>
-          {% endfor %}
-          {% if form.degree_programme.value not in programmes %}
-          <option selected>{{form.degree_programme.value}}</option>
-          {% endif %}
-        </select>
-      </div>
-      <div class="col-md-3">
-        <label class="form-check-label" for="{{form.graduated.id_for_label}}">
-          {%if form.graduated.errors %}<div class="alert alert-danger">{{form.graduated.errors}}</div>{%endif%}
-          {{form.graduated}} Utexaminerad
-        </label>
-      </div>
-      <div class="col-md-3">
-        <label for="{{form.graduated_year.id_for_label}}">År Utexaminerad</label>
-        {%if form.graduated_year.errors %}<div class="alert alert-danger">{{form.graduated_year.errors}}</div>{%endif%}
-        {{form.graduated_year}}
-      </div>
-    </div>
-    <div class="row form-group">
-      <div class="col-md-4">
-        <label class="form-check-label" for="{{form.subscribed_to_modulen.id_for_label}}">
-          {%if form.subscribed_to_modulen.errors %}<div class="alert alert-danger">{{form.subscribed_to_modulen.errors}}</div>{%endif%}
-          {{form.subscribed_to_modulen}} Vill ha modulen hemskickad
-        </label>
-      </div>
-      <div class="col-md-4 form-check">
-        <label class="form-check-label" for="{{form.allow_publish_info.id_for_label}}">
-          {%if form.allow_publish_info.errors %}<div class="alert alert-danger">{{form.allow_publish_info.errors}}</div>{%endif%}
-          {{form.allow_publish_info}} Tillåter utlämning av uppgifter
-        </label>
-      </div>
-      <div class="col-md-4 form-check">
-        <label class="form-check-label" for="{{form.dead.id_for_label}}">
-          {%if form.dead.errors %}<div class="alert alert-danger">{{form.dead.errors}}</div>{%endif%}
-          {{form.dead}} Avliden
-        </label>
-      </div>
-    </div>
-    <div class="row form-group">
-      <div class ="col-md-8">
-        <label for="{{form.url.id_for_label}}">Hemsida</label>
-        {%if form.url.errors %}<div class="alert alert-danger">{{form.url.errors}}</div>{%endif%}
-        {{form.url}}
-      </div>
-      <div class ="col-md-4">
-        <label for="{{form.crm_id.id_for_label}}">CRM id</label>
-        {%if form.crm_id.errors %}<div class="alert alert-danger">{{form.crm_id.errors}}</div>{%endif%}
-        {{form.crm_id}}
-      </div>
-    </div>
-    <div class = "row">
-      <div class ="col-md-12">
-      <label for="{{form.comment.id_for_label}}">Kommentar</label>
-      {%if form.comment.errors %}<div class="alert alert-danger">{{form.comment.errors}}</div>{%endif%}
-      {{form.comment}}
-      </div>
-    </div>
-    <br>
-    <div class = "row">
-      <div class = "col-md-12">
-      <button type="submit" class="btn btn-success">Spara</button>
-      &nbsp;&nbsp;&nbsp;
-      <button id="deletemember" class="btn btn-danger" data-id={{member.id}}>Radera</button>
-      </div>
-    </div>
-  </form>
 
-  <div class="row">
-    <h2>Användarkonton</h2>
-    <div class="col-md-6">
-      <h3>LDAP</h3>
-      {% if LDAP %}
-        {% if LDAP.error %}
-        Kunde inte få svar av LDAP: {{ LDAP.error }}
+    <!-- User accounts -->
+    <div class="row">
+      <h2>Användarkonton</h2>
+      <div class="col-md-6">
+        <h3>LDAP</h3>
+        {% if LDAP %}
+          {% if LDAP.error %}
+            Kunde inte få svar av LDAP: {{ LDAP.error }}
+          {% else %}
+            <b>Användarnamn:</b> {{member.username}}
+            <h4>LDAP Grupper</h4>
+            <ul>
+              {% for group in LDAP.groups %}
+                <li>{{group}}</li>
+              {% endfor %}
+            </ul>
+            <br/>
+            <button id="changepw" class="btn btn-primary" data-toggle="modal" data-target="#changepw_modal">Ändra lösenord</button>
+            {% include "modals/changeldappw.html" with modalname="changepw_modal" title="Ändra LDAP lösenord" member_id=member.id only %}
+            <button id="delldap" class="btn btn-danger" data-id="{{ member.id }}">Ta bort LDAP konto</button>
+          {% endif %}
         {% else %}
-          <b>Användarnamn:</b> {{member.username}}
-          <h4>LDAP Grupper</h4>
-          <ul>
-          {% for group in LDAP.groups %}
-          <li>{{group}}</li>
-          {% endfor %}
-          </ul>
-          <br/>
-          <button id="changepw" class="btn btn-primary" data-toggle="modal" data-target="#changepw_modal">Ändra lösenord</button>
-          {% include "modals/changeldappw.html" with modalname="changepw_modal" title="Ändra LDAP lösenord" member_id=member.id only %}
-          <button id="delldap" class="btn btn-danger" data-id="{{ member.id }}">Ta bort LDAP konto</button>
+          <button id="addldap" class="btn btn-primary" data-toggle="modal" data-target="#addldap_modal">Skapa LDAP konto</button>
+          {% include "modals/addldap.html" with modalname="addldap_modal" title="Skapa LDAP konto" member_id=member.id only %}
         {% endif %}
-      {% else %}
-        <button id="addldap" class="btn btn-primary" data-toggle="modal" data-target="#addldap_modal">Skapa LDAP konto</button>
-        {% include "modals/addldap.html" with modalname="addldap_modal" title="Skapa LDAP konto" member_id=member.id only %}
-      {% endif %}
-    </div>
-    <div class="col-md-6">
-      <h3>BILL</h3>
-      {% if BILL %}
-        {% if BILL.error %}
-        <div class="alert alert-danger">Kunde inte få svar av BILL: {{ BILL.error }}</div>
+      </div>
+      <div class="col-md-6">
+        <h3>BILL</h3>
+        {% if BILL %}
+          {% if BILL.error %}
+            <div class="alert alert-danger">Kunde inte få svar av BILL: {{ BILL.error }}</div>
+          {% else %}
+            <b>BILL kod:</b> {{ BILL.acc }}
+            <br />
+            <b>BILL saldo:</b> {{ BILL.balance }}€
+            <br />
+            <br />
+            <button id="delbill" class="btn btn-danger" data-id="{{ member.id }}">Ta bort BILL konto</button>
+          {% endif %}
         {% else %}
-          <b>BILL kod:</b> {{ BILL.acc }}
-          <br>
-          <b>BILL saldo:</b> {{ BILL.balance }}€
-          <br>
-          <br>
-          <button id="delbill" class="btn btn-danger" data-id="{{ member.id }}">Ta bort BILL konto</button>
+          <button id="addbill" class="btn btn-primary" {% if not LDAP %} disabled title="Skapa LDAP konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL konto</button>
         {% endif %}
-      {% else %}
-        
-        <button id="addbill" class="btn btn-primary" {% if not LDAP %} disabled title="Skapa LDAP konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL konto</button>
-      {% endif %}
+      </div>
     </div>
-  </div>
   </div>
 
   <!-- Right Column -->
-
   <div class="col-md-4">
     <ul class="list-inline">
       <li><h3>Poster</h3></li>
@@ -246,22 +303,22 @@
       </li>
     </ul>
     <table class="table table-condensed">
-    <thead><tr>
-      <th></th>
-    	<th>Post</th>
-    	<th>Från</th>
-    	<th>Till</th>
-    </tr></thead>
-    {% for functionary in functionaries %}
-    <tr>
-      <td>
-        <span class="glyphicon glyphicon-remove text-danger removeFunctionary" role="button" data-id="{{ functionary.id }}"></span>
-      </td>
-    	<td><a href="/admin/functionaries/{{functionary.id}}/">{{functionary.functionarytype.name}}</a></td>
-    	<td>{{functionary.begin_date}}</td>
-    	<td>{{functionary.end_date}}</td>
-    </tr>
-    {% endfor %}
+      <thead>
+        <tr>
+          <th></th>
+        	<th>Post</th>
+        	<th>Från</th>
+        	<th>Till</th>
+        </tr>
+      </thead>
+      {% for functionary in functionaries %}
+        <tr>
+          <td><span class="glyphicon glyphicon-remove text-danger removeFunctionary" role="button" data-id="{{ functionary.id }}"></span></td>
+        	<td><a href="/admin/functionaries/{{functionary.id}}/">{{functionary.functionarytype.name}}</a></td>
+        	<td>{{functionary.begin_date}}</td>
+        	<td>{{functionary.end_date}}</td>
+        </tr>
+      {% endfor %}
     </table>
     <ul class="list-inline">
       <li><h3>Grupper</h3></li>
@@ -271,28 +328,30 @@
       </li>
     </ul>
     <table class="table table-condensed">
-    <thead><tr>
-    <th></th>
-    <th>Grupp</th>
-    <th>Från</th>
-    <th>Till</th>
-    </tr></thead>
-    {% for membership in groups %}
-    <tr>
-      <td>
-        <span class="glyphicon glyphicon-remove text-danger removeGroup" role="button" data-id="{{ membership.id }}"></span>
-      </td>
-    <td>
-      <a href="/admin/groups/{{membership.group.grouptype.id}}/{{membership.group.id}}/">{{membership.group.grouptype.name}}</a>
-    </td>
-    <td>
-      {{membership.group.begin_date}}
-    </td>
-    <td>
-      {{membership.group.end_date}}
-    </td>
-    </tr>
-    {% endfor %}
+      <thead>
+        <tr>
+          <th></th>
+          <th>Grupp</th>
+          <th>Från</th>
+          <th>Till</th>
+        </tr>
+      </thead>
+      {% for membership in groups %}
+        <tr>
+          <td>
+            <span class="glyphicon glyphicon-remove text-danger removeGroup" role="button" data-id="{{ membership.id }}"></span>
+          </td>
+          <td>
+            <a href="/admin/groups/{{membership.group.grouptype.id}}/{{membership.group.id}}/">{{membership.group.grouptype.name}}</a>
+          </td>
+          <td>
+            {{membership.group.begin_date}}
+          </td>
+          <td>
+            {{membership.group.end_date}}
+          </td>
+        </tr>
+      {% endfor %}
     </table>
     <ul class="list-inline">
       <li><h3>Medlemstyper</h3></li>
@@ -302,30 +361,29 @@
       </li>
     </ul>
     <table class="table table-condensed">
-    <thead><tr>
-      <th></th>
-      <th>Typ</th>
-      <th>Från</th>
-      <th>Till</th>
-    </tr></thead>
-    {% for type in membertypes %}
-    <tr><td>
-      <span class="glyphicon glyphicon-edit text-info editMemberType" role="button" data-id="{{ type.id }}"></span>
-      <span class="glyphicon glyphicon-remove text-danger removeMemberType" role="button" data-id="{{ type.id }}"></span>
-      </td>
-      <td>
-      {{type.get_type_display}}
-      </td>
-      <td>
-      {{type.begin_date}}
-      </td>
-      <td>
-      {{type.end_date}}
-    </td></tr>
-    {% endfor %}
+      <thead>
+        <tr>
+          <th></th>
+          <th>Typ</th>
+          <th>Från</th>
+          <th>Till</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for type in membertypes %}
+          <tr>
+            <td>
+              <span class="glyphicon glyphicon-edit text-info editMemberType" role="button" data-id="{{ type.id }}"></span>
+              <span class="glyphicon glyphicon-remove text-danger removeMemberType" role="button" data-id="{{ type.id }}"></span>
+            </td>
+            <td>{{type.get_type_display}}</td>
+            <td>{{type.begin_date}}</td>
+            <td>{{type.end_date}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
     {% include "modals/modal.html" with modalname="editMemberTypeModal" title="Editera medlemstyp" only %}
-  </div>
   </div>
 </div>
 {% endblock %}
