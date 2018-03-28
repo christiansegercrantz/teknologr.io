@@ -127,7 +127,6 @@ class LDAPAccountManager:
         salt = "".join([random.choice(string.ascii_uppercase) for i in range(4)])
         return "{SMD5}" + hashlib.md5(password.encode('utf-8')).hexdigest() + salt
 
-
     def get_ldap_groups(self, username):
         dn = env("LDAP_GROUP_DN")
         query = "(&(objectClass=posixGroup)(memberUid=%s))" % username
