@@ -128,7 +128,7 @@ class LDAPAccountManager:
         import binascii
         salt = "".join([random.choice(string.ascii_uppercase) for i in range(4)])
         digest = hashlib.md5((password + salt).encode('utf-8')).hexdigest()
-        return "{SMD5}" + base64.b64encode(binascii.unhexlify(digest) + salt)
+        return b"{SMD5}" + base64.b64encode(binascii.unhexlify(digest) + salt.encode('utf-8'))
 
     def get_ldap_groups(self, username):
         dn = env("LDAP_GROUP_DN")
