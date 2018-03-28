@@ -57,7 +57,7 @@ class LDAPAccountManager:
         ]
         attrs['krbName'] = [username.encode('utf-8')]
         attrs['mail'] = [member.email.encode('utf-8')]
-        attrs['userPassword'] = [password.encode('utf-8')]
+        attrs['userPassword'] = [self.hash_user_password(password).encode('utf-8')]
         sambasid = "S-1-0-0-%s" % str(uidnumber*2+1000)
         attrs['sambaSID'] = [sambasid.encode('utf-8')]
         attrs['sambaNTPassword'] = [nt_pw.encode('utf-8')]
@@ -99,7 +99,7 @@ class LDAPAccountManager:
         dn = env("LDAP_USER_DN_TEMPLATE") % {'user': username}
         nt_pw = self.get_samba_password(password)
         mod_attrs = [
-            (ldap.MOD_REPLACE, 'userPassword', password.encode('utf-8')),
+            (ldap.MOD_REPLACE, 'userPassword', self.hash_user_password(password).encode('utf-8')),
             (ldap.MOD_REPLACE, 'sambaNTPassword', nt_pw.encode('utf-8'))
         ]
         self.ldap.modify_s(dn, mod_attrs)
@@ -119,6 +119,14 @@ class LDAPAccountManager:
         return codecs.encode(
                 hashlib.new('md4', password.encode('utf-16le')).digest(), 'hex_codec'
             ).decode('utf-8').upper()
+
+    def hash_user_password(self, password):
+        import random
+        import string
+        import hashlib
+        salt = "".join([random.choice(string.ascii_uppercase) for i in range(4)])
+        return "{SMD5}" + hashlib.md5(password.encode('utf-8')).hexdigest() + salt
+
 
     def get_ldap_groups(self, username):
         dn = env("LDAP_GROUP_DN")
