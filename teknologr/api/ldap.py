@@ -121,7 +121,11 @@ class LDAPAccountManager:
             ).decode('utf-8').upper()
 
     def hash_user_password(self, password):
-        import random, string, hashlib, base64, binascii
+        import random
+        import string
+        import hashlib
+        import base64
+        import binascii
         salt = "".join([random.choice(string.ascii_uppercase) for i in range(4)])
         digest = hashlib.md5((password + salt).encode('utf-8')).hexdigest()
         return "{SMD5}" + base64.b64encode(binascii.unhexlify(digest) + salt)
