@@ -121,11 +121,10 @@ class LDAPAccountManager:
             ).decode('utf-8').upper()
 
     def hash_user_password(self, password):
-        import random
-        import string
-        import hashlib
+        import random, string, hashlib, base64, binascii
         salt = "".join([random.choice(string.ascii_uppercase) for i in range(4)])
-        return "{SMD5}" + hashlib.md5(password.encode('utf-8')).hexdigest() + salt
+        digest = hashlib.md5((password + salt).encode('utf-8')).hexdigest()
+        return "{SMD5}" + base64.b64encode(binascii.unhexlify(digest) + salt)
 
     def get_ldap_groups(self, username):
         dn = env("LDAP_GROUP_DN")
