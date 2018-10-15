@@ -5,24 +5,24 @@
   {% csrf_token %}
   {{ addfunctionaryform.media }}
   <div class="row form-group">
-  <div class="col-md-12">
-    <label for={{addfunctoinaryform.member.id_for_label}}>Medlem</label>
-    {{ addfunctionaryform.member }}
-  </div>
+    <div class="col-md-12">
+      <label for={{addfunctoinaryform.member.id_for_label}}>Medlem</label>
+      {{ addfunctionaryform.member }}
+    </div>
   </div>
   <div class="row form-group">
-  <div class="col-md-5">
-    <label for={{addfunctoinaryform.begin_date.id_for_label}}>Från</label>
-    {{ addfunctionaryform.begin_date }}
-  </div>
-  <div class="col-md-5">
-    <label for={{addfunctoinaryform.end_date.id_for_label}}>Till</label>
-    {{ addfunctionaryform.end_date }}
-  </div>
-  <div class="col-md-2">
-    <br>
-    <button type="submit" class="btn btn-success">Spara</button>
-  </div>
+    <div class="col-md-5">
+      <label for={{addfunctoinaryform.begin_date.id_for_label}}>Från</label>
+      {{ addfunctionaryform.begin_date }}
+    </div>
+    <div class="col-md-5">
+      <label for={{addfunctoinaryform.end_date.id_for_label}}>Till</label>
+      {{ addfunctionaryform.end_date }}
+    </div>
+    <div class="col-md-2">
+      <br>
+      <button type="submit" class="btn btn-success">Spara</button>
+    </div>
   </div>
   {{ addfunctionaryform.functionarytype.as_hidden}}
 </form>

@@ -4,19 +4,19 @@
 <form id="addgroupform" autocomplete="off">
   {% csrf_token %}
   <div class="row form-group">
-  <div class="col-md-5">
-    <label for="{{addgroupform.begin_date.id_for_label}}">Från</label>
-    {{ addgroupform.begin_date }}
-  </div>
-  <div class="col-md-5">
-    <label for="{{addgroupform.end_date.id_for_label}}">Till</label>
-    {{ addgroupform.end_date }}
-  </div>
-  {{ addgroupform.grouptype.as_hidden }}
-  <div class="col-md-2">
-    <br>
-    <button type="submit" class="btn btn-success">Spara</button>
-  </div>
+    <div class="col-md-5">
+      <label for="{{addgroupform.begin_date.id_for_label}}">Från</label>
+      {{ addgroupform.begin_date }}
+    </div>
+    <div class="col-md-5">
+      <label for="{{addgroupform.end_date.id_for_label}}">Till</label>
+      {{ addgroupform.end_date }}
+    </div>
+    {{ addgroupform.grouptype.as_hidden }}
+    <div class="col-md-2">
+      <br>
+      <button type="submit" class="btn btn-success">Spara</button>
+    </div>
   </div>
 </form>
 {% endblock %}
