@@ -65,18 +65,27 @@
       <li>
         <button class="btn btn-success" data-toggle="modal" data-target="#groupMembershipModal">Lägg till ny</button>
       </li>
+      <li>
+        <button class="btn btn-default" id="copy2clipboard" title="Kopiera medlemmarnas epostadresser"><span class="glyphicon glyphicon-copy"></span></button>
+      </li>
     </ul>
+    <textarea id="members_email_list" style="opacity: 0;width: 0;">{{ emails }}</textarea>
 
     {% include "modals/groupmembership.html" with modalname="groupMembershipModal" title="Lägg till medlem i grupp" groupmembershipform=groupmembershipform only %}
 
     <table class="table table-condensed">
       {% for membership in groupmembers %}
-      <tr><td>
-        <span class="glyphicon glyphicon-remove text-danger removeMembership" role="button" data-id="{{ membership.id }}"></span>
-      </td>
-      <td>
-        <a href="/admin/members/{{membership.member.id}}">{{membership.member.full_name}}</a>
-      </td></tr>
+      <tr>
+        <td>
+          <span class="glyphicon glyphicon-remove text-danger removeMembership" role="button" data-id="{{ membership.id }}"></span>
+        </td>
+        <td>
+          <a href="/admin/members/{{membership.member.id}}">{{membership.member.full_name}}</a>
+        </td>
+        <td>
+          <p class="email">{{membership.member.email}}</p>
+        </td>
+      </tr>
       {% endfor %}
     </table>
   {% endif %}
