@@ -338,6 +338,9 @@ class ActiveRenderer(csv_renderer.CSVRenderer):
     header = ['position', 'member']
 
 
+# Lists all members that are active at the moment. These are members
+# that are either functionaries right now or in a group that has an
+# active mandate
 @api_view(['GET'])
 @renderer_classes((ActiveRenderer,))
 def activeDump(request):
