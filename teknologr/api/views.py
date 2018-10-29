@@ -264,6 +264,7 @@ def membersByMemberType(request, membertype, field=None):
 
 
 # Data for HTK
+# JSON file including all necessary information for HTK, i.e. member's activity at TF
 @api_view(['GET'])
 def htkDump(request, member=None):
     def dumpMember(member):
@@ -301,7 +302,7 @@ def htkDump(request, member=None):
     else:
         data = [dumpMember(m) for m in Member.objects.all()]
 
-    return Response(data, status=200)
+    return Response(data, status=200, headers={'Content-Disposition': 'attachment; filename="HTKdump.json"'})
 
 
 # CSV-render class

@@ -135,8 +135,8 @@ class Member(SuperClass):
 
 
 class DecorationOwnership(SuperClass):
-    member = models.ForeignKey("Member")
-    decoration = models.ForeignKey("Decoration")
+    member = models.ForeignKey("Member", on_delete=models.CASCADE)
+    decoration = models.ForeignKey("Decoration", on_delete=models.CASCADE)
     acquired = models.DateField()
 
     def __str__(self):
@@ -151,15 +151,15 @@ class Decoration(SuperClass):
 
 
 class GroupMembership(SuperClass):
-    member = models.ForeignKey("Member")
-    group = models.ForeignKey("Group")
+    member = models.ForeignKey("Member", on_delete=models.CASCADE)
+    group = models.ForeignKey("Group", on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (("member", "group"),)
 
 
 class Group(SuperClass):
-    grouptype = models.ForeignKey("GroupType")
+    grouptype = models.ForeignKey("GroupType", on_delete=models.CASCADE)
     begin_date = models.DateField()
     end_date = models.DateField()
 
@@ -175,8 +175,8 @@ class GroupType(SuperClass):
 
 
 class Functionary(SuperClass):
-    member = models.ForeignKey("Member")
-    functionarytype = models.ForeignKey("FunctionaryType")
+    member = models.ForeignKey("Member", on_delete=models.CASCADE)
+    functionarytype = models.ForeignKey("FunctionaryType", on_delete=models.CASCADE)
     begin_date = models.DateField()
     end_date = models.DateField()
 
@@ -217,7 +217,7 @@ class MemberType(SuperClass):
         ("KE", "Kanslist emerita"),
 
     )
-    member = models.ForeignKey("Member")
+    member = models.ForeignKey("Member", on_delete=models.CASCADE)
     begin_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
     type = models.CharField(max_length=2, choices=TYPES, default="PH")
