@@ -351,12 +351,12 @@ def activeDump(request):
     )
     for func in all_functionaries:
         content.append({
-        'position': str(func.functionarytype),
-        'member': ''
+            'position': str(func.functionarytype),
+            'member': ''
         })
         content.append({
-        'position': '',
-        'member': func.member._get_full_preferred_name()
+            'position': '',
+            'member': func.member._get_full_preferred_name()
         })
 
     # Groups
@@ -376,6 +376,7 @@ def activeDump(request):
         } for m in members])
 
     return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="activedump.csv"'})
+
 
 class FullRenderer(csv_renderer.CSVRenderer):
     header = ['id', 'membertype', 'given_names', 'preferred_name', 'surname', 'maiden_name',
