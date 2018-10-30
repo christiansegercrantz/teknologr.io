@@ -10,6 +10,8 @@ from ldap import LDAPError
 from api.bill import BILLAccountManager, BILLException
 from rest_framework_csv import renderers as csv_renderer
 from api.mailutils import mailNewPassword
+from collections import defaultdict
+from datetime import datetime
 
 # Create your views here.
 
@@ -330,6 +332,53 @@ def modulenDump(request):
         for recipient in recipients]
 
     return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="modulendump.csv"'})
+
+
+class ActiveRenderer(csv_renderer.CSVRenderer):
+    header = ['position', 'member']
+
+
+# Lists all members that are active at the moment. These are members
+# that are either functionaries right now or in a group that has an
+# active mandate
+@api_view(['GET'])
+@renderer_classes((ActiveRenderer,))
+def activeDump(request):
+    now = datetime.now().date()
+    content = []
+
+    # Functionaries
+    all_functionaries = Functionary.objects.filter(
+        begin_date__lt=now,
+        end_date__gt=now
+    )
+    for func in all_functionaries:
+        content.append({
+            'position': str(func.functionarytype),
+            'member': ''
+        })
+        content.append({
+            'position': '',
+            'member': func.member._get_full_preferred_name()
+        })
+
+    # Groups
+    groupmemberships = GroupMembership.objects.all()
+    grouped_by_group = defaultdict(list)
+    for membership in groupmemberships:
+        if membership.group.begin_date < now and membership.group.end_date > now:
+            grouped_by_group[membership.group].append(membership.member)
+    for group, members in grouped_by_group.items():
+        content.append({
+            'position': str(group.grouptype),
+            'member': ''
+        })
+        content.extend([{
+            'position': '',
+            'member': m._get_full_preferred_name()
+        } for m in members])
+
+    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="activedump.csv"'})
 
 
 class FullRenderer(csv_renderer.CSVRenderer):

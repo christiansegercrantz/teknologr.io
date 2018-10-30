@@ -27,5 +27,6 @@ urlpatterns = [
     url(r'^htkdump/(\d+)?$', htkDump),
     url(r'^modulendump/$', modulenDump),
     url(r'^fulldump/$', fullDump),
+    url(r'^activedump/$', activeDump),
     url(r'^membersByMemberType/([A-Z]{2})/(\w+)?$', membersByMemberType)
 ]
