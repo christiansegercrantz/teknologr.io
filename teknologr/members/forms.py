@@ -18,7 +18,7 @@ class MemberForm(ModelForm):
         model = Member
         fields = '__all__'
         widgets = {
-            'comment': forms.Textarea(attrs={'rows':3, 'cols':15}),
+            'comment': forms.Textarea(attrs={'rows': 3, 'cols': 15}),
         }
 
     def __init__(self, *args, **kwargs):
