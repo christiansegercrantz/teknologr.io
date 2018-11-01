@@ -124,6 +124,13 @@
         </label>
       </div>
     </div>
+    <div class="row">
+      <div class ="col-md-12">
+        <label for="{{  form.comment.id_for_label }}">Kommentar</label>
+        {% if form.comment.errors %}<div class="alert alert-danger">{{ form.comment.errors }}</div>{%endif%}
+        {{ form.comment }}
+      </div>
+    </div>
     <div class = "row">
       <div class = "col-md-12">
       <button type="submit" class="btn btn-success">Spara</button>
@@ -171,7 +178,7 @@
           <button id="delbill" class="btn btn-danger" data-id="{{ member.id }}">Ta bort BILL konto</button>
         {% endif %}
       {% else %}
-        
+
         <button id="addbill" class="btn btn-primary" {% if not LDAP %} disabled title="Skapa LDAP konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL konto</button>
       {% endif %}
     </div>
