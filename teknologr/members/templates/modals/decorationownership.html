@@ -5,20 +5,20 @@
   {% csrf_token %}
   {{ adddecorationform.media }}
   <div class="row form-group">
-  <div class="col-md-12">
-    <label for={{adddecorationform.member.id_for_label}}>Medlem</label>
-    {{ adddecorationform.member }}
-  </div>
+    <div class="col-md-12">
+      <label for={{adddecorationform.member.id_for_label}}>Medlem</label>
+      {{ adddecorationform.member }}
+    </div>
   </div>
   <div class="row form-group">
-  <div class="col-md-10">
-    <label for={{adddecorationform.acquired.id_for_label}}>Utdelat</label>
-    {{ adddecorationform.acquired }}
-  </div>
-  <div class="col-md-2">
-    <br>
-    <button type="submit" class="btn btn-success">Spara</button>
-  </div>
+    <div class="col-md-10">
+      <label for={{adddecorationform.acquired.id_for_label}}>Utdelat</label>
+      {{ adddecorationform.acquired }}
+    </div>
+    <div class="col-md-2">
+      <br>
+      <button type="submit" class="btn btn-success">Spara</button>
+    </div>
   </div>
   {{ adddecorationform.decoration.as_hidden }}
 </form>
