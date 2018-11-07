@@ -79,8 +79,12 @@ class Member(SuperClass):
     def _get_full_address(self):
         country = 'Finland'
         if self.country.name:
-            country = self.country.name
-        return "%s, %s, %s, %s" % (self.street_address, self.postal_code, self.city, country)
+            country = str(self.country.name)
+        address_parts = [self.street_address, self.city, country]
+        if self.postal_code:
+            address_parts.insert(1, self.postal_code)
+        return ", ".join(address_parts)
+        # return "%s, %s, %s, %s" % ()
 
     def save(self, *args, **kwargs):
         if not self.username:
@@ -126,8 +130,7 @@ class Member(SuperClass):
 
     def shouldBeStalm(self):
         ''' Used to find Juniorstalmar members that should magically become stalmar somehow '''
-        return self.isValidMember() is not None and \
-            next((x for x in MemberType.objects.filter(member=self) if x.type == "JS"), None) is not None
+        return not self.isValidMember() and ("JS" in [x.type for x in MemberType.objects.filter(member=self)])
 
     def isValidMember(self):
         memberType = self.getMostRecentMemberType()
@@ -223,4 +226,6 @@ class MemberType(SuperClass):
     type = models.CharField(max_length=2, choices=TYPES, default="PH")
 
     def __str__(self):
-        return "{0}: {1} - {2}".format(self.get_type_display(), self.begin_date, self.end_date)
+        return "{0}: {1}-{2}".format(
+            self.get_type_display(), self.begin_date, (self.end_date if self.end_date else ">")
+            )
