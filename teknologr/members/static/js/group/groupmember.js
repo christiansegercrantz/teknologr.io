@@ -37,5 +37,8 @@ $(document).ready(function() {
 			});
 		}
 	});
-
+	$('#copy2clipboard').click(function(){
+		$("#members_email_list").select();
+    document.execCommand('copy');
+	});
 });
