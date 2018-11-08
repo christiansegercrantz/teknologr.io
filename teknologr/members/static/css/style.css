@@ -2,11 +2,6 @@
  * Base structure
  */
 
-/* Move down content because we have a fixed navbar that is 50px tall */
-body {
-  padding-top: 50px;
-}
-
 
 /*
  * Global add-ons
@@ -110,7 +105,7 @@ ul.ui-autocomplete {
   z-index: 1100;
 }
 
-/* Overrides list-group-item from Bootstrap */ 
+/* Overrides list-group-item from Bootstrap */
 .list-group-item {
   padding: 3px 10px
 }
