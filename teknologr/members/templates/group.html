@@ -2,95 +2,89 @@
 {% load staticfiles %}
 {% block main %}
 <div class="container-fluid">
-
-<h1 class="page-header">
-<ul class="list-inline">
-  <li>
-    {{ grouptype.name }}
-  </li>
-  <li>
-    <button class="btn btn-success" data-toggle="modal" data-target="#groupTypeModal">Ändra</button>
-  </li>
-  <li>
-    <button id="deleteGroupType" class="btn btn-danger" data-id="{{ grouptype.id }}">Radera</button>
-  </li>
-</ul>
-</h1>
-
-{% include "modals/grouptype.html" with modalname="groupTypeModal" title="Editera grupptyp" groupTypeForm=groupTypeForm grouptype=grouptype only %}
-
+  <ul class="list-inline page-header">
+    <li class="list-inline-item">
+      <h1>{{ grouptype.name }}</h1>
+    </li>
+    <li class="list-inline-item">
+      <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#groupTypeModal"></i>
+    </li>
+    <li class="list-inline-item">
+      <i id="deleteGroupType" class="fas fa-times text-danger icon-20" role="button" data-id="{{ subgroup.id }}"></i>
+    </li>
+  </ul>
+  {% include "modals/grouptype.html" with modalname="groupTypeModal" title="Editera grupptyp" groupTypeForm=groupTypeForm grouptype=grouptype only %}
 </div>
 
 <div class="container-fluid">
-<div class="row">
-  <div class="col-md-7">
-    <ul class="list-inline">
-      <li><h3>Undergrupper</h3></li>
-      <li>
-        <button class="btn btn-success" data-toggle="modal" data-target="#addGroupModal">Lägg till ny</button>
-      </li>
-    </ul>
-
-    {% include "modals/addgroup.html" with modalname="addGroupModal" title="Lägg till grupp" addgroupform=addgroupform grouptype=grouptype only %}
-
-    <table class="table table-condensed">
-      <thead>
-        <tr>
-        <th>Från</th>
-        <th>Till</th>
-        <th>Editera</th>
-        <th>Radera</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for subgroup in groups %}
-        <tr {% if group.id == subgroup.id %} class="active" {% endif %}>
-          <td>{{subgroup.begin_date}}</td>
-          <td>{{subgroup.end_date}}</td>
-          <td><a class="glyphicon glyphicon-edit text-info" href="/admin/groups/{{grouptype.id}}/{{subgroup.id}}/"></a></td>
-          <td><span class="glyphicon glyphicon-remove text-danger removeGroup" role="button" data-id="{{ subgroup.id }}" data-grouptype_id="{{grouptype.id}}"></span></td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-
+  <div class="row">
+    <div class="col-md-7">
+      <ul class="list-inline">
+        <li class="list-inline-item">
+          <h3>Undergrupper</h3>
+        </li>
+        <li class="list-inline-item">
+          <i class="fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#addGroupModal"></i>
+        </li>
+      </ul>
+      {% include "modals/addgroup.html" with modalname="addGroupModal" title="Lägg till grupp" addgroupform=addgroupform grouptype=grouptype only %}
+      <table class="table table-sm">
+        <thead class="no-border">
+          <tr>
+            <th></th>
+            <th>Från</th>
+            <th>Till</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for subgroup in groups %}
+          <tr {% if group.id == subgroup.id %} class="bg-light" {% endif %}>
+            <td>
+              <a href="/admin/groups/{{grouptype.id}}/{{subgroup.id}}/"><i class="far fa-edit text-info"></i></a>
+              <i class="fas fa-times removeGroup text-danger" role="button" data-id="{{ subgroup.id }}" data-grouptype_id="{{ grouptype.id }}"></i>
+            </td>
+            <td>{{subgroup.begin_date}}</td>
+            <td>{{subgroup.end_date}}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- Right block, view single group -->
+    <div class="col-md-5">
+      {% if group %}
+        <table class="table table-sm">
+          <thead class="no-border">
+            <tr>
+              <th>
+                <h3>
+                  <span class="col-10">{{ group.begin_date }} - {{ group.end_date }}</span>
+                  <span class="float-right">
+                    <i class="far fa-edit text-info icon-20" role="button" data-toggle="modal" data-target="#editGroupModal"></i>
+                    <i class="fas fa-plus text-success icon-20 align-middle" role="button" data-toggle="modal" data-target="#groupMembershipModal"></i>
+                    <i id="copy2clipboard" class="far fa-copy icon-20" role="button" title="Kopiera medlemmarnas epostadresser"></i>
+                  </span>
+                </h3>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for membership in groupmembers %}
+              <tr>
+                <td>
+                  <i class="col-2 fas fa-times removeMembership text-danger" role="button" data-id="{{ membership.id }}"></i>
+                  <a class="col-10" href="/admin/members/{{membership.member.id}}">{{membership.member.full_name}}</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <textarea id="members_email_list" style="opacity: 0;width: 0; height:0;">{{ emails }}</textarea>
+        {% include "modals/group.html" with modalname="editGroupModal" title="Editera grupp" form=groupform groupid=group.id only %}
+        {% include "modals/groupmembership.html" with modalname="groupMembershipModal" title="Lägg till medlem i grupp" groupmembershipform=groupmembershipform only %}
+      {% endif %}
+    </div>
   </div>
-
-  <div class="col-md-5">
-  {% if group %}
-    <h3> {{ group.begin_date }} - {{ group.end_date }} <span class="glyphicon glyphicon-edit text-info" role="button" data-toggle="modal" data-target="#editGroupModal"></span></h3>
-    {% include "modals/group.html" with modalname="editGroupModal" title="Editera grupp" form=groupform groupid=group.id only %}
-    <ul class="list-inline">
-      <li><h4>Medlemmar i gruppen</h4></li>
-      <li>
-        <button class="btn btn-success" data-toggle="modal" data-target="#groupMembershipModal">Lägg till ny</button>
-      </li>
-      <li>
-        <button class="btn btn-default" id="copy2clipboard" title="Kopiera medlemmarnas epostadresser"><span class="glyphicon glyphicon-copy"></span></button>
-      </li>
-    </ul>
-    <textarea id="members_email_list" style="opacity: 0;width: 0;">{{ emails }}</textarea>
-
-    {% include "modals/groupmembership.html" with modalname="groupMembershipModal" title="Lägg till medlem i grupp" groupmembershipform=groupmembershipform only %}
-
-    <table class="table table-condensed">
-      {% for membership in groupmembers %}
-      <tr>
-        <td>
-          <span class="glyphicon glyphicon-remove text-danger removeMembership" role="button" data-id="{{ membership.id }}"></span>
-        </td>
-        <td>
-          <a href="/admin/members/{{membership.member.id}}">{{membership.member.full_name}}</a>
-        </td>
-        <td>
-          <p class="email">{{membership.member.email}}</p>
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-  {% endif %}
-  </div>
-</div>
 </div>
 {% endblock %}
 
