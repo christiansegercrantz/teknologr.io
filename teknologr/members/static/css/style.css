@@ -7,8 +7,9 @@
  * Global add-ons
  */
 
-.sub-header {
+.page-header {
   padding-bottom: 10px;
+  margin-bottom: 20px;
   border-bottom: 1px solid #eee;
 }
 
@@ -113,8 +114,6 @@ ul.ui-autocomplete {
 #side-search {
   width: 300px;
 }
-
-/* API buttons at top of member view*/
-.apibtn {
-  float: right;
+i.far:hover, i.fas:hover {
+  cursor: pointer;
 }
