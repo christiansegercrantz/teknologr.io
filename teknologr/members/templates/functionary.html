@@ -3,49 +3,46 @@
 
 {% block main %}
 <div class="container-fluid">
-<h1 class="page-header">
-<ul class="list-inline">
-  <li>
-    {{ functionaryType.name }}
-  </li>
-  <li>
-    <button class="btn btn-success" data-toggle="modal" data-target="#functionaryTypeModal">Ändra</button>
-  </li>
-  <li>
-    <button id="deleteFunctionaryType" class="btn btn-danger" data-id="{{ functionaryType.id }}">Radera</button>
-  </li>
-</ul>
-</h1>
-
-{% include "modals/functionarytype.html" with modalname="functionaryTypeModal" title="Editera Funktionär" functionaryTypeForm=functionaryTypeForm functionaryType=functionaryType only %}
+  <ul class="list-inline page-header">
+    <li class="list-inline-item">
+      <h1>{{ functionaryType.name }}</h1>
+    </li>
+    <li class="list-inline-item">
+      <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#functionaryTypeModal"></i>
+    </li>
+    <li class="list-inline-item">
+      <i id="deleteFunctionaryType" class="fas fa-times text-danger icon-20" role="button" data-id="{{ functionaryType.id }}"></i>
+    </li>
+  </ul>
+  {% include "modals/functionarytype.html" with modalname="functionaryTypeModal" title="Editera Funktionär" functionaryTypeForm=functionaryTypeForm functionaryType=functionaryType only %}
 </div>
 
 <div class="container-fluid">
   <ul class="list-inline">
-    <li><h3>Innehavare av posten</h3></li>
-    <li>
-      <button class="btn btn-success" data-toggle="modal" data-target="#addFunctionaryModal">Lägg till ny</button>
+    <li class="list-inline-item">
+      <h3>Innehavare av posten</h3>
+    </li>
+    <li class="list-inline-item">
+      <i class="fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#addFunctionaryModal"></i>
     </li>
   </ul>
-
   {% include "modals/functionary.html" with modalname="addFunctionaryModal" title="Lägg till ny "|add:functionaryType.name addfunctionaryform=addfunctionaryform only %}
-
-  <table class="table table-condensed">
-    <thead>
+  <table class="table table-sm">
+    <thead class="no-border">
       <tr>
-      <th>Från</th>
-      <th>Till</th>
-      <th>Medlem</th>
-      <th>Radera</th>
+        <th></th>
+        <th>Medlem</th>
+        <th>Från</th>
+        <th>Till</th>
       </tr>
     </thead>
     <tbody>
     {% for functionary in functionaries %}
       <tr>
+        <td><i class="fas fa-times removeFunctionary text-danger" role="button" data-id="{{ functionary.id }}" data-functionarytype_id="{{functionaryType.id}}"></i></td>
+        <td><a href="/admin/members/{{functionary.member.id}}/">{{functionary.member.full_name}}</a></td>
         <td>{{functionary.begin_date}}</td>
         <td>{{functionary.end_date}}</td>
-        <td><a href="/admin/members/{{functionary.member.id}}/">{{functionary.member.full_name}}</a></td>
-        <td><span class="glyphicon glyphicon-remove text-danger removeFunctionary" role="button" data-id="{{ functionary.id }}" data-functionarytype_id="{{functionaryType.id}}"></span></td>
       </tr>
     {% endfor %}
     </tbody>
