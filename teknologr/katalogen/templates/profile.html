@@ -3,138 +3,138 @@
 {% block content %}
 
 <div class="container-fluid">
-<h1 class="page-header">{{person.full_name}}</h1>
-<div class="row">
-  <div class="col-12 col-lg-7">
-    <table class="table table-striped table-borderless">
-      <tbody>
-        <tr>
-          <th>Tilltalsnamn</th>
-          <td align="right">{{person.preferred_name}}</td>
-        </tr>
-        <tr>
-          <th>Smeknamn</th>
-          <td align="right">{{person.nickname}}</td>
-        </tr>
-        <tr>
-          <th>Telefonnummer</th>
-          <td align="right">
-          {% if person.mobile_phone %}
-            {{person.mobile_phone}}
-          {% else %}
-            {{person.phone}}
-          {% endif %}
-          </td>
-        </tr>
-        <tr>
-          <th>E-postadress</th>
-          <td align="right">{{person.email}}</td>
-        </tr>
-        <tr>
-          <th>Hemadress</th>
-          <td align="right">
-            {{person.street_address}}<br/>
-            {{person.postal_code}} {{person.city}}<br/>
-            {{person.country.name}}
-          </td>
-        </tr>
-        <tr>
-          <th>Studieprogram</th>
-          <td align="right">{{person.degree_programme}}</td>
-        </tr>
-        <tr>
-          <th>Phuxår</th>
-          <td align="right">
-          {% if person.enrolment_year %}
-            {{person.enrolment_year}}
-          {% endif %}
-          </td>
-        </tr>
-        <tr>
-          <th>Färdigbliven</th>
-          <td align="right">
-          {% if person.graduated %}
-            {% if person.graduated_year %}
-                {{person.graduated_year}}
+  <h1 class="page-header">{{person.full_name}}</h1>
+  <div class="row">
+    <div class="col-12 col-lg-7">
+      <table class="table table-striped table-borderless">
+        <tbody>
+          <tr>
+            <th>Tilltalsnamn</th>
+            <td align="right">{{person.preferred_name}}</td>
+          </tr>
+          <tr>
+            <th>Smeknamn</th>
+            <td align="right">{{person.nickname}}</td>
+          </tr>
+          <tr>
+            <th>Telefonnummer</th>
+            <td align="right">
+            {% if person.mobile_phone %}
+              {{person.mobile_phone}}
             {% else %}
-                Ja
+              {{person.phone}}
             {% endif %}
-          {% else %}
-            Nej
-          {% endif %}
-          </td>
-        </tr>
-        <tr>
-          <th>Medlemskapstyp</th>
-          <td align="right">
-          {% if person.current_member_type %}
-            {{ person.current_member_type }}
-          {% else %}
-            Ej medlem
-          {% endif %}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+            </td>
+          </tr>
+          <tr>
+            <th>E-postadress</th>
+            <td align="right">{{person.email}}</td>
+          </tr>
+          <tr>
+            <th>Hemadress</th>
+            <td align="right">
+              {{person.street_address}}<br/>
+              {{person.postal_code}} {{person.city}}<br/>
+              {{person.country.name}}
+            </td>
+          </tr>
+          <tr>
+            <th>Studieprogram</th>
+            <td align="right">{{person.degree_programme}}</td>
+          </tr>
+          <tr>
+            <th>Phuxår</th>
+            <td align="right">
+            {% if person.enrolment_year %}
+              {{person.enrolment_year}}
+            {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th>Färdigbliven</th>
+            <td align="right">
+            {% if person.graduated %}
+              {% if person.graduated_year %}
+                  {{person.graduated_year}}
+              {% else %}
+                  Ja
+              {% endif %}
+            {% else %}
+              Nej
+            {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th>Medlemskapstyp</th>
+            <td align="right">
+            {% if person.current_member_type %}
+              {{ person.current_member_type }}
+            {% else %}
+              Ej medlem
+            {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <div class="col-12 col-lg-5">
-    <h3>Poster</h3>
-    <table class="table table-striped table-borderless table-sm">
-      {% for functionary in functionaries %}
-        <tr>
-          <th>
-            {{ functionary.functionarytype.name }}
-          </td>
-          <td align="right">
-            {{ functionary.begin_date }} - {{ functionary.end_date }}
-          </td>
-        </tr>
-      {% empty %}
-        <tr>
-          <th>Inga poster.</th>
-          <td align="right"></td>
-        </tr>
-      {% endfor %}
-    </table>
-    <h3>Grupper</h3>
-    <table class="table table-striped table-borderless table-sm">
-      {% for group in groups %}
-        <tr>
-          <th>
-            {{ group.group.grouptype.name }}
-          </th>
-          <td align="right">
-            {{ group.group.begin_date }} - {{ group.group.end_date }}
-          </td>
-        </tr>
-      {% empty %}
-        <tr>
-          <th>Inga grupper. </th>
-          <td align="right"></td>
-        </tr>
-      {% endfor %}
-    </table>
-    <h3>Hedersbetygelser</h3>
-    <table class="table table-striped table-borderless table-sm">
-      {% for decoration in decorations %}
-        <tr>
-          <th>
-            {{ decoration.decoration.name }}
-          </th>
-          <td align="right">
-            {{ decoration.acquired }}
-          </td>
-        </tr>
-      {% empty %}
-        <tr>
-          <th>Inga hedersbetygelser. </th>
-          <td align="right"></td>
-        </tr>
-      {% endfor %}
-    </table>
+    <div class="col-12 col-lg-5">
+      <h3>Poster</h3>
+      <table class="table table-striped table-borderless table-sm">
+        {% for functionary in functionaries %}
+          <tr>
+            <th>
+              {{ functionary.functionarytype.name }}
+            </td>
+            <td align="right">
+              {{ functionary.begin_date }} - {{ functionary.end_date }}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <th>Inga poster.</th>
+            <td align="right"></td>
+          </tr>
+        {% endfor %}
+      </table>
+      <h3>Grupper</h3>
+      <table class="table table-striped table-borderless table-sm">
+        {% for group in groups %}
+          <tr>
+            <th>
+              {{ group.group.grouptype.name }}
+            </th>
+            <td align="right">
+              {{ group.group.begin_date }} - {{ group.group.end_date }}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <th>Inga grupper. </th>
+            <td align="right"></td>
+          </tr>
+        {% endfor %}
+      </table>
+      <h3>Hedersbetygelser</h3>
+      <table class="table table-striped table-borderless table-sm">
+        {% for decoration in decorations %}
+          <tr>
+            <th>
+              {{ decoration.decoration.name }}
+            </th>
+            <td align="right">
+              {{ decoration.acquired }}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <th>Inga hedersbetygelser. </th>
+            <td align="right"></td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
   </div>
-</div>
 </div>
 
 {% endblock %}
