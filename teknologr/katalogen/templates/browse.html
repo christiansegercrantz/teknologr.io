@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="row">
-    {% if home %}
+  {% if home %}
     <div class="text-center col-12">
       <h1>Katalogen på nätet</h1>
       <p class="lead">
@@ -12,34 +12,34 @@
         Man kan dock alltid se sin egen profil.
       </p>
     </div>
-    {% else %}
-    <div class="people">
-        {% if persons %}
-        <table class="table table-condensed table-striped">
-            <thead>
-                <tr>
-                    <th>Namn</th>
-                    <th>Telefonnummer</th>
-                    <th>E-post</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for person in persons %}
-                <tr>
-                    <td><a href="{% url 'katalogen.views.profile' person.id %}">{{person.full_name}}</a></td>
-                    <td>{{person.phone}}</td>
-                    <td><a href="mailto:{{person.email}}">{{person.email}}</a>
-                </tr>
-                {% endfor %}
-            </tbody>
+  {% else %}
+    <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+      {% if persons %}
+        <table class="table table-sm table-striped">
+          <thead>
+            <tr>
+              <th>Namn</th>
+              <th>Telefonnummer</th>
+              <th>E-post</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for person in persons %}
+              <tr>
+                <td><a href="{% url 'katalogen.views.profile' person.id %}">{{person.full_name}}</a></td>
+                <td>{{person.phone}}</td>
+                <td><a href="mailto:{{person.email}}">{{person.email}}</a>
+              </tr>
+            {% endfor %}
+          </tbody>
         </table>
-        {% else %}
-        <div class="home-info lead">
-            Inga personer hittades.
-        </div>
-        {% endif %}
+      {% else %}
+      <div class="text-center lead">
+          Inga personer hittades.
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
+  {% endif %}
 </div>
 
 {% endblock %}

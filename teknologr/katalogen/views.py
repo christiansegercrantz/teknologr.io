@@ -16,7 +16,7 @@ def _get_consenting_persons():
 
 
 def _filter_valid_members(member_query):
-    return (x for x in member_query if x.isValidMember())
+    return [x for x in member_query if x.isValidMember()]
 
 
 @login_required
