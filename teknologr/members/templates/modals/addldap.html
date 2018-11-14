@@ -3,36 +3,40 @@
 {% block modalcontent %}
 <form id="addldapform" autocomplete="new-password" data-id="{{member_id}}">
   {% csrf_token %}
-  <div class="row">
-    <div class="col-md-12 form-group">
+  <div class="row form-group">
+    <div class="col-4">
       <label for="username">Användarnamn</label>
+    </div>
+    <div class="col-8">
       <input class="form-control" maxlength="32" name="username" type="text" required />
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12 form-group">
+  <div class="row form-group">
+    <div class="col-4">
       <label for="password">Lösenord</label>
+    </div>
+    <div class="col-8">
       <input class="form-control" id="ldap_password" name="password" type="password" autocomplete="new-password" required />
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12">
-      <div class="form-group has-feedback">
-        <label class="control-label" for="confirm_password">Repetera lösenord</label>
-        <input class="form-control" id="confirm_password" type="password" autocomplete="new-password" required/>
-        <span id="validate_icon" class="glyphicon form-control-feedback"></span>
-      </div>
+  <div class="row form-group has-feedback">
+    <div class="col-4">
+      <label class="control-label" for="confirm_password">Repetera lösenord</label>
+    </div>
+    <div class="col-8">
+      <input class="form-control" id="confirm_password" type="password" autocomplete="new-password" required/>
+      <span id="validate_icon" class="glyphicon form-control-feedback"></span>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12 form-group">
+  <div class="row form-group">
+    <div class="col-10 offset-1">
       <input class="form-check-input" type="checkbox" id="mail_to_user" name="mail_to_user" value="send" checked>
-      <label class="control-label" for="mail_to_user">Skicka lösenordet åt avändaren?</label>
+      <label class="control-label" for="mail_to_user">Skicka lösenordet åt användaren?</label>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-12 form-group">
-    <button type="submit" class="btn btn-success">Skicka</button>
+    <div class="col-12">
+      <button type="submit" class="btn btn-success float-right">Skicka</button>
     </div>
   </div>
 </form>
