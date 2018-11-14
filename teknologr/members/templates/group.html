@@ -28,7 +28,7 @@
         </li>
       </ul>
       {% include "modals/addgroup.html" with modalname="addGroupModal" title="Lägg till grupp" addgroupform=addgroupform grouptype=grouptype only %}
-      <table class="table table-sm">
+      <table class="table table-sm table-striped table-borderless">
         <thead class="no-border">
           <tr>
             <th></th>
@@ -53,7 +53,7 @@
     <!-- Right block, view single group -->
     <div class="col-md-5">
       {% if group %}
-        <table class="table table-sm">
+        <table class="table table-sm table-striped table-borderless">
           <thead class="no-border">
             <tr>
               <th>

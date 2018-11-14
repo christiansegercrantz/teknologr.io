@@ -4,7 +4,7 @@
 {% block main %}
 <div class="container-fluid">
   <h1 class="page-header">
-    {{member.full_name}}&nbsp;
+    {{member.full_name}}
     <a href="/api/members/{{member.id}}/" class="btn btn-outline-dark float-right">API länk</a>
     <a href="/api/htkdump/{{member.id}}" class="btn btn-outline-dark float-right">HTK dump</a>
   </h1>
@@ -251,7 +251,7 @@
         {% include "modals/memberfunctionary.html" with modalname="addFunctionary" title="Lägg till funktionärspost" form=addfunctionaryform only %}
       </li>
     </ul>
-    <table class="table table-condensed">
+    <table class="table table-sm table-striped table-borderless">
     <thead><tr>
       <th></th>
     	<th>Post</th>
@@ -274,7 +274,7 @@
         {% include "modals/membergroup.html" with modalname="addGroup" title="Lägg till grupp" form=addgroupform only %}
       </li>
     </ul>
-    <table class="table table-condensed">
+    <table class="table table-sm table-striped table-borderless">
     <thead><tr>
     <th></th>
     <th>Grupp</th>
@@ -297,7 +297,7 @@
         {% include "modals/membertype.html" with modalname="addMemberType" title="Lägg till medlemstyp" form=addmembertypeform only %}
       </li>
     </ul>
-    <table class="table table-condensed">
+    <table class="table table-sm table-striped table-borderless">
     <thead><tr>
       <th></th>
       <th>Typ</th>
