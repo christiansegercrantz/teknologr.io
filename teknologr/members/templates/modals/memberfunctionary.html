@@ -4,23 +4,32 @@
 <form id="addfunctionaryform" autocomplete="off">
   {% csrf_token %}
   <div class="row form-group">
-    <div class="col-md-12">
+    <div class="col-3">
       <label for={{form.functionarytype.id_for_label}}>Post</label>
+    </div>
+    <div class="col-9">
       {{ form.functionarytype }}
     </div>
   </div>
   <div class="row form-group">
-    <div class="col-md-5">
+    <div class="col-3">
       <label for={{form.begin_date.id_for_label}}>Från</label>
+    </div>
+    <div class="col-9">
       {{ form.begin_date }}
     </div>
-    <div class="col-md-5">
+  </div>
+  <div class="row form-group">
+    <div class="col-3">
       <label for={{form.end_date.id_for_label}}>Till</label>
+    </div>
+    <div class="col-9">
       {{ form.end_date }}
     </div>
-    <div class="col-md-2">
-      <br>
-      <button type="submit" class="btn btn-success">Spara</button>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <button type="submit" class="btn btn-success float-right">Spara</button>
     </div>
   </div>
   {{ form.member.as_hidden }}
