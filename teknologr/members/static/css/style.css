@@ -100,3 +100,12 @@ i.icon-20 {
 thead.no-border th {
   border: 0;
 }
+
+.negative-link {
+  color: grey;
+}
+.negative-link:hover {
+  text-decoration: none;
+  color: grey;
+  background-color: rgb(242, 242, 242);
+}
