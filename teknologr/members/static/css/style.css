@@ -1,28 +1,21 @@
 /*
  * Base structure
  */
-
-/* Move down content because we have a fixed navbar that is 50px tall */
-body {
-  padding-top: 50px;
+a {
+  color: #337ab7;
 }
-
+.list-group-item.active, .nav-link.active {
+  background-color: #337ab7 !important;
+}
 
 /*
  * Global add-ons
  */
 
-.sub-header {
+.page-header {
   padding-bottom: 10px;
+  margin-bottom: 20px;
   border-bottom: 1px solid #eee;
-}
-
-/*
- * Top navigation
- * Hide default border to remove 1px line.
- */
-.navbar-fixed-top {
-  border: 0;
 }
 
 /*
@@ -84,33 +77,12 @@ body {
   margin-top: 0;
 }
 
-
-/*
- * Placeholder dashboard ideas
- */
-
-.placeholders {
-  margin-bottom: 30px;
-  text-align: center;
-}
-.placeholders h4 {
-  margin-bottom: 0;
-}
-.placeholder {
-  margin-bottom: 20px;
-}
-.placeholder img {
-  display: inline-block;
-  border-radius: 50%;
-}
-
 /* ajax-select:s bootstrap-select module */
-
 ul.ui-autocomplete {
   z-index: 1100;
 }
 
-/* Overrides list-group-item from Bootstrap */ 
+/* Overrides list-group-item from Bootstrap */
 .list-group-item {
   padding: 3px 10px
 }
@@ -118,8 +90,22 @@ ul.ui-autocomplete {
 #side-search {
   width: 300px;
 }
+i.far:hover, i.fas:hover {
+  cursor: pointer;
+}
+i.icon-20 {
+  font-size: 20px;
+}
 
-/* API buttons at top of member view*/
-.apibtn {
-  float: right;
+thead.no-border th {
+  border: 0;
+}
+
+.negative-link {
+  color: grey;
+}
+.negative-link:hover {
+  text-decoration: none;
+  color: grey;
+  background-color: rgb(242, 242, 242);
 }

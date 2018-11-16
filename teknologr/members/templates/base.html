@@ -1,68 +1,57 @@
-{% load staticfiles %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   <meta name="description" content="">
   <meta name="author" content="">
   <link rel="icon" href="{% static "favicon.ico" %}">
 
-  <title>teknologr.io</title>
-
+  <title>TF Medlemsregistrer</title>
   <!-- Bootstrap core CSS -->
-  <link href="{% static "assets/css/bootstrap.min.css" %}" rel="stylesheet">
-  <link href="{% static "assets/css/bootstrap-select.min.css" %}" rel="stylesheet">
-
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <link href="{% static "assets/css/ie10-viewport-bug-workaround.css" %}" rel="stylesheet">
-  <link href="{% static "assets/css/jquery-editable-select.min.css" %}" rel="stylesheet">
-
+  <link href="{% static "assets/css/bootstrap.css" %}" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
   <!-- Custom styles for this template -->
   <link href="{% static "css/style.css" %}" rel="stylesheet">
 </head>
 
 <body>
-  <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">teknologr.io</a>
-      </div>
-      <div id="navbar" class="navbar-collapse collapse">
-        <ul class="nav navbar-nav navbar-right">
-          <li>
-            <a href="{% url 'katalogen.views.home' %}">Katalogen</a>
-          </li>
-          <li>
-            <a href="/api/">API</a>
-          </li>
-          <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Dumpar<span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li><a href="/api/fulldump/">Full dump</a></li>
-              <li><a href="/api/modulendump/">Modulen dump</a></li>
-              <li data-toggle="tooltip" data-placement="right" title="Lista av medlemmar som är funkkisar eller i kommittéer med aktiva mandat">
-                <a href="/api/activedump/">Aktiva dump</a>
-              </li>
-              <li><a href="/api/htkdump/?format=json">Full HTK dump</a></li>
-            </ul>
-          </li>
-          <li>
-            <a href="https://wiki.teknologforeningen.fi/itwiki/index.php/Medlemsregister" target="_blank">Info</a>
-          </li>
-          <li>
-            <a href="/logout/">Logga ut</a>
-          </li>
-        </ul>
-      </div>
+  <nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
+    <a class="navbar-brand" href="#">teknologr.io</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'katalogen.views.home' %}">Katalogen</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/">API</a>
+        </li>
+        <li class="dropdown nav-item">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Dumpar<span class="caret"></span>
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/api/fulldump/">Full dump</a>
+            <a class="dropdown-item" href="/api/modulendump/">Modulen dump</a>
+            <a class="dropdown-item" href="/api/activedump/" data-toggle="tooltip" title="Lista av medlemmar som är funkkisar eller i kommittéer med aktiva mandat">Aktiva dump</a>
+            <a class="dropdown-item" href="/api/htkdump/?format=json">Full HTK dump</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://wiki.teknologforeningen.fi/itwiki/index.php/Medlemsregister" target="_blank">Info</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/logout/">Logga ut</a>
+        </li>
+      </ul>
     </div>
   </nav>
   <div class="container-fluid">
@@ -74,7 +63,7 @@
       </div>
       <!-- Modal box must be outside of sidebar because of sidebar position:fixed style -->
       {% include "modals/new.html" with modalname="newModal" title="Lägg till "|add:side.sname newForm=side.newForm active=side.active only %}
-      <div id='main' class="col-md-8 col-md-offset-4 col-lg-9 col-lg-offset-3 main">
+      <div id='main' class="col-md-8 offset-md-4 col-lg-9 offset-lg-3 main">
         {% block main %}
         {% endblock %}
       </div>
@@ -87,12 +76,10 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{% static "assets/js/vendor/jquery.min.js" %}"></script>
+    <script src="{% static "assets/js/jquery-3.3.1.min.js" %}"></script>
+    <script src="{% static "assets/js/popper.min.js" %}"></script>
     <script src="{% static "assets/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "assets/js/bootstrap-select.min.js" %}"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="{% static "assets/js/ie10-viewport-bug-workaround.js" %}"></script>
-    <script src="{% static "assets/js/jquery-editable-select.min.js" %}"></script>
+
     <script src="{% static "js/ajax_api.js" %}"></script>
     <script src="{% static "js/base.js" %}"></script>
     <!-- For tooltips -->

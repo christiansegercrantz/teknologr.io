@@ -89,7 +89,7 @@ class MemberTypeForm(BSModelForm):
         fields = '__all__'
 
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
-    end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
+    end_date = DateField(required=False, widget=DateInput(attrs={'type': 'date'}))
 
 
 class BSAuthForm(AuthenticationForm):

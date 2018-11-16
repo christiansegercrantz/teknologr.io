@@ -1,24 +1,31 @@
-<form id="{{formid}}" autocomplete="off">
+<form id="{{ formid }}" autocomplete="off">
   {% csrf_token %}
   <div class="row form-group">
-  <div class="col-md-12">
-    <label for="{{form.type.id_for_label}}">Medlemstyp</label>
-    {{ form.type }}
-  </div>
+    <div class="col-4">
+      <label for="{{form.type.id_for_label}}">Medlemstyp</label>
+    </div>
+    <div class="col-8">{{ form.type }}</div>
   </div>
   <div class="row form-group">
-  <div class="col-md-5">
-    <label for="{{form.begin_date.id_for_label}}">Från</label>
-    {{ form.begin_date }}
+    <div class="col-4">
+      <label for="{{form.begin_date.id_for_label}}">Från</label>
+    </div>
+    <div class="col-8">
+      {{ form.begin_date }}
+    </div>
   </div>
-  <div class="col-md-5">
-    <label for="{{form.end_date.id_for_label}}">Till</label>
-    {{ form.end_date }}
+  <div class="row form-group">
+    <div class="col-4">
+      <label for="{{form.end_date.id_for_label}}">Till</label>
+    </div>
+    <div class="col-8">
+      {{ form.end_date }}
+    </div>
   </div>
   {{ form.member.as_hidden }}
-  <div class="col-md-2">
-    <br>
-    <button type="submit" class="btn btn-success">Spara</button>
-  </div>
+  <div class="row">
+    <div class="col-12">
+      <button type="submit" class="btn btn-success float-right">Spara</button>
+    </div>
   </div>
 </form>

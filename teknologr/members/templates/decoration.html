@@ -3,51 +3,49 @@
 
 {% block main %}
 <div class="container-fluid">
-<h1 class="page-header">
-<ul class="list-inline">
-  <li>
-    {{decoration.name}}
-  </li>
-  <li>
-  <button class="btn btn-success" data-toggle="modal" data-target="#decorationModal">Ändra</button>
-  </li>
-  <li>
-    <button id="deleteDecoration" class="btn btn-danger" data-id="{{ decoration.id }}">Radera</button>
-  </li>
-</ul>
-</h1>
-
-{% include "modals/decoration.html" with modalname="decorationModal" title="Editera Betygelse" decorationform=decorationform decoration=decoration only %}
-</div>
-<div class="container-fluid">
-
-  <ul class="list-inline">
-    <li><h3>Innehavare av betygelsen</h3></li>
-    <li>
-      <button class="btn btn-success" data-toggle="modal" data-target="#addDecoration">Lägg till ny</button>
+  <ul class="list-inline page-header">
+    <li class="list-inline-item">
+      <h1>{{ decoration.name }}</h1>
+    </li>
+    <li class="list-inline-item">
+      <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#decorationModal"></i>
+    </li>
+    <li class="list-inline-item">
+      <i id="deleteDecoration" class="fas fa-times text-danger icon-20" role="button" data-id="{{ decoration.id }}"></i>
     </li>
   </ul>
+  {% include "modals/decoration.html" with modalname="decorationModal" title="Editera Betygelse" decorationform=decorationform decoration=decoration only %}
+</div>
 
+
+<div class="container-fluid">
+  <ul class="list-inline">
+    <li class="list-inline-item">
+      <h3>Innehavare av betygelse</h3>
+    </li>
+    <li class="list-inline-item">
+      <i class="fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#addDecoration"></i>
+    </li>
+  </ul>
   {% include "modals/decorationownership.html" with modalname="addDecoration" title="Lägg till innehavare av betygelse "|add:decoration.name adddecorationform=adddecorationform only %}
-
-<table class="table table-condensed">
-  <thead>
-    <tr>
-    <th>Utdelat</th>
-    <th>Medlem</th>
-    <th>Radera</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for ownership in decorations %}
-    <tr>
-      <td>{{ownership.acquired}}</td>
-      <td><a href="/admin/members/{{ownership.member.id}}/">{{ownership.member.full_name}}</a></td>
-      <td><span class="glyphicon glyphicon-remove text-danger removeDecoration" role="button" data-id="{{ ownership.id }}" data-decoration_id="{{decoration.id}}"></span></td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+  <table class="table table-sm table-striped table-borderless">
+    <thead class="no-border">
+      <tr>
+        <th></th>
+        <th>Medlem</th>
+        <th>Utdelat</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ownership in decorations %}
+        <tr>
+          <td><i class="fas fa-times removeDecoration text-danger" role="button" data-id="{{ ownership.id }}" data-decoration_id="{{decoration.id}}"></i></td>
+          <td><a href="/admin/members/{{ownership.member.id}}/">{{ownership.member.full_name}}</a></td>
+          <td>{{ownership.acquired}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}
 
