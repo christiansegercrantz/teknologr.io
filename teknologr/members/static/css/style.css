@@ -109,3 +109,7 @@ thead.no-border th {
   color: grey;
   background-color: rgb(242, 242, 242);
 }
+
+#save-remove-buttons {
+  margin-top: 20px;
+}

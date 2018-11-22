@@ -22,11 +22,6 @@
     <form id="memberform" autocomplete="off" role ="form" action="/admin/members/{{member.id}}/" method="post">
     {% csrf_token %}
     <div class="row form-group">
-      <div class="col-md-4">
-        <label for="{{form.surname.id_for_label}}">Efternamn</label>
-        {%if form.surname.errors %}<div class="alert alert-danger">{{form.surname.errors}}</div>{%endif%}
-        {{form.surname}}
-      </div>
       <div class="col-md-5">
         <label for="{{form.given_names.id_for_label}}">Förnamn</label>
         {%if form.given_names.errors %}<div class="alert alert-danger">{{form.given_names.errors}}</div>{%endif%}
@@ -37,22 +32,10 @@
         {%if form.preferred_name.errors %}<div class="alert alert-danger">{{form.preferred_name.errors}}</div>{%endif%}
         {{form.preferred_name}}
       </div>
-    </div>
-    <div class="row form-group">
       <div class="col-md-4">
-        <label for="{{form.nickname.id_for_label}}">Smeknamn</label>
-        {%if form.nickname.errors %}<div class="alert alert-danger">{{form.nickname.errors}}</div>{%endif%}
-        {{form.nickname}}
-      </div>
-      <div class="col-md-5">
-        <label for="{{form.maiden_name.id_for_label}}">Tidigare efternamn</label>
-        {%if form.maiden_name.errors %}<div class="alert alert-danger">{{form.maiden_name.errors}}</div>{%endif%}
-        {{form.maiden_name}}
-      </div>
-      <div class="col-md-3">
-        <label for="{{form.gender.id_for_label}}">Kön</label>
-        {%if form.gender.errors %}<div class="alert alert-danger">{{form.gender.errors}}</div>{%endif%}
-        {{form.gender}}
+        <label for="{{form.surname.id_for_label}}">Efternamn</label>
+        {%if form.surname.errors %}<div class="alert alert-danger">{{form.surname.errors}}</div>{%endif%}
+        {{form.surname}}
       </div>
     </div>
     <div class="row form-group">
@@ -73,32 +56,20 @@
       </div>
     </div>
     <div class="row form-group">
-      <div class="col-md-6">
-        <label for="{{form.country.id_for_label}}">Land</label>
-        {%if form.country.errors %}<div class="alert alert-danger">{{form.country.errors}}</div>{%endif%}
-        {{form.country}}
-      </div>
-      <div class="col-md-6">
-        <label for="{{form.nationality.id_for_label}}">Nationalitet</label>
-        {%if form.nationality.errors %}<div class="alert alert-danger">{{form.nationality.errors}}</div>{%endif%}
-        {{form.nationality}}
-      </div>
-    </div>
-    <div class="row form-group">
       <div class="col-md-3">
         <label for="{{form.mobile_phone.id_for_label}}">Telefonnummer</label>
         {%if form.phone.errors %}<div class="alert alert-danger">{{form.phone.errors}}</div>{%endif%}
         {{form.phone}}
       </div>
-      <div class="col-md-3">
-        <label for="{{form.mobile_phone.id_for_label}}">Mobiltelefonnummer</label>
-        {%if form.mobile_phone.errors %}<div class="alert alert-danger">{{form.mobile_phone.errors}}</div>{%endif%}
-        {{form.mobile_phone}}
-      </div>
-      <div class="col-md-6">
+      <div class="col-md-5">
         <label for="{{form.email.id_for_label}}">E-postadress</label>
         {%if form.email.errors %}<div class="alert alert-danger">{{form.email.errors}}</div>{%endif%}
         {{form.email}}
+      </div>
+      <div class="col-md-4">
+        <label for="{{form.birth_date.id_for_label}}">Födelsedatum</label>
+        {%if form.birth_date.errors %}<div class="alert alert-danger">{{form.birth_date.errors}}</div>{%endif%}
+        {{form.birth_date}}
       </div>
     </div>
     <div class="row form-group">
@@ -107,18 +78,11 @@
         {%if form.student_id.errors %}<div class="alert alert-danger">{{form.student_id.errors}}</div>{%endif%}
         {{form.student_id}}
       </div>
-      <div class="col-md-4">
-        <label for="{{form.birth_date.id_for_label}}">Födelsedatum</label>
-        {%if form.birth_date.errors %}<div class="alert alert-danger">{{form.birth_date.errors}}</div>{%endif%}
-        {{form.birth_date}}
-      </div>
-      <div class="col-md-5">
+      <div class="col-md-3">
         <label for="{{form.enrolment_year.id_for_label}}">Inskrivningsår vid Aalto</label>
         {%if form.enrolment_year.errors %}<div class="alert alert-danger">{{form.enrolment_year.errors}}</div>{%endif%}
         {{form.enrolment_year}}
       </div>
-    </div>
-    <div class="row form-group">
       <div class="col-md-6">
         <label for="{{form.degree_programme.id_for_label}}">Studieinriktning</label>
         <a href="https://wiki.teknologforeningen.fi/itwiki/index.php/Medlemsregister#Studieprogramslistan" target="_blank" class="glyphicon glyphicon-info-sign text-info" data-toggle="tooltip" data-original-title="Välj alltid om möjligt ett alternativ från listan. Om listan behöver ändras, klicka på denna ikon för att se instruktioner till det."></a>
@@ -132,63 +96,49 @@
           {% endif %}
         </select>
       </div>
-      <div class="col-md-3">
+    </div>
+    <div class="row form-group">
+      <div class="col-md-2">
         <label class="form-check-label" for="{{form.graduated.id_for_label}}">
           {%if form.graduated.errors %}<div class="alert alert-danger">{{form.graduated.errors}}</div>{%endif%}
           {{form.graduated}} Utexaminerad
         </label>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <label for="{{form.graduated_year.id_for_label}}">År Utexaminerad</label>
         {%if form.graduated_year.errors %}<div class="alert alert-danger">{{form.graduated_year.errors}}</div>{%endif%}
         {{form.graduated_year}}
       </div>
-    </div>
-    <div class="row form-group">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-check-label" for="{{form.subscribed_to_modulen.id_for_label}}">
           {%if form.subscribed_to_modulen.errors %}<div class="alert alert-danger">{{form.subscribed_to_modulen.errors}}</div>{%endif%}
           {{form.subscribed_to_modulen}} Vill ha modulen hemskickad
         </label>
       </div>
-      <div class="col-md-4 form-check">
+      <div class="col-md-3 form-check">
         <label class="form-check-label" for="{{form.allow_publish_info.id_for_label}}">
           {%if form.allow_publish_info.errors %}<div class="alert alert-danger">{{form.allow_publish_info.errors}}</div>{%endif%}
           {{form.allow_publish_info}} Tillåter utlämning av uppgifter
         </label>
       </div>
-      <div class="col-md-4 form-check">
+      <div class="col-md-2 form-check">
         <label class="form-check-label" for="{{form.dead.id_for_label}}">
           {%if form.dead.errors %}<div class="alert alert-danger">{{form.dead.errors}}</div>{%endif%}
           {{form.dead}} Avliden
         </label>
       </div>
     </div>
-    <div class="row form-group">
-      <div class ="col-md-8">
-        <label for="{{form.url.id_for_label}}">Hemsida</label>
-        {%if form.url.errors %}<div class="alert alert-danger">{{form.url.errors}}</div>{%endif%}
-        {{form.url}}
-      </div>
-      <div class ="col-md-4">
-        <label for="{{form.crm_id.id_for_label}}">CRM id</label>
-        {%if form.crm_id.errors %}<div class="alert alert-danger">{{form.crm_id.errors}}</div>{%endif%}
-        {{form.crm_id}}
-      </div>
-    </div>
     <div class="row">
       <div class ="col-md-12">
-      <label for="{{form.comment.id_for_label}}">Kommentar</label>
-      {%if form.comment.errors %}<div class="alert alert-danger">{{form.comment.errors}}</div>{%endif%}
-      {{form.comment}}
+        <label for="{{  form.comment.id_for_label }}">Kommentar</label>
+        {% if form.comment.errors %}<div class="alert alert-danger">{{ form.comment.errors }}</div>{%endif%}
+        {{ form.comment }}
       </div>
     </div>
-    <br>
-    <div class="row">
-      <div class = "col-md-12">
-      <button type="submit" class="btn btn-success">Spara</button>
-      &nbsp;&nbsp;&nbsp;
-      <button id="deletemember" class="btn btn-danger" data-id={{member.id}}>Radera</button>
+    <div id="save-remove-buttons" class="row">
+      <div class="col-md-12">
+        <button type="submit" class="btn btn-success">Spara</button>
+        <button id="deletemember" class="btn btn-danger" data-id={{member.id}}>Radera</button>
       </div>
     </div>
   </form>

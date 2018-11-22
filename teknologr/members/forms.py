@@ -3,6 +3,7 @@ from django.forms import ModelForm, DateField, ChoiceField, CharField
 from django.forms.widgets import CheckboxInput, DateInput, HiddenInput, TextInput, PasswordInput
 from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
 from django.contrib.auth.forms import AuthenticationForm
+from django import forms
 
 
 class BSModelForm(ModelForm):
@@ -16,6 +17,9 @@ class MemberForm(ModelForm):
     class Meta:
         model = Member
         fields = '__all__'
+        widgets = {
+            'comment': forms.Textarea(attrs={'rows': 3, 'cols': 15}),
+        }
 
     def __init__(self, *args, **kwargs):
         super(MemberForm, self).__init__(*args, **kwargs)
