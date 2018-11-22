@@ -5,14 +5,12 @@
   <li class="nav-item"><a class="nav-link {% if side.active == "decorations" %}active{% endif %}" href="/admin/decorations/">Betygelser</a></li>
 </ul>
 <br>
-<ul class="list-inline">
-  <li class="list-inline-item">
-    <input id="side-search" type="text" class="form-control" placeholder="Sök..." data-active="{{side.active}}">
-  </li>
-  <li class="list-inline-item">
-    <button class="btn btn-success" data-toggle="modal" data-target="#newModal">Ny {{ side.sname }}</button>
-  </li>
-</ul>
+<div class="d-flex align-items-center">
+  <input id="side-search" type="text" class="form-control col-11" placeholder="Sök..." data-active="{{side.active}}">
+  <span data-toggle="tooltip" title="Lägg till en {{ side.sname }}">
+    <i class="fas fa-plus text-success icon-20 col-1" role="button" data-toggle="modal" data-target="#newModal"></i>
+  </span>
+</div>
 <br>
 <div id="side-objects" class="list-group">
   {% for obj in side.objects %}
