@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.views.generic import RedirectView
 from . import views
 from ajax_select import urls as ajax_select_urls

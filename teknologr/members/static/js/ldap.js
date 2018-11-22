@@ -3,15 +3,12 @@ function validatePassword(){
   var confirm = $('#confirm_password');
   if(password.val() != confirm.val()) {
     confirm[0].setCustomValidity("Lösenorden är olika");
-    confirm.closest('.form-group').addClass('has-error');
-    $('#validate_icon').removeClass('glyphicon-ok').addClass('glyphicon-remove');
+    confirm.addClass('is-invalid');
   } else if(confirm.val().length <= 0) {
-    confirm.closest('.form-group').removeClass('has-error has-success');
-    $('#validate_icon').removeClass('glyphicon-ok glyphicon-remove');
+    confirm.removeClass('is-invalid is-valid');
   } else {
     confirm[0].setCustomValidity('');
-    confirm.closest('.form-group').removeClass('has-error').addClass('has-success');
-    $('#validate_icon').removeClass('glyphicon-remove').addClass('glyphicon-ok');
+    confirm.removeClass('is-invalid').addClass('is-valid');
   }
 }
 
@@ -33,7 +30,7 @@ $(document).ready(function() {
     request.fail(function(jqHXR, textStatus ) {
       alert( "Request failed (" + textStatus + "): " + jqHXR.responseText );
     });
-  }); 
+  });
 
   $('#changeldappwform').submit(function(event){
     event.preventDefault();

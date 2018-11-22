@@ -3,14 +3,18 @@
 
 {% block main %}
 <div class="container-fluid">
-<h1 class="page-header">{{member.full_name}}&nbsp;<a href="/api/members/{{member.id}}/" class="btn btn-default apibtn">API länk</a> <a href="/api/htkdump/{{member.id}}" class="btn btn-default apibtn">HTK dump</a></h1>
+  <h1 class="page-header">
+    {{member.full_name}}
+    <a href="/api/members/{{member.id}}/" class="btn btn-outline-dark float-right">API länk</a>
+    <a href="/api/htkdump/{{member.id}}" class="btn btn-outline-dark float-right">HTK dump</a>
+  </h1>
   {% if result %}
-	<div class="row">
-    {% if result == 'success' %}
-    <div class="col-md-12 alert alert-success" role="alert"> <strong>Ändringarna sparade</strong> </div>
-    {% else %}
-    <div class="col-md-12 alert alert-danger" role="alert"> <strong>Ett fel uppstod, kontrollera fälten</strong> </div>
-    {% endif %}
+  	<div class="row">
+      {% if result == 'success' %}
+        <div class="col-md-12 alert alert-success" role="alert"> <strong>Ändringarna sparade</strong> </div>
+      {% else %}
+        <div class="col-md-12 alert alert-danger" role="alert"> <strong>Ett fel uppstod, kontrollera fälten</strong> </div>
+      {% endif %}
     </div>
   {% endif %}
 <div class="row form-group">
@@ -140,7 +144,9 @@
   </form>
 
   <div class="row">
-    <h2>Användarkonton</h2>
+    <h2 class="col-12">Användarkonton</h2>
+  </div>
+  <div class="row">
     <div class="col-md-6">
       <h3>LDAP</h3>
       {% if LDAP %}
@@ -189,13 +195,13 @@
 
   <div class="col-md-4">
     <ul class="list-inline">
-      <li><h3>Poster</h3></li>
-      <li>
-        <button class="btn btn-success" data-toggle="modal" data-target="#addFunctionary">Lägg till ny</button>
+      <li class="list-inline-item"><h3>Poster</h3></li>
+      <li class="list-inline-item float-right">
+        <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addFunctionary">Lägg till ny</button>
         {% include "modals/memberfunctionary.html" with modalname="addFunctionary" title="Lägg till funktionärspost" form=addfunctionaryform only %}
       </li>
     </ul>
-    <table class="table table-condensed">
+    <table class="table table-sm table-striped table-borderless">
     <thead><tr>
       <th></th>
     	<th>Post</th>
@@ -204,9 +210,7 @@
     </tr></thead>
     {% for functionary in functionaries %}
     <tr>
-      <td>
-        <span class="glyphicon glyphicon-remove text-danger removeFunctionary" role="button" data-id="{{ functionary.id }}"></span>
-      </td>
+      <td><i class="fas fa-times removeFunctionary text-danger" role="button" data-id="{{ functionary.id }}"></i></td>
     	<td><a href="/admin/functionaries/{{functionary.id}}/">{{functionary.functionarytype.name}}</a></td>
     	<td>{{functionary.begin_date}}</td>
     	<td>{{functionary.end_date}}</td>
@@ -214,13 +218,13 @@
     {% endfor %}
     </table>
     <ul class="list-inline">
-      <li><h3>Grupper</h3></li>
-      <li>
-        <button class="btn btn-success" data-toggle="modal" data-target="#addGroup">Lägg till ny</button>
+      <li class="list-inline-item"><h3>Grupper</h3></li>
+      <li class="list-inline-item float-right">
+        <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addGroup">Lägg till ny</button>
         {% include "modals/membergroup.html" with modalname="addGroup" title="Lägg till grupp" form=addgroupform only %}
       </li>
     </ul>
-    <table class="table table-condensed">
+    <table class="table table-sm table-striped table-borderless">
     <thead><tr>
     <th></th>
     <th>Grupp</th>
@@ -229,29 +233,21 @@
     </tr></thead>
     {% for membership in groups %}
     <tr>
-      <td>
-        <span class="glyphicon glyphicon-remove text-danger removeGroup" role="button" data-id="{{ membership.id }}"></span>
-      </td>
-    <td>
-      <a href="/admin/groups/{{membership.group.grouptype.id}}/{{membership.group.id}}/">{{membership.group.grouptype.name}}</a>
-    </td>
-    <td>
-      {{membership.group.begin_date}}
-    </td>
-    <td>
-      {{membership.group.end_date}}
-    </td>
+      <td><i class="fas fa-times removeGroup text-danger" role="button" data-id="{{ membership.id }}"></i></td>
+      <td><a href="/admin/groups/{{membership.group.grouptype.id}}/{{membership.group.id}}/">{{membership.group.grouptype.name}}</a></td>
+      <td>{{membership.group.begin_date}}</td>
+      <td>{{membership.group.end_date}}</td>
     </tr>
     {% endfor %}
     </table>
     <ul class="list-inline">
-      <li><h3>Medlemstyper</h3></li>
-      <li>
-        <button class="btn btn-success" data-toggle="modal" data-target="#addMemberType">Lägg till ny</button>
+      <li class="list-inline-item"><h3>Medlemstyper</h3></li>
+      <li class="list-inline-item float-right">
+        <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addMemberType">Lägg till ny</button>
         {% include "modals/membertype.html" with modalname="addMemberType" title="Lägg till medlemstyp" form=addmembertypeform only %}
       </li>
     </ul>
-    <table class="table table-condensed">
+    <table class="table table-sm table-striped table-borderless">
     <thead><tr>
       <th></th>
       <th>Typ</th>
@@ -259,9 +255,10 @@
       <th>Till</th>
     </tr></thead>
     {% for type in membertypes %}
-    <tr><td>
-      <span class="glyphicon glyphicon-edit text-info editMemberType" role="button" data-id="{{ type.id }}"></span>
-      <span class="glyphicon glyphicon-remove text-danger removeMemberType" role="button" data-id="{{ type.id }}"></span>
+    <tr>
+      <td>
+        <i class="far fa-edit text-info editMemberType" role="button" data-id="{{ type.id }}"></i>
+        <i class="fas fa-times removeMemberType text-danger" role="button" data-id="{{ type.id }}"></i>
       </td>
       <td>
       {{type.get_type_display}}

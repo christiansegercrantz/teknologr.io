@@ -134,4 +134,4 @@ class LDAPAccountManager:
         dn = env("LDAP_GROUP_DN")
         query = "(&(objectClass=posixGroup)(memberUid=%s))" % username
         output = self.ldap.search_s(dn, ldap.SCOPE_SUBTREE, query, ['cn', ])
-        return [group[1]['cn'][0] for group in output]
+        return [group[1]['cn'][0].decode('utf-8') for group in output]

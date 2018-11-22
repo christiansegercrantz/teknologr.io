@@ -3,10 +3,10 @@
 {% block modalcontent %}
 <form id="grouptypeform" autocomplete="off" data-id="{{ grouptype.id }}" class="form-inline">
   {% csrf_token %}
-  <div class="form-group">
-    <label for="{{ groupTypeForm.name.id_for_label}}">Namn</label>
-    {{ groupTypeForm.name }}
-    <button type="submit" class="btn btn-success">Spara</button>
+  <div class="row form-group w-100">
+    <div class="col-3"><label for="{{ groupTypeForm.name.id_for_label }}">Namn</label></div>
+    <div class="col-6">{{ groupTypeForm.name }}</div>
+    <div class="col-3"><button type="submit" class="btn btn-success float-right">Spara</button></div>
   </div>
 </form>
 {% endblock %}
