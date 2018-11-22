@@ -196,8 +196,10 @@
   <div class="col-md-4">
     <ul class="list-inline">
       <li class="list-inline-item"><h3>Poster</h3></li>
-      <li class="list-inline-item float-right">
-        <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addFunctionary">Lägg till ny</button>
+      <li class="list-inline-item">
+        <span data-toggle="tooltip" title="Lägg till en post">
+          <i class="fas fa-plus text-success icon-20 col-1" role="button" data-toggle="modal" data-target="#addFunctionary"></i>
+        </span>
         {% include "modals/memberfunctionary.html" with modalname="addFunctionary" title="Lägg till funktionärspost" form=addfunctionaryform only %}
       </li>
     </ul>
@@ -219,8 +221,10 @@
     </table>
     <ul class="list-inline">
       <li class="list-inline-item"><h3>Grupper</h3></li>
-      <li class="list-inline-item float-right">
-        <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addGroup">Lägg till ny</button>
+      <li class="list-inline-item">
+        <span data-toggle="tooltip" title="Lägg till en grupp">
+          <i class="fas fa-plus text-success icon-20 col-1" role="button" data-toggle="modal" data-target="#addGroup"></i>
+        </span>
         {% include "modals/membergroup.html" with modalname="addGroup" title="Lägg till grupp" form=addgroupform only %}
       </li>
     </ul>
@@ -242,8 +246,10 @@
     </table>
     <ul class="list-inline">
       <li class="list-inline-item"><h3>Medlemstyper</h3></li>
-      <li class="list-inline-item float-right">
-        <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addMemberType">Lägg till ny</button>
+      <li class="list-inline-item">
+        <span data-toggle="tooltip" title="Lägg till en medlemstyp">
+          <i class="fas fa-plus text-success icon-20 col-1" role="button" data-toggle="modal" data-target="#addMemberType"></i>
+        </span>
         {% include "modals/membertype.html" with modalname="addMemberType" title="Lägg till medlemstyp" form=addmembertypeform only %}
       </li>
     </ul>
