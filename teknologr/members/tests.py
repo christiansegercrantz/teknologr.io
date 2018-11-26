@@ -35,14 +35,6 @@ class MemberModelTest(TestCase):
         )
         self.assertEquals("Svackis Teknolog", member.full_preferred_name)
 
-    def test_maiden_name(self):
-        member = Member(
-            given_names="Svatta",
-            surname="Teknolog",
-            maiden_name="Hankeit"
-        )
-        self.assertEquals("Svatta Teknolog", member.name)
-
     def test_address(self):
         member = Member(
             given_names="Svatta",

@@ -39,7 +39,7 @@
       </div>
     </div>
     <div class="row form-group">
-      <div class="col-md-7">
+      <div class="col-md-5">
         <label for="{{form.street_address.id_for_label}}">Gatuadress</label>
         {%if form.street_address.errors %}<div class="alert alert-danger">{{form.street_address.errors}}</div>{%endif%}
         {{form.street_address}}
@@ -49,9 +49,14 @@
         {%if form.postal_code.errors %}<div class="alert alert-danger">{{form.postal_code.errors}}</div>{%endif%}
         {{form.postal_code}}
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <label for="{{form.city.id_for_label}}">Postanstalt</label>
         {%if form.city.errors %}<div class="alert alert-danger">{{form.city.errors}}</div>{%endif%}
+        {{form.city}}
+      </div>
+      <div class="col-md-3">
+        <label for="{{form.country.id_for_label}}">Land</label>
+        {%if form.country.errors %}<div class="alert alert-danger">{{form.country.errors}}</div>{%endif%}
         {{form.city}}
       </div>
     </div>
