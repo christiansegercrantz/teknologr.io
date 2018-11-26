@@ -14,39 +14,35 @@ class SuperClass(models.Model):
 
 
 class Member(SuperClass):
-    GENDER_CHOICES = (("UN", "Okänd"), ("M", "Man"), ("F", "Kvinna"))
+    # NAMES
     given_names = models.CharField(max_length=64, blank=False, null=False, default="UNKNOWN")
     preferred_name = models.CharField(max_length=32, blank=True, null=False, default="")
     surname = models.CharField(max_length=32, blank=False, null=False, default="UNKNOWN")
-    maiden_name = models.CharField(max_length=32, blank=True, null=False, default="")
-    nickname = models.CharField(max_length=32, blank=True, null=False, default="")
-    birth_date = models.DateField(blank=True, null=True)
-    student_id = models.CharField(max_length=10, blank=True, null=True, default=None, unique=True)
-    gender = models.CharField(max_length=2, choices=GENDER_CHOICES, default="UN")
-    # https://pypi.python.org/pypi/django-countries/1.0.1
-    nationality = CountryField(blank_label="Välj land", blank=True, null=False, default="")
-    enrolment_year = models.IntegerField(blank=True, null=True)
-    graduated = models.BooleanField(default=False)
-    graduated_year = models.IntegerField(blank=True, null=True)
-    degree_programme = models.CharField(max_length=256, blank=True, null=False)
-    dead = models.BooleanField(default=False)
-    mobile_phone = models.CharField(max_length=128, blank=True, null=False, default="")
-    phone = models.CharField(max_length=128, blank=True, null=False, default="")
+    # ADDRESS
     street_address = models.CharField(max_length=64, blank=True, null=False, default="")
     postal_code = models.CharField(max_length=64, blank=True, null=False, default="")
     city = models.CharField(max_length=64, blank=True, null=False, default="")
     # https://pypi.python.org/pypi/django-countries/1.0.1
     country = CountryField(blank_label="Välj land", blank=True, null=False, default="")
-    url = models.CharField(max_length=64, blank=True, null=False, default="")
+    # CONTACT INFO
+    phone = models.CharField(max_length=128, blank=True, null=False, default="")
     email = models.CharField(max_length=64, blank=True, null=False, default="")
-
+    # DATE OF BIRTH
+    birth_date = models.DateField(blank=True, null=True)
+    # STUDIES
+    student_id = models.CharField(max_length=10, blank=True, null=True, default=None, unique=True)
+    degree_programme = models.CharField(max_length=256, blank=True, null=False)
+    enrolment_year = models.IntegerField(blank=True, null=True)
+    graduated = models.BooleanField(default=False)
+    graduated_year = models.IntegerField(blank=True, null=True)
+    # OTHER
+    dead = models.BooleanField(default=False)
     subscribed_to_modulen = models.BooleanField(default=False)
     allow_publish_info = models.BooleanField(default=False)
-
+    comment = models.TextField(blank=True, null=True)
+    # IT-username and BILL
     username = models.CharField(max_length=32, blank=False, null=True, editable=False, unique=True)
     bill_code = models.CharField(max_length=8, blank=False, null=True, editable=False)
-    crm_id = models.CharField(max_length=32, blank=True, null=False, default="")
-    comment = models.TextField(blank=True, null=True)
 
     def __init__(self, *args, **kwargs):
         super(Member, self).__init__(*args, **kwargs)
