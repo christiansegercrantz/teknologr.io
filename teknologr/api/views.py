@@ -248,7 +248,7 @@ def memberTypesForMember(request, mode, query):
     data = {
         "given_names": member.given_names.split(),
         "surname": member.surname,
-        "nickname": member.nickname,
+        "nickname": "",
         "preferred_name": member.preferred_name,
         "membertypes": membertypes
     }
