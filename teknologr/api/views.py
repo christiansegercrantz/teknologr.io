@@ -383,12 +383,11 @@ def activeDump(request):
 
 
 class FullRenderer(csv_renderer.CSVRenderer):
-    header = ['id', 'membertype', 'given_names', 'preferred_name', 'surname', 'maiden_name',
-              'nickname', 'birth_date', 'student_id', 'nationality', 'enrolment_year',
-              'graduated', 'graduated_year', 'degree_programme', 'dead', 'mobile_phone',
-              'phone', 'street_address', 'postal_code', 'city', 'country', 'url', 'email',
-              'subscribed_to_modulen', 'allow_publish_info', 'username', 'bill_code', 'crm_id', 'comment',
-              'should_be_stalmed']
+    header = ['id', 'given_names', 'preferred_name', 'surname', 'membertype',
+    'street_address', 'postal_code', 'city', 'country', 'birth_date',
+    'student_id', 'enrolment_year', 'graduated', 'graduated_year',
+    'degree_programme', 'dead','phone', 'email', 'subscribed_to_modulen',
+    'allow_publish_info', 'username', 'bill_code', 'comment', 'should_be_stalmed']
 
 
 # "Fulldump". If you need some arbitrary bit of info this with some excel magic might do the trick.
@@ -398,41 +397,33 @@ class FullRenderer(csv_renderer.CSVRenderer):
 @renderer_classes((FullRenderer,))
 def fullDump(request):
 
-    members = Member.objects.exclude(
-            dead=True
-        )
+    members = Member.objects.exclude(dead=True)
 
     content = [{
         'id': member.id,
-        'membertype': str(member.getMostRecentMemberType()),
         'given_names': member.given_names,
         'preferred_name': member.preferred_name,
         'surname': member.surname,
-        'maiden_name': member.maiden_name,
-        'nickname': member.nickname,
+        'membertype': str(member.getMostRecentMemberType()),
+        'street_address': member.street_address,
+        'postal_code': member.postal_code,
+        'city': member.city,
+        'country': member.country,
         'birth_date': member.birth_date,
         'student_id': member.student_id,
-        'nationality': member.nationality,
         'enrolment_year': member.enrolment_year,
         'graduated': member.graduated,
         'graduated_year': member.graduated_year,
         'degree_programme': member.degree_programme,
         'dead': member.dead,
-        'mobile_phone': member.mobile_phone,
         'phone': member.phone,
-        'street_address': member.street_address,
-        'postal_code': member.postal_code,
-        'city': member.city,
-        'country': member.country,
-        'url': member.url,
         'email': member.email,
         'subscribed_to_modulen': member.subscribed_to_modulen,
         'allow_publish_info': member.allow_publish_info,
         'username': member.username,
         'bill_code': member.bill_code,
-        'crm_id': member.crm_id,
         'comment': member.comment,
         'should_be_stalmed': member.shouldBeStalm()}
         for member in members]
 
-    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="fulldump.csv"'})
+    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="fulldump_{}.csv"'.format(datetime.today().date())})
