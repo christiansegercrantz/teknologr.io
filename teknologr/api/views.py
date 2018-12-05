@@ -330,7 +330,7 @@ def htkDump(request, member_id=None):
 
 # CSV-render class
 class ModulenRenderer(csv_renderer.CSVRenderer):
-    header = ['name', 'address']
+    header = ['name', 'street_address', 'postal_code', 'city', 'country']
 
 
 # List of addresses whom to post modulen to
@@ -350,10 +350,13 @@ def modulenDump(request):
 
     content = [{
         'name': recipient._get_full_name(),
-        'address': recipient._get_full_address()}
-        for recipient in recipients]
+        'street_address': recipient.street_address,
+        'postal_code': recipient.postal_code,
+        'city': recipient.city,
+        'country': recipient.country
+        } for recipient in recipients]
 
-    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="modulendump.csv"'})
+    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="modulendump.csv"'.format(datetime.today().date())})
 
 
 class ActiveRenderer(csv_renderer.CSVRenderer):
