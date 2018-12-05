@@ -356,7 +356,7 @@ def modulenDump(request):
         'country': recipient.country
         } for recipient in recipients]
 
-    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="modulendump.csv"'.format(datetime.today().date())})
+    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="modulendump_{}.csv"'.format(datetime.today().date())})
 
 
 class ActiveRenderer(csv_renderer.CSVRenderer):
