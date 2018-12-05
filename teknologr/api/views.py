@@ -268,43 +268,64 @@ def membersByMemberType(request, membertype, field=None):
 # Data for HTK
 # JSON file including all necessary information for HTK, i.e. member's activity at TF
 @api_view(['GET'])
-def htkDump(request, member=None):
+def htkDump(request, member_id=None):
     def dumpMember(member):
+        # Functionaries
         funcs = Functionary.objects.filter(member=member)
-        flist = []
-        for f in funcs:
-            flist.append("%s: %s > %s" % (f.functionarytype.name, f.begin_date, f.end_date))
-
+        func_list = []
+        for func in funcs:
+            func_str = "{}: {} > {}".format(
+                func.functionarytype.name,
+                func.begin_date,
+                func.end_date
+            )
+            func_list.append(func_str)
+        # Groups
         groups = GroupMembership.objects.filter(member=member)
-        glist = []
-        for g in groups:
-            glist.append("%s: %s > %s" % (g.group.grouptype.name, g.group.begin_date, g.group.end_date))
-
+        group_list = []
+        for group in groups:
+            group_str = "{}: {} > {}".format(
+                group.group.grouptype.name,
+                group.group.begin_date,
+                group.group.end_date
+            )
+            group_list.append(group_str)
+        # Membertypes
         types = MemberType.objects.filter(member=member)
-        tlist = []
-        for t in types:
-            tlist.append("%s: %s > %s" % (t.get_type_display(), t.begin_date, t.end_date))
+        type_list = []
+        for type in types:
+            type_str = "{}: {} > {}".format(
+                type.get_type_display(),
+                type.begin_date,
+                type.end_date
+            )
+            type_list.append(type_str)
+        # Decorations
         decorations = DecorationOwnership.objects.filter(member=member)
-        dlist = []
-        for d in decorations:
-            dlist.append("%s: %s" % (d.decoration.name, d.acquired))
+        decoration_list = []
+        for decoration in decorations:
+            decoration_str = "{}: {}".format(
+                decoration.decoration.name,
+                decoration.acquired
+            )
+            decoration_list.append(decoration_str)
 
         return {
             "id": member.id,
             "name": member.full_name,
-            "functionaries": flist,
-            "groups": glist,
-            "membertypes": tlist,
-            "decorations": dlist
+            "functionaries": func_list,
+            "groups": group_list,
+            "membertypes": type_list,
+            "decorations": decoration_list
         }
 
-    if member:
-        m = get_object_or_404(Member, id=member)
-        data = dumpMember(m)
+    if member_id:
+        member = get_object_or_404(Member, id=member_id)
+        data = dumpMember(member)
     else:
-        data = [dumpMember(m) for m in Member.objects.all()]
+        data = [dumpMember(member) for member in Member.objects.all()]
 
-    return Response(data, status=200, headers={'Content-Disposition': 'attachment; filename="HTKdump.json"'})
+    return Response(data, status=200, headers={'Content-Disposition': 'attachment; filename="HTKdump_{}.json"'.format(datetime.today().date())})
 
 
 # CSV-render class
