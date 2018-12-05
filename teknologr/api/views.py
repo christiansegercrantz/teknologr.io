@@ -403,7 +403,7 @@ def activeDump(request):
             'member': m._get_full_preferred_name()
         } for m in members])
 
-    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="activedump.csv"'})
+    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="activedump_{}.csv"'.format(datetime.today().date())})
 
 
 class FullRenderer(csv_renderer.CSVRenderer):
