@@ -325,7 +325,12 @@ def htkDump(request, member_id=None):
     else:
         data = [dumpMember(member) for member in Member.objects.all()]
 
-    return Response(data, status=200, headers={'Content-Disposition': 'attachment; filename="HTKdump_{}.json"'.format(datetime.today().date())})
+    dumpname = 'filename="HTKdump_{}.json'.format(datetime.today().date())
+    return Response(
+            data,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
 
 
 # CSV-render class
@@ -356,7 +361,12 @@ def modulenDump(request):
         'country': recipient.country
         } for recipient in recipients]
 
-    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="modulendump_{}.csv"'.format(datetime.today().date())})
+    dumpname = 'filename="modulendump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
 
 
 class ActiveRenderer(csv_renderer.CSVRenderer):
@@ -403,15 +413,22 @@ def activeDump(request):
             'member': m._get_full_preferred_name()
         } for m in members])
 
-    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="activedump_{}.csv"'.format(datetime.today().date())})
+    dumpname = 'filename="activedump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
 
 
 class FullRenderer(csv_renderer.CSVRenderer):
-    header = ['id', 'given_names', 'preferred_name', 'surname', 'membertype',
-    'street_address', 'postal_code', 'city', 'country', 'birth_date',
-    'student_id', 'enrolment_year', 'graduated', 'graduated_year',
-    'degree_programme', 'dead','phone', 'email', 'subscribed_to_modulen',
-    'allow_publish_info', 'username', 'bill_code', 'comment', 'should_be_stalmed']
+    header = [
+        'id', 'given_names', 'preferred_name', 'surname', 'membertype',
+        'street_address', 'postal_code', 'city', 'country', 'birth_date',
+        'student_id', 'enrolment_year', 'graduated', 'graduated_year',
+        'degree_programme', 'dead', 'phone', 'email', 'subscribed_to_modulen',
+        'allow_publish_info', 'username', 'bill_code', 'comment', 'should_be_stalmed'
+    ]
 
 
 # "Fulldump". If you need some arbitrary bit of info this with some excel magic might do the trick.
@@ -450,4 +467,9 @@ def fullDump(request):
         'should_be_stalmed': member.shouldBeStalm()}
         for member in members]
 
-    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="fulldump_{}.csv"'.format(datetime.today().date())})
+    dumpname = 'filename="fulldump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
