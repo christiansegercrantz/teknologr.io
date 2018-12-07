@@ -268,48 +268,74 @@ def membersByMemberType(request, membertype, field=None):
 # Data for HTK
 # JSON file including all necessary information for HTK, i.e. member's activity at TF
 @api_view(['GET'])
-def htkDump(request, member=None):
+def htkDump(request, member_id=None):
     def dumpMember(member):
+        # Functionaries
         funcs = Functionary.objects.filter(member=member)
-        flist = []
-        for f in funcs:
-            flist.append("%s: %s > %s" % (f.functionarytype.name, f.begin_date, f.end_date))
-
+        func_list = []
+        for func in funcs:
+            func_str = "{}: {} > {}".format(
+                func.functionarytype.name,
+                func.begin_date,
+                func.end_date
+            )
+            func_list.append(func_str)
+        # Groups
         groups = GroupMembership.objects.filter(member=member)
-        glist = []
-        for g in groups:
-            glist.append("%s: %s > %s" % (g.group.grouptype.name, g.group.begin_date, g.group.end_date))
-
+        group_list = []
+        for group in groups:
+            group_str = "{}: {} > {}".format(
+                group.group.grouptype.name,
+                group.group.begin_date,
+                group.group.end_date
+            )
+            group_list.append(group_str)
+        # Membertypes
         types = MemberType.objects.filter(member=member)
-        tlist = []
-        for t in types:
-            tlist.append("%s: %s > %s" % (t.get_type_display(), t.begin_date, t.end_date))
+        type_list = []
+        for type in types:
+            type_str = "{}: {} > {}".format(
+                type.get_type_display(),
+                type.begin_date,
+                type.end_date
+            )
+            type_list.append(type_str)
+        # Decorations
         decorations = DecorationOwnership.objects.filter(member=member)
-        dlist = []
-        for d in decorations:
-            dlist.append("%s: %s" % (d.decoration.name, d.acquired))
+        decoration_list = []
+        for decoration in decorations:
+            decoration_str = "{}: {}".format(
+                decoration.decoration.name,
+                decoration.acquired
+            )
+            decoration_list.append(decoration_str)
 
         return {
             "id": member.id,
             "name": member.full_name,
-            "functionaries": flist,
-            "groups": glist,
-            "membertypes": tlist,
-            "decorations": dlist
+            "functionaries": func_list,
+            "groups": group_list,
+            "membertypes": type_list,
+            "decorations": decoration_list
         }
 
-    if member:
-        m = get_object_or_404(Member, id=member)
-        data = dumpMember(m)
+    if member_id:
+        member = get_object_or_404(Member, id=member_id)
+        data = dumpMember(member)
     else:
-        data = [dumpMember(m) for m in Member.objects.all()]
+        data = [dumpMember(member) for member in Member.objects.all()]
 
-    return Response(data, status=200, headers={'Content-Disposition': 'attachment; filename="HTKdump.json"'})
+    dumpname = 'filename="HTKdump_{}.json'.format(datetime.today().date())
+    return Response(
+            data,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
 
 
 # CSV-render class
 class ModulenRenderer(csv_renderer.CSVRenderer):
-    header = ['name', 'address']
+    header = ['name', 'street_address', 'postal_code', 'city', 'country']
 
 
 # List of addresses whom to post modulen to
@@ -329,10 +355,18 @@ def modulenDump(request):
 
     content = [{
         'name': recipient._get_full_name(),
-        'address': recipient._get_full_address()}
-        for recipient in recipients]
+        'street_address': recipient.street_address,
+        'postal_code': recipient.postal_code,
+        'city': recipient.city,
+        'country': recipient.country
+        } for recipient in recipients]
 
-    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="modulendump.csv"'})
+    dumpname = 'filename="modulendump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
 
 
 class ActiveRenderer(csv_renderer.CSVRenderer):
@@ -379,16 +413,22 @@ def activeDump(request):
             'member': m._get_full_preferred_name()
         } for m in members])
 
-    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="activedump.csv"'})
+    dumpname = 'filename="activedump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
 
 
 class FullRenderer(csv_renderer.CSVRenderer):
-    header = ['id', 'membertype', 'given_names', 'preferred_name', 'surname', 'maiden_name',
-              'nickname', 'birth_date', 'student_id', 'nationality', 'enrolment_year',
-              'graduated', 'graduated_year', 'degree_programme', 'dead', 'mobile_phone',
-              'phone', 'street_address', 'postal_code', 'city', 'country', 'url', 'email',
-              'subscribed_to_modulen', 'allow_publish_info', 'username', 'bill_code', 'crm_id', 'comment',
-              'should_be_stalmed']
+    header = [
+        'id', 'given_names', 'preferred_name', 'surname', 'membertype',
+        'street_address', 'postal_code', 'city', 'country', 'birth_date',
+        'student_id', 'enrolment_year', 'graduated', 'graduated_year',
+        'degree_programme', 'dead', 'phone', 'email', 'subscribed_to_modulen',
+        'allow_publish_info', 'username', 'bill_code', 'comment', 'should_be_stalmed'
+    ]
 
 
 # "Fulldump". If you need some arbitrary bit of info this with some excel magic might do the trick.
@@ -398,41 +438,38 @@ class FullRenderer(csv_renderer.CSVRenderer):
 @renderer_classes((FullRenderer,))
 def fullDump(request):
 
-    members = Member.objects.exclude(
-            dead=True
-        )
+    members = Member.objects.exclude(dead=True)
 
     content = [{
         'id': member.id,
-        'membertype': str(member.getMostRecentMemberType()),
         'given_names': member.given_names,
         'preferred_name': member.preferred_name,
         'surname': member.surname,
-        'maiden_name': member.maiden_name,
-        'nickname': member.nickname,
+        'membertype': str(member.getMostRecentMemberType()),
+        'street_address': member.street_address,
+        'postal_code': member.postal_code,
+        'city': member.city,
+        'country': member.country,
         'birth_date': member.birth_date,
         'student_id': member.student_id,
-        'nationality': member.nationality,
         'enrolment_year': member.enrolment_year,
         'graduated': member.graduated,
         'graduated_year': member.graduated_year,
         'degree_programme': member.degree_programme,
         'dead': member.dead,
-        'mobile_phone': member.mobile_phone,
         'phone': member.phone,
-        'street_address': member.street_address,
-        'postal_code': member.postal_code,
-        'city': member.city,
-        'country': member.country,
-        'url': member.url,
         'email': member.email,
         'subscribed_to_modulen': member.subscribed_to_modulen,
         'allow_publish_info': member.allow_publish_info,
         'username': member.username,
         'bill_code': member.bill_code,
-        'crm_id': member.crm_id,
         'comment': member.comment,
         'should_be_stalmed': member.shouldBeStalm()}
         for member in members]
 
-    return Response(content, status=200, headers={'Content-Disposition': 'attachment; filename="fulldump.csv"'})
+    dumpname = 'filename="fulldump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
