@@ -24,9 +24,9 @@ urlpatterns = [
     url(r'^accounts/ldap/(\d+)/$', LDAPAccountView.as_view()),
     url(r'^accounts/ldap/change_pw/(\d+)/$', change_ldap_password),
     url(r'^accounts/bill/(\d+)/$', BILLAccountView.as_view()),
-    url(r'^htkdump/(\d+)?$', htkDump),
-    url(r'^modulendump/$', modulenDump),
-    url(r'^fulldump/$', fullDump),
-    url(r'^activedump/$', activeDump),
+    url(r'^htkdump/(\d+)?$', htkDump, name='api.views.htkDump'),
+    url(r'^modulendump/$', modulenDump, name='api.views.modulenDump'),
+    url(r'^fulldump/$', fullDump, name='api.views.fullDump'),
+    url(r'^activedump/$', activeDump, name='api.views.activeDump'),
     url(r'^membersByMemberType/([A-Z]{2})/(\w+)?$', membersByMemberType)
 ]
