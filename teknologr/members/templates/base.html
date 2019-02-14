@@ -39,17 +39,17 @@
             Dumpar<span class="caret"></span>
           </a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="/api/fulldump/">Full dump</a>
-            <a class="dropdown-item" href="/api/modulendump/">Modulen dump</a>
-            <a class="dropdown-item" href="/api/activedump/" data-toggle="tooltip" title="Lista av medlemmar som är funkkisar eller i kommittéer med aktiva mandat">Aktiva dump</a>
-            <a class="dropdown-item" href="/api/htkdump/?format=json">Full HTK dump</a>
+            <a class="dropdown-item" href="{% url 'api.views.fullDump' %}">Full dump</a>
+            <a class="dropdown-item" href="{% url 'api.views.modulenDump' %}">Modulen dump</a>
+            <a class="dropdown-item" href="{% url 'api.views.activeDump' %}" data-toggle="tooltip" title="Lista av medlemmar som är funkkisar eller i kommittéer med aktiva mandat">Aktiva dump</a>
+            <a class="dropdown-item" href="{% url 'api.views.htkDump' %}?format=json">Full HTK dump</a>
           </div>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="https://wiki.teknologforeningen.fi/itwiki/index.php/Medlemsregister" target="_blank">Info</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/logout/">Logga ut</a>
+          <a class="nav-link" href="{% url 'logout' %}">Logga ut</a>
         </li>
       </ul>
     </div>
