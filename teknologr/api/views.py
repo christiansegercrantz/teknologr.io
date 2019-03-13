@@ -10,7 +10,7 @@ from ldap import LDAPError
 from api.bill import BILLAccountManager, BILLException
 from rest_framework_csv import renderers as csv_renderer
 from api.mailutils import mailNewPassword
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from datetime import datetime
 
 # Create your views here.
@@ -473,3 +473,62 @@ def fullDump(request):
             status=200,
             headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
         )
+
+
+class ArskRenderer(csv_renderer.CSVRenderer):
+    header = ['name', 'surname', 'street_address', 'postal_code', 'city', 'country', 'association']
+
+
+# Dump for Årsfestkommittén, includes all members that should be posted invitations.
+# These include: honor-members, TFS 5 years back, all counsels
+@api_view(['GET'])
+@renderer_classes((ArskRenderer,))
+def arskDump(request):
+    tfs_years_back = 5
+    current_year = datetime.now().year
+
+    # All saved associations
+    grouped_by_assocation = defaultdict(list)
+
+    # All board members from 5 years back
+    board_membership = GroupMembership.objects.filter(group__grouptype__name__contains='Styrelse')
+    for membership in board_membership:
+        membership_group = membership.group
+        board_year = int(membership_group.begin_date.strftime('%Y'))
+        if current_year - tfs_years_back <= board_year <= current_year:
+            grouped_by_assocation[membership.group].append(membership.member)
+
+    # All current counsel members
+    counsel_types = ['AR', 'FR', 'DÄR', 'FaR', 'KonRad']
+    counsel_membership = GroupMembership.objects.filter(group__grouptype__name__in=counsel_types)
+    for membership in counsel_membership:
+        membership_group = membership.group
+        counsel_year = int(membership_group.begin_date.strftime('%Y'))
+        if counsel_year >= current_year:
+            grouped_by_assocation[membership.group].append(membership.member)
+
+    # All honor-members
+    honor_decoration = DecorationOwnership.objects.filter(decoration__name='Hedersmedlem')
+    for decoration in honor_decoration:
+        grouped_by_assocation[decoration.decoration.name].append(decoration.member)
+
+    # Finally format the data correctly
+    content = []
+    for association, member_list in grouped_by_assocation.items():
+        content.extend([{
+            'name': member.given_names,
+            'surname': member.surname,
+            'street_address': member.street_address,
+            'postal_code': member.postal_code,
+            'city': member.city,
+            'country': member.country,
+            'association': association}
+            for member in member_list])
+
+    dumpname = 'filename="arskdump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
+
