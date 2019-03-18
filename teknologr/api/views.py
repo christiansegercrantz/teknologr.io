@@ -480,7 +480,7 @@ class ArskRenderer(csv_renderer.CSVRenderer):
 
 
 # Dump for Årsfestkommittén, includes all members that should be posted invitations.
-# These include: honor-members, TFS 5 years back, all counsels
+# These include: honor-members, all TFS 5 years back + exactly 10 years back, all counsels, all current functionaries
 @api_view(['GET'])
 @renderer_classes((ArskRenderer,))
 def arskDump(request):
@@ -490,22 +490,24 @@ def arskDump(request):
     # All saved associations
     grouped_by_assocation = defaultdict(list)
 
+    def extract_membership(type_list, condition_fun):
+        membership_type = GroupMembership.object.filter(group__grouptype__name__in=type_list)
+        for membership in board_membership:
+            active_year = int(membership.group.begin_date.strftime('%Y'))
+            if condition_fun(active_year):
+                grouped_by_assocation[membership.group].append(membership.member)
+
     # All board members from 5 years back
-    board_membership = GroupMembership.objects.filter(group__grouptype__name__contains='Styrelse')
-    for membership in board_membership:
-        membership_group = membership.group
-        board_year = int(membership_group.begin_date.strftime('%Y'))
-        if current_year - tfs_years_back <= board_year <= current_year:
-            grouped_by_assocation[membership.group].append(membership.member)
+    def styrelse_func(tfs):
+        current_year - tfs_years_back <= tfs <= current_year or current_year - 10 == tfs
+    styrelse_list = ['Styrelse']
+    extract_membership(styrelse_list, styrelse_func)
 
     # All current counsel members
+    def counsel_func(counsel_year):
+        counsel_year >= current_year
     counsel_types = ['AR', 'FR', 'DÄR', 'FaR', 'KonRad']
-    counsel_membership = GroupMembership.objects.filter(group__grouptype__name__in=counsel_types)
-    for membership in counsel_membership:
-        membership_group = membership.group
-        counsel_year = int(membership_group.begin_date.strftime('%Y'))
-        if counsel_year >= current_year:
-            grouped_by_assocation[membership.group].append(membership.member)
+    extract_membership(counsel_types, counsel_func)
 
     # All honor-members
     honor_decoration = DecorationOwnership.objects.filter(decoration__name='Hedersmedlem')
@@ -531,4 +533,3 @@ def arskDump(request):
             status=200,
             headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
         )
-
