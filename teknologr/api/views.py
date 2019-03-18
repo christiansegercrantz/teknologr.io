@@ -10,7 +10,7 @@ from ldap import LDAPError
 from api.bill import BILLAccountManager, BILLException
 from rest_framework_csv import renderers as csv_renderer
 from api.mailutils import mailNewPassword
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 from datetime import datetime
 
 # Create your views here.
