@@ -490,11 +490,11 @@ def arskDump(request):
     # All saved associations
     grouped_by_assocation = defaultdict(list)
 
-    def extract_membership(type_list, condition_fun):
-        membership_type = GroupMembership.object.filter(group__grouptype__name__in=type_list)
-        for membership in board_membership:
+    def extract_membership(type_list, condition_func):
+        membership_type = GroupMembership.objects.all().filter(group__grouptype__name__in=type_list)
+        for membership in membership_type:
             active_year = int(membership.group.begin_date.strftime('%Y'))
-            if condition_fun(active_year):
+            if condition_func(active_year):
                 grouped_by_assocation[membership.group].append(membership.member)
 
     # All board members from 5 years back
@@ -513,6 +513,12 @@ def arskDump(request):
     honor_decoration = DecorationOwnership.objects.filter(decoration__name='Hedersmedlem')
     for decoration in honor_decoration:
         grouped_by_assocation[decoration.decoration.name].append(decoration.member)
+
+    functionaries = Functionary.objects.all()
+    for functionary in functionaries:
+        functionary_year = int(functionary.begin_date.strftime('%Y'))
+        if functionary_year == current_year:
+            grouped_by_assocation[functionary.functionarytype.name].append(functionary.member)
 
     # Finally format the data correctly
     content = []
