@@ -488,18 +488,19 @@ def arskDump(request):
     current_year = datetime.now().year
 
     # All saved associations
-    grouped_by_assocation = defaultdict(list)
+    by_association = defaultdict(list)
 
+    # Function for extracting GroupMemberships
     def extract_membership(type_list, condition_func):
         membership_type = GroupMembership.objects.all().filter(group__grouptype__name__in=type_list)
         for membership in membership_type:
             active_year = int(membership.group.begin_date.strftime('%Y'))
             if condition_func(active_year):
-                grouped_by_assocation[membership.group].append(membership.member)
+                by_association[membership.member].append(membership.group)
 
     # All board members from 5 years back
-    def styrelse_func(tfs):
-        current_year - tfs_years_back <= tfs <= current_year or current_year - 10 == tfs
+    def styrelse_func(year):
+        current_year - tfs_years_back <= year <= current_year or current_year - 10 == year
     styrelse_list = ['Styrelse']
     extract_membership(styrelse_list, styrelse_func)
 
@@ -512,26 +513,25 @@ def arskDump(request):
     # All honor-members
     honor_decoration = DecorationOwnership.objects.filter(decoration__name='Hedersmedlem')
     for decoration in honor_decoration:
-        grouped_by_assocation[decoration.decoration.name].append(decoration.member)
+        by_association[decoration.member].append(decoration.decoration.name)
 
+    # Get all functionaries active for this year
     functionaries = Functionary.objects.all()
     for functionary in functionaries:
-        functionary_year = int(functionary.begin_date.strftime('%Y'))
-        if functionary_year == current_year:
-            grouped_by_assocation[functionary.functionarytype.name].append(functionary.member)
+        begin_year = int(functionary.begin_date.strftime('%Y'))
+        if begin_year == current_year:
+            by_association[functionary.member].append(functionary.functionarytype.name)
 
     # Finally format the data correctly
-    content = []
-    for association, member_list in grouped_by_assocation.items():
-        content.extend([{
-            'name': member.given_names,
-            'surname': member.surname,
-            'street_address': member.street_address,
-            'postal_code': member.postal_code,
-            'city': member.city,
-            'country': member.country,
-            'association': association}
-            for member in member_list])
+    content = [{
+        'name': member.given_names,
+        'surname': member.surname,
+        'street_address': member.street_address,
+        'postal_code': member.postal_code,
+        'city': member.city,
+        'country': member.country.name,
+        'association': ','.join(association)}
+        for member, association in by_association.items()]
 
     dumpname = 'filename="arskdump_{}.csv"'.format(datetime.today().date())
     return Response(
