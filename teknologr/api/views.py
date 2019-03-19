@@ -477,7 +477,7 @@ def fullDump(request):
 
 
 class ArskRenderer(csv_renderer.CSVRenderer):
-    header = ['name', 'surname', 'street_address', 'postal_code', 'city', 'country', 'association']
+    header = ['name', 'surname', 'street_address', 'postal_code', 'city', 'country', 'associations']
 
 
 # Dump for Årsfestkommittén, includes all members that should be posted invitations.
@@ -536,7 +536,7 @@ def arskDump(request):
         'postal_code': member.postal_code,
         'city': member.city,
         'country': member.country.name,
-        'association': ','.join(association)}
+        'associations': ','.join(association)}
         for member, association in by_association.items()]
 
     dumpname = 'filename="arskdump_{}.csv"'.format(datetime.today().date())
