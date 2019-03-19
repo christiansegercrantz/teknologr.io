@@ -495,8 +495,8 @@ def arskDump(request):
             44,  # Fastighets Rådet (FaR)
             19,  # Kontinuitets Rådet (KonRad)
     ]
-    styrelse_id = 2
-    honor_id = 3
+    styrelse_id = 2  # Styrelsen
+    honor_id = 3  # Hedersmedlemmar
 
     # All saved associations
     by_association = defaultdict(list)
