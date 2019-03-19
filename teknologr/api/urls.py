@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'^modulendump/$', modulenDump, name='api.views.modulenDump'),
     url(r'^fulldump/$', fullDump, name='api.views.fullDump'),
     url(r'^activedump/$', activeDump, name='api.views.activeDump'),
+    url(r'^arskdump/$', arskDump, name='api.views.arskDump'),
     url(r'^membersByMemberType/([A-Z]{2})/(\w+)?$', membersByMemberType)
 ]

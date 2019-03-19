@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 from rest_framework import viewsets
 from api.serializers import *
 from rest_framework.views import APIView
@@ -468,6 +469,77 @@ def fullDump(request):
         for member in members]
 
     dumpname = 'filename="fulldump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
+
+
+class ArskRenderer(csv_renderer.CSVRenderer):
+    header = ['name', 'surname', 'street_address', 'postal_code', 'city', 'country', 'associations']
+
+
+# Dump for Årsfestkommittén, includes all members that should be posted invitations.
+# These include: honor-members, all TFS 5 years back + exactly 10 years back, all counsels, all current functionaries
+@api_view(['GET'])
+@renderer_classes((ArskRenderer,))
+def arskDump(request):
+    tfs_low_range = 5
+    current_year = datetime.now().year
+
+    counsel_ids = [
+            10,  # Affärsrådet (AR)
+            9,   # Finansrådet (FR)
+            12,  # De Äldres Råd (DÄR)
+            44,  # Fastighets Rådet (FaR)
+            19,  # Kontinuitets Rådet (KonRad)
+    ]
+    styrelse_id = 2  # Styrelsen
+    honor_id = 3  # Hedersmedlemmar
+
+    # All saved associations
+    by_association = defaultdict(list)
+
+    # Common query for checking if member is deceased
+    is_alive = Q(member__dead=False)
+
+    # Query for current counsel membership
+    counsel_members_query = Q(group__grouptype__id__in=counsel_ids, group__begin_date__year__gte=current_year)
+
+    # Query for board membership
+    is_styrelse_q = Q(group__grouptype__id=styrelse_id)
+    is_recent_q = Q(group__begin_date__year__gte=current_year-tfs_low_range, group__begin_date__year__lte=current_year)
+    is_ten_years_back_q = Q(group__begin_date__year=current_year-10)
+    styrelse_members_query = Q(is_styrelse_q & Q(is_recent_q | is_ten_years_back_q))
+
+    # Apply membership queries to database and append answer
+    memberships = GroupMembership.objects.filter(Q(styrelse_members_query | counsel_members_query) & is_alive)
+    for membership in memberships:
+        by_association[membership.member].append(str(membership.group))
+
+    # Apply honor member queries and append answer
+    honor_decoration = DecorationOwnership.objects.filter(Q(decoration__id=honor_id) & is_alive)
+    for decoration in honor_decoration:
+        by_association[decoration.member].append(decoration.decoration.name)
+
+    # Apply functionary queries and append answer
+    functionaries = Functionary.objects.filter(Q(begin_date__year=current_year) & is_alive)
+    for functionary in functionaries:
+        by_association[functionary.member].append(functionary.functionarytype.name)
+
+    # Finally format the data correctly
+    content = [{
+        'name': member.given_names,
+        'surname': member.surname,
+        'street_address': member.street_address,
+        'postal_code': member.postal_code,
+        'city': member.city,
+        'country': member.country.name,
+        'associations': ','.join(association)}
+        for member, association in by_association.items()]
+
+    dumpname = 'filename="arskdump_{}.csv"'.format(datetime.today().date())
     return Response(
             content,
             status=200,
