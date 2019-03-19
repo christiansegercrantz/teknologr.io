@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 from rest_framework import viewsets
 from api.serializers import *
 from rest_framework.views import APIView
@@ -484,43 +485,48 @@ class ArskRenderer(csv_renderer.CSVRenderer):
 @api_view(['GET'])
 @renderer_classes((ArskRenderer,))
 def arskDump(request):
-    tfs_years_back = 5
+    tfs_low_range = 5
     current_year = datetime.now().year
+
+    counsel_ids = [
+            10,  # Affärsrådet (AR)
+            9,   # Finansrådet (FR)
+            12,  # De Äldres Råd (DÄR)
+            44,  # Fastighets Rådet (FaR)
+            19,  # Kontinuitets Rådet (KonRad)
+    ]
+    styrelse_id = 2
+    honor_id = 3
 
     # All saved associations
     by_association = defaultdict(list)
 
-    # Function for extracting GroupMemberships
-    def extract_membership(type_list, condition_func):
-        membership_type = GroupMembership.objects.all().filter(group__grouptype__name__in=type_list)
-        for membership in membership_type:
-            active_year = int(membership.group.begin_date.strftime('%Y'))
-            if condition_func(active_year):
-                by_association[membership.member].append(membership.group)
+    # Common query for checking if member is deceased
+    is_alive = Q(member__dead=False)
 
-    # All board members from 5 years back
-    def styrelse_func(year):
-        current_year - tfs_years_back <= year <= current_year or current_year - 10 == year
-    styrelse_list = ['Styrelse']
-    extract_membership(styrelse_list, styrelse_func)
+    # Query for current counsel membership
+    counsel_members_query = Q(group__grouptype__id__in=counsel_ids, group__begin_date__year__gte=current_year)
 
-    # All current counsel members
-    def counsel_func(counsel_year):
-        counsel_year >= current_year
-    counsel_types = ['AR', 'FR', 'DÄR', 'FaR', 'KonRad']
-    extract_membership(counsel_types, counsel_func)
+    # Query for board membership
+    is_styrelse_q = Q(group__grouptype__id=styrelse_id)
+    is_recent_q = Q(group__begin_date__year__gte=current_year-tfs_low_range, group__begin_date__year__lte=current_year)
+    is_ten_years_back_q = Q(group__begin_date__year=current_year-10)
+    styrelse_members_query = Q(is_styrelse_q & Q(is_recent_q | is_ten_years_back_q))
 
-    # All honor-members
-    honor_decoration = DecorationOwnership.objects.filter(decoration__name='Hedersmedlem')
+    # Apply membership queries to database and append answer
+    memberships = GroupMembership.objects.filter(Q(styrelse_members_query | counsel_members_query) & is_alive)
+    for membership in memberships:
+        by_association[membership.member].append(str(membership.group))
+
+    # Apply honor member queries and append answer
+    honor_decoration = DecorationOwnership.objects.filter(Q(decoration__id=honor_id) & is_alive)
     for decoration in honor_decoration:
         by_association[decoration.member].append(decoration.decoration.name)
 
-    # Get all functionaries active for this year
-    functionaries = Functionary.objects.all()
+    # Apply functionary queries and append answer
+    functionaries = Functionary.objects.filter(Q(begin_date__year=current_year) & is_alive)
     for functionary in functionaries:
-        begin_year = int(functionary.begin_date.strftime('%Y'))
-        if begin_year == current_year:
-            by_association[functionary.member].append(functionary.functionarytype.name)
+        by_association[functionary.member].append(functionary.functionarytype.name)
 
     # Finally format the data correctly
     content = [{
