@@ -2,11 +2,23 @@
 
 {% block content %}
 
-<div class="row">
-    <div class="home-info text-center col-sm-12 col-md-8 offset-md-2">
-        <h1 id="medlemsansokan">TFs Medlemsansökan</h1>
+<div class="container-fluid">
+    <!--div class="text-center col-sm-12 col-md-8 offset-md-2"-->
+    <div class="col-sm-12 col-md-8 offset-md-2">
+        <h1>TFs Medlemsansökan</h1>
+        <form>
+            <div class="form-group">
+                <label for="member-email">E-post adress</label>
+                <input type="email" class="form-control" id="input-email" aria-describedby="email-help" placeholder="Skriv in e-post">
+                <small id="email-help" class="form-text text-muted">E-post för grejjer.</small>
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="wants-modulen">
+                <label class="form-check-label" for="wants-modulen">Jag vill ha Modulen hemskickad.</label>
+            </div>
+        </form>
     </div>
 </div>
 
 {% endblock %}
-
