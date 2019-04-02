@@ -1,0 +1,5 @@
+/* Override Bootstrap's default font to TFs widely used: Montserrat */
+
+* {
+    font-family: 'Montserrat', sans-serif;
+}

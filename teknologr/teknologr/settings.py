@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'ajax_select',
     'members',
     'katalogen',
+    'registration',
 ]
 
 MIDDLEWARE = [

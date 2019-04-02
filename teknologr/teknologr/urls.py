@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^', include('katalogen.urls')),
     url(r'^admin/', include('members.urls')),
     url(r'^api/', include('api.urls')),
+    url(r'^registration/', include('registration.urls')),
 ]
