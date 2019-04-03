@@ -2,22 +2,117 @@
 
 {% block content %}
 
+<!-- TODO: parameterize for language options -->
 <div class="container-fluid">
-    <!--div class="text-center col-sm-12 col-md-8 offset-md-2"-->
     <div class="col-sm-12 col-md-8 offset-md-2">
-        <h1>TFs Medlemsansökan</h1>
-        <form>
-            <div class="form-group">
-                <label for="member-email">E-post adress</label>
-                <input type="email" class="form-control" id="input-email" aria-describedby="email-help" placeholder="Skriv in e-post">
-                <small id="email-help" class="form-text text-muted">E-post för grejjer.</small>
-            </div>
+        <div>
+            <h1>Ansökan om medlemskap</h1>
+            <h3>i Teknologföreningen</h3>
+        </div>
 
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="wants-modulen">
-                <label class="form-check-label" for="wants-modulen">Jag vill ha Modulen hemskickad.</label>
-            </div>
-        </form>
+        <div>
+            <form>
+                <!-- Member name information -->
+                <div id="names" class="row">
+                    <div class="form-group col-md-4 required">
+                        <label for="surname">Efternamn</label>
+                        <input type="text" class="form-control" id="surname" aria-describedby="surname-help" placeholder="Efternamn" required="true">
+                        <small id="surname-help" class="form-text text-muted"></small>
+                    </div>
+                    <div class="form-group col-md-4 required">
+                        <label for="firstnames">Förnamn</label>
+                        <input type="text" class="form-control" id="firstnames" aria-describedby="firstnames-help" placeholder="Förnamn">
+                        <small id="surname-help" class="form-text text-muted"></small>
+                    </diV>
+                    <div class="form-group col-md-4">
+                        <label for="preferred-name">Tilltalsnamn</label>
+                        <input type="text" class="form-control" id="preferred-name" aria-describedby="preferred-name-help" placeholder="Tilltalsnamn">
+                        <small id="preferred-name-help" class="form-text text-muted"></small>
+                    </div>
+                </div>
+
+                <!-- Member address information -->
+                <div id="address" class="row">
+                    <div class="form-group col-md-6 required">
+                        <label for="street-address">Gatuadress</label>
+                        <input type="text" class="form-control" id="street-address" aria-describedby="street-address-help" placeholder="Gatuadress">
+                        <small id="street-address-help" class="form-text text-muted"></small>
+                    </div>
+                    <div class="form-group col-md-3 required">
+                        <label for="zip-code">Postnummer</label>
+                        <input type="text" class="form-control" id="zip-code" aria-describedby="zip-code-help" placeholder="Postummer">
+                        <small id="zip-code-help" class="form-text text-muted"></small>
+                    </div>
+                    <div class="form-group col-md-3 required">
+                        <label for="post-office">Postanstalt</label>
+                        <input type="text" class="form-control" id="post-office" aria-describedby="post-office-help" placeholder="Postanstalt">
+                        <small id="post-office-help" class="form-text text-muted"></small>
+                    </div>
+                </div>
+
+                <!-- Member contact information -->
+                <div id="contact" class="row">
+                    <div class="form-group col-md-7 required">
+                        <label for="phone-number">Telefonnummer</label>
+                        <input type="tel" name="usrtel" class="form-control" id="phone-number" aria-describedby="phone-number-help" placeholder="Telefonnummer">
+                        <small id="phone-number-help" class="form-text text-muted"></small>
+                    </div>
+                    <div class="form-group col-md-5 required">
+                        <label for="email">E-postadress</label>
+                        <input type="email" class="form-control" id="email" aria-describedby="email-help" placeholder="@aalto.fi">
+                        <small id="email-help" class="form-text text-muted"></small>
+                    </div>
+                </div>
+
+                <!-- Field of study -->
+                <h3>Studieinriktning</h3>
+                <!-- TODO: get values from database, set as multioptions field -->
+
+                <!-- Member motivation -->
+                <div id="motivation">
+                    <div class="form-group required">
+                        <label for="membership-motivation">Motivering till medlemskapet</label>
+                        <textarea class="form-control" rows="4" id="membership-motivation" aria-describedby="membership-motivation-help"></textarea>
+                        <small id="membership-motivation-help" class="form-text text-muted"></small>
+                    </div>
+                </div>
+
+                <!-- Mother tongue -->
+                <div id="mother-tongue" class="row">
+                    <div class="form-group col-md-4 required">
+                        <label><strong>Modersmål:</strong></label>
+                    </div>
+
+                    <div class="col-md-8 row">
+                        <label class="radio-inline col-md-2">
+                            <input type="radio" name="language">
+                            Svenska
+                        </label>
+                        <label class="radio-inline col-md-2">
+                            <input type="radio" name="language">
+                            Finska
+                        </label>
+                        <div class="row col-md-8">
+                            <label for="other-language" class="col-md-2">Annat:</label>
+                            <input type="text" class="form-control col-md-10" id="other-language" aria-describedby="other-language-help">
+                            <small id="other-language-help" class="form-text text-muted"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consents -->
+                <div id="consents">
+                    <div class="form-check required">
+                        <input type="checkbox" class="form-check-input" id="wants-modulen">
+                        <label class="form-check-label" for="wants-modulen">Jag vill ha Modulen hemskickad.</label>
+                    </div>
+                    <div class="form-check required">
+                        <input type="checkbox" class="form-check-input" id="gdpr">
+                        <label class="form-check-label" for="gdpr">Jag tillåter att mina uppgifter utlämnas till Katalogen och Modulens redaktion.</label>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
