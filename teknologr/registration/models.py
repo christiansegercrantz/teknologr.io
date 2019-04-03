@@ -1,3 +1,7 @@
 from django.db import models
+from django import forms
 
-# Create your models here.
+
+class RegistrationForm(forms.Form):
+    surname = forms.CharField(label='Efternamn', max_length=100)
+

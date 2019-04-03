@@ -11,8 +11,3 @@
    content:"*";
    color:red;
 }
-
-.form-check.required label:before {
-   content:"*";
-   color:red;
-}

@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from members.programmes import DEGREE_PROGRAMME_CHOICES
 
 
 def home(request):
-    return render(request, 'registration.html')
+    context = {'programmes': DEGREE_PROGRAMME_CHOICES}
+    return render(request, 'registration.html', context)
 
