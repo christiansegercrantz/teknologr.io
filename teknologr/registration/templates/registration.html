@@ -2,9 +2,7 @@
 
 {% block content %}
 
-<!-- TODO: parameterize for language options -->
 <div class="container-fluid">
-
     <div class="col-sm-12 col-md-8 offset-md-2">
         <div>
             <h1>Ansökan om medlemskap</h1>
@@ -12,56 +10,88 @@
         </div>
 
         <div>
-            <form>
+            <form id="registration-form" action="/submit/" autocomplete="off" method="post">
                 <!-- Member name information -->
                 <div id="names" class="row">
                     <div class="form-group col-md-4 required">
-                        <label for="surname">Efternamn</label>
-                        <input type="text" class="form-control" id="surname" aria-describedby="surname-help" required="true">
-                        <small id="surname-help" class="form-text text-muted"></small>
+                        {% if DEBUG %}{{ form.surname.errors }}{% endif %}
+                        <label 
+                            for="{{ form.surname.id_for_label }}"
+                            class="{% if form.surname.errors %}is-invalid{% endif %}">
+                            {{ form.surname.label }}
+                        </label>
+                        {{ form.surname }}
                     </div>
                     <div class="form-group col-md-4 required">
-                        <label for="firstnames">Förnamn</label>
-                        <input type="text" class="form-control" id="firstnames" aria-describedby="firstnames-help">
-                        <small id="surname-help" class="form-text text-muted"></small>
+                        {% if DEBUG %}{{ form.given_names.errors }}{% endif %}
+                        <label 
+                            for="{{ form.given_names.id_for_label }}"
+                            class="{% if form.given_names.errors %}is-invalid{% endif %}">
+                            {{ form.given_names.label }}
+                        </label>
+                        {{ form.given_names }}
                     </diV>
                     <div class="form-group col-md-4">
-                        <label for="preferred-name">Tilltalsnamn</label>
-                        <input type="text" class="form-control" id="preferred-name" aria-describedby="preferred-name-help">
-                        <small id="preferred-name-help" class="form-text text-muted"></small>
+                        {% if DEBUG %}{{ form.preferred_name.errors }}{% endif %}
+                        <label 
+                            for="{{ form.preferred_name.id_for_label }}"
+                            class="{% if form.preferred_name.errors %}is-invalid{% endif %}">
+                            {{ form.preferred_name.label }}
+                        </label>
+                        {{ form.preferred_name }}
                     </div>
                 </div>
 
                 <!-- Member address information -->
                 <div id="address" class="row">
                     <div class="form-group col-md-6 required">
-                        <label for="street-address">Gatuadress</label>
-                        <input type="text" class="form-control" id="street-address" aria-describedby="street-address-help">
-                        <small id="street-address-help" class="form-text text-muted"></small>
+                        {% if DEBUG %}{{ form.street_address.errors }}{% endif %}
+                        <label 
+                            for="{{ form.street_address.id_for_label }}"
+                            class="{% if form.street_address.errors %}is-invalid{% endif %}">
+                            {{ form.street_address.label }}
+                        </label>
+                        {{ form.street_address }}
                     </div>
                     <div class="form-group col-md-3 required">
-                        <label for="zip-code">Postnummer</label>
-                        <input type="text" class="form-control" id="zip-code" aria-describedby="zip-code-help">
-                        <small id="zip-code-help" class="form-text text-muted"></small>
+                        {% if DEBUG %}{{ form.postal_code.errors }}{% endif %}
+                        <label 
+                            for="{{ form.postal_code.id_for_label }}"
+                            class="{% if form.postal_code.errors %}is-invalid{% endif %}">
+                            {{ form.postal_code.label }}
+                        </label>
+                        {{ form.postal_code }}
                     </div>
                     <div class="form-group col-md-3 required">
-                        <label for="post-office">Postanstalt</label>
-                        <input type="text" class="form-control" id="post-office" aria-describedby="post-office-help">
-                        <small id="post-office-help" class="form-text text-muted"></small>
+                        {% if DEBUG %}{{ form.city.errors }}{% endif %}
+                        <label 
+                            for="{{ form.city.id_for_label }}"
+                            class="{% if form.city.errors %}is-invalid{% endif %}">
+                            {{ form.city.label }}
+                        </label>
+                        {{ form.city }}
                     </div>
                 </div>
 
                 <!-- Member contact information -->
                 <div id="contact" class="row">
                     <div class="form-group col-md-6 required">
-                        <label for="phone-number">Telefonnummer</label>
-                        <input type="tel" name="usrtel" class="form-control" id="phone-number" aria-describedby="phone-number-help">
-                        <small id="phone-number-help" class="form-text text-muted"></small>
+                        {% if DEBUG %}{{ form.phone.errors }}{% endif %}
+                        <label 
+                            for="{{ form.phone.id_for_label }}"
+                            class="{% if form.phone.errors %}is-invalid{% endif %}">
+                            {{ form.phone.label }}
+                        </label>
+                        {{ form.phone }}
                     </div>
                     <div class="form-group col-md-6 required">
-                        <label for="email">E-postadress</label>
-                        <input type="email" class="form-control" id="email" aria-describedby="email-help" placeholder="@aalto.fi">
-                        <small id="email-help" class="form-text text-muted"></small>
+                        {% if DEBUG %}{{ form.email.errors }}{% endif %}
+                        <label 
+                            for="{{ form.email.id_for_label }}"
+                            class="{% if form.email.errors %}is-invalid{% endif %}">
+                            {{ form.email.label }}
+                        </label>
+                        {{ form.email }}
                     </div>
                 </div>
 
@@ -74,15 +104,20 @@
                 <!-- Member motivation -->
                 <div id="motivation">
                     <div class="form-group required">
-                        <label for="membership-motivation">Motivering till medlemskapet</label>
-                        <textarea class="form-control" rows="4" id="membership-motivation" aria-describedby="membership-motivation-help"></textarea>
-                        <small id="membership-motivation-help" class="form-text text-muted"></small>
+                        {% if DEBUG %}{{ form.motivation.errors }}{% endif %}
+                        <label 
+                            for="{{ form.motivation.id_for_label }}"
+                            class="{% if form.motivation.errors %}is-invalid{% endif %}">
+                            {{ form.motivation.label }}
+                        </label>
+                        {{ form.motivation }}
                     </div>
                 </div>
 
                 <!-- FIXME: looks horrible on some window sizes -->
+                <!-- FIXME: render programmatically -->
                 <!-- Mother tongue -->
-                <div id="mother-tongue" class="row">
+                <!--div id="mother-tongue" class="row">
                     <div class="form-group col-md-4 required">
                         <label><strong>Modersmål:</strong></label>
                     </div>
@@ -102,22 +137,32 @@
                             <small id="other-language-help" class="form-text text-muted"></small>
                         </div>
                     </div>
-                </div>
+                </div-->
 
                 <!-- Consents -->
                 <div id="consents">
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="wants-modulen">
-                        <label class="form-check-label" for="wants-modulen">Jag vill ha Modulen hemskickad.</label>
+                        {% if DEBUG %}{{ form.subscribed_to_modulen.errors }}{% endif %}
+                        {{ form.subscribed_to_modulen }}
+                        <label 
+                            for="{{ form.subscribed_to_modulen.id_for_label }}"
+                            class="{% if form.subscribed_to_modulen.errors %}is-invalid{% endif %}">
+                            {{ form.subscribed_to_modulen.label }}
+                        </label>
                     </div>
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="gdpr">
-                        <label class="form-check-label" for="gdpr">Jag tillåter att mina uppgifter utlämnas till Katalogen och Modulens redaktion.</label>
+                        {% if DEBUG %}{{ form.allow_publish_info.errors }}{% endif %}
+                        {{ form.allow_publish_info }}
+                        <label
+                            for="{{ form.allow_publish_info.id_for_label }}"
+                            class="{% if form.allow_publish_info.errors %}is-invalid{% endif %}">
+                            {{ form.allow_publish_info.label }}
+                        </label>
                     </div>
                 </div>
 
-                <!-- TODO: add Google Captcha -->
-                <!-- TODO: create submit button -->
+                {# TODO: add Google Captcha #}
+                <input type="submit" class="btn" value="Skicka">
             </form>
         </div>
     </div>
