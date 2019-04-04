@@ -11,6 +11,8 @@
 
         <div>
             <form id="registration-form" action="/submit/" autocomplete="off" method="post">
+                {% csrf_token %}
+
                 <!-- Member name information -->
                 <div id="names" class="row">
                     <div class="form-group col-md-4 required">
@@ -97,9 +99,14 @@
 
                 <!-- Field of study -->
                 <h3>Studieinriktning</h3>
-                {% for programme in programmes %}
-                    <p>{# programme #}</p>
-                {% endfor %}
+                <div id="programme">
+                    {% for programme in programmes %}
+                        <p>{# programme #}</p>
+                    {% endfor %}
+
+                    {{ form.school }}
+                    {{ form.degree_programme }}
+                </div>
 
                 <!-- Member motivation -->
                 <div id="motivation">

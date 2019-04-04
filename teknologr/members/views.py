@@ -83,7 +83,11 @@ def member(request, member_id):
     else:
         form = MemberForm(instance=member)
 
-    context['programmes'] = DEGREE_PROGRAMME_CHOICES
+    context['programmes'] = [
+            programme
+            for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
+            for programme in programmes
+    ]
     context['form'] = form
     context['full_name'] = member
 
