@@ -19,6 +19,10 @@
 
     <!-- Custom styles for this template -->
     <link href="{% static "css/registration.css" %}" rel="stylesheet">
+    {% if DEBUG %}
+        <link href="{% static "css/debug.css" %}" rel="stylesheet">
+    {% endif %}
+
   </head>
 
   <body>

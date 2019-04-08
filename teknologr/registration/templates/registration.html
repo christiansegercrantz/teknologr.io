@@ -98,14 +98,15 @@
                 </div>
 
                 <!-- Field of study -->
-                <h3>Studieinriktning</h3>
                 <div id="programme">
-                    {% for programme in programmes %}
-                        <p>{# programme #}</p>
-                    {% endfor %}
-
-                    {{ form.school }}
-                    {{ form.degree_programme }}
+                    <div class="form-group required">
+                        <label
+                            for="{{ form.degree_programme.id_for_label }}"
+                            class="{% if form.degree_programme.errors %}is-invalid{% endif %}">
+                            {{ form.degree_programme.label }}
+                        </label>
+                        {{ form.degree_programme }}
+                    </div>
                 </div>
 
                 <!-- Member motivation -->

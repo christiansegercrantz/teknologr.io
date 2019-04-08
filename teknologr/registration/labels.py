@@ -14,4 +14,5 @@ MEMBERSHIP_FORM_LABELS = {
     'motivation': 'Motivering till medlemskapet',
     'subscribed_to_modulen': 'Jag vill få Teknologföreningens medlemstidning Modulen hemskickad',
     'allow_publish_info': 'Jag tillåter att mina uppgifter utlämnas till Katalogen och Modulens redaktion',
+    'degree_programme': 'Studieinriktning',
 }

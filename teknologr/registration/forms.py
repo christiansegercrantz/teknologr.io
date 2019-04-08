@@ -17,24 +17,28 @@ class RegistrationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
-        self._set_attributes()
         self._set_programme_choices()
+        self._set_attributes()
 
     def _set_attributes(self):
         for fname, f in self.fields.items():
             f.widget.attrs['class'] = BOOTSTRAP_CLASS
+            f.widget.attrs['autocomplete'] = 'off'
             if type(f.widget) == forms.widgets.CheckboxInput:
                 f.widget.attrs['class'] = BOOTSTRAP_RADIO_CLASS
+            if type(f.widget) == forms.widgets.Select:
+                f.widget.attrs['class'] = 'form-control es-input'
 
         self.fields['email'].widget.attrs['placeholder'] = EMAIL_PLACEHOLDER
 
     def _set_programme_choices(self):
-        schools = [(school, school) for school in DEGREE_PROGRAMME_CHOICES.keys()]
-        self.fields['school'] = forms.ChoiceField(choices=schools, required=True)
-
-        # FIXME: set these as hidden options, shown only when the school above is chosen
-        programme_options = [
-            forms.ChoiceField(choices=enumerate(programmes))
-            for school, programmes
-            in DEGREE_PROGRAMME_CHOICES.items()
-        ]
+        programmes = [('', 'SKOLA - LINJE')]  # Default setting
+        programmes.extend([
+                ('{}_{}'.format(school, programme), '{} - {}'.format(school, programme))
+                for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
+                for programme in programmes
+        ])
+        self.fields['degree_programme'] = forms.ChoiceField(
+                choices=programmes,
+                required=True,
+                label=MEMBERSHIP_FORM_LABELS['degree_programme'])

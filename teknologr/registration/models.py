@@ -17,7 +17,6 @@ class LimboMember(models.Model):
     birth_date = models.DateField()
     # STUDIES
     student_id = models.CharField(max_length=10)
-    school = models.CharField(max_length=100, default="")
     degree_programme = models.CharField(max_length=256)
     enrolment_year = models.IntegerField()
     # MEMBERSHIP MOTIVATION
