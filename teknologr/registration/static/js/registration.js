@@ -1,7 +1,8 @@
-$('#id_degree_programme').change(function() {
+$('#id_degree_programme_options').change(function() {
     if (this.value === 'extra') {
-        // TODO: show 'övrig' field
+        $('#unknown_degree').show();
     } else {
-        // TODO: hide 'övrig' field
+        $('#unknown_degree').hide();
+        $('#unknown_degree').val(self.value);
     }
 })

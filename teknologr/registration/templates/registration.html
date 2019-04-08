@@ -101,6 +101,17 @@
                 <!-- Field of study -->
                 <div id="programme">
                     <div class="form-group required">
+                        {% if DEBUG %}{{ form.degree_programme_options.errors }}{% endif %}
+                        <label
+                            for="{{ form.degree_programme_options.id_for_label }}"
+                            class="{% if form.degree_programme_options.errors %}is-invalid{% endif %}">
+                            {{ form.degree_programme_options.label }}
+                        </label>
+                        {{ form.degree_programme_options }}
+                    </diV>
+
+                    <div id="unknown_degree" class="form-group required" style="display: none;">
+                        {% if DEBUG %}{{ form.degree_programme.errors }}{% endif %}
                         <label
                             for="{{ form.degree_programme.id_for_label }}"
                             class="{% if form.degree_programme.errors %}is-invalid{% endif %}">

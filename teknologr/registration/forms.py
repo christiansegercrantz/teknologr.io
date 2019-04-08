@@ -32,6 +32,8 @@ class RegistrationForm(forms.ModelForm):
         self.fields['email'].widget.attrs['placeholder'] = EMAIL_PLACEHOLDER
 
     def _set_programme_choices(self):
+        degree_programme_label = MEMBERSHIP_FORM_LABELS['degree_programme_options']
+
         programmes = [('', 'SKOLA - LINJE')]  # Default setting
         programmes.extend([
                 ('{}_{}'.format(school, programme), '{} - {}'.format(school, programme))
@@ -39,8 +41,12 @@ class RegistrationForm(forms.ModelForm):
                 for programme in programmes
         ])
         programmes.append(('extra', 'ÖVRIG'))
-        self.fields['degree_programme'] = forms.ChoiceField(
+
+        self.fields['degree_programme_options'] = forms.ChoiceField(
                 choices=programmes,
-                required=True,
+                label=degree_programme_label,
+                widget=forms.widgets.Select(attrs={'id': 'id_degree_programme_options'}))
+
+        self.fields['degree_programme'] = forms.CharField(
                 label=MEMBERSHIP_FORM_LABELS['degree_programme'],
-                widget=forms.widgets.Select(attrs={'id': 'id_degree_programme'}))
+                widget=forms.widgets.TextInput(attrs={'placeholder': degree_programme_label}))
