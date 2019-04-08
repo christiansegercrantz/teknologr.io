@@ -28,5 +28,9 @@
   <body>
       {% block content %}
       {% endblock %}
+
+      {% block scripts %}
+          <script src="{% static "assets/js/jquery-3.3.1.min.js" %}"></script>
+      {% endblock %}
   </body>
 </html>

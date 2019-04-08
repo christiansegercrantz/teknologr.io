@@ -38,7 +38,9 @@ class RegistrationForm(forms.ModelForm):
                 for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
                 for programme in programmes
         ])
+        programmes.append(('extra', 'ÖVRIG'))
         self.fields['degree_programme'] = forms.ChoiceField(
                 choices=programmes,
                 required=True,
-                label=MEMBERSHIP_FORM_LABELS['degree_programme'])
+                label=MEMBERSHIP_FORM_LABELS['degree_programme'],
+                widget=forms.widgets.Select(attrs={'id': 'id_degree_programme'}))

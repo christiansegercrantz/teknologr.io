@@ -1,4 +1,5 @@
 {% extends "registrationbase.html" %}
+{% load staticfiles %}
 
 {% block content %}
 
@@ -177,4 +178,9 @@
 
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static "js/registration.js" %}"></script>
 {% endblock %}
