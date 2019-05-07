@@ -4,9 +4,9 @@ from registration.labels import MEMBERSHIP_FORM_LABELS
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 
 
-BOOTSTRAP_CLASS = 'form-control'
-BOOTSTRAP_RADIO_CLASS = 'form-check-input'
-EMAIL_PLACEHOLDER = '@aalto.fi'
+_BOOTSTRAP_CLASS = 'form-control'
+_BOOTSTRAP_RADIO_CLASS = 'form-check-input'
+_EMAIL_PLACEHOLDER = '@aalto.fi'
 
 
 class RegistrationForm(forms.ModelForm):
@@ -19,17 +19,19 @@ class RegistrationForm(forms.ModelForm):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         self._set_programme_choices()
         self._set_attributes()
+        # Specify unrequired fields
+        self.fields['preferred_name'].required = False
 
     def _set_attributes(self):
         for fname, f in self.fields.items():
-            f.widget.attrs['class'] = BOOTSTRAP_CLASS
+            f.widget.attrs['class'] = _BOOTSTRAP_CLASS
             f.widget.attrs['autocomplete'] = 'off'
             if type(f.widget) == forms.widgets.CheckboxInput:
-                f.widget.attrs['class'] = BOOTSTRAP_RADIO_CLASS
+                f.widget.attrs['class'] = _BOOTSTRAP_RADIO_CLASS
             if type(f.widget) == forms.widgets.Select:
                 f.widget.attrs['class'] = 'form-control es-input'
 
-        self.fields['email'].widget.attrs['placeholder'] = EMAIL_PLACEHOLDER
+        self.fields['email'].widget.attrs['placeholder'] = _EMAIL_PLACEHOLDER
 
     def _set_programme_choices(self):
         degree_programme_label = MEMBERSHIP_FORM_LABELS['degree_programme_options']

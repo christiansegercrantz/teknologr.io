@@ -5,7 +5,7 @@ class LimboMember(models.Model):
     # NAMES
     surname = models.CharField(max_length=100)
     given_names = models.CharField(max_length=64)
-    preferred_name = models.CharField(max_length=32)
+    preferred_name = models.CharField(max_length=32, default='')
     # ADDRESS
     street_address = models.CharField(max_length=64)
     postal_code = models.CharField(max_length=64)
@@ -20,7 +20,7 @@ class LimboMember(models.Model):
     degree_programme = models.CharField(max_length=256)
     enrolment_year = models.IntegerField()
     # MEMBERSHIP MOTIVATION
-    motivation = models.TextField(max_length=2048, default="")
+    motivation = models.TextField(max_length=2048, default='')
     # CONSENTS
     subscribed_to_modulen = models.BooleanField(default=False)
     allow_publish_info = models.BooleanField(default=False)

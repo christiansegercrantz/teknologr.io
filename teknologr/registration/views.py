@@ -15,9 +15,13 @@ def home(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect('/welcome/')
+            return HttpResponseRedirect('/registration/')
     else:
         context['programmes'] = DEGREE_PROGRAMME_CHOICES
         context['form'] = RegistrationForm()
 
     return render(request, 'registration.html', context)
+
+
+def submit(request):
+    pass

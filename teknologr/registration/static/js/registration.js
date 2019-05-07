@@ -3,6 +3,6 @@ $('#id_degree_programme_options').change(function() {
         $('#unknown_degree').show();
     } else {
         $('#unknown_degree').hide();
-        $('#unknown_degree').val(self.value);
+        $('#unknown_degree > input').val(this.value);
     }
 })
