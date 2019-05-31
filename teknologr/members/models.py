@@ -132,6 +132,10 @@ class Member(SuperClass):
         memberType = self.getMostRecentMemberType()
         return memberType is not None and (memberType.type == "OM" or memberType.type == "ST")
 
+    def getPhuxYear(self):
+        phuxYear = MemberType.objects.filter(member=self).filter(type='PH').order_by('begin_date')
+        return None if len(phuxYear) == 0 else phuxYear[0].begin_date.year
+
 
 class DecorationOwnership(SuperClass):
     member = models.ForeignKey("Member", on_delete=models.CASCADE)
