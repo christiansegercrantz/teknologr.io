@@ -37,6 +37,5 @@ class SubmitView(BaseView):
         else:
             self.context['form'] = form
             return render(request, 'registration.html', self.context, status=400)
-            #return redirect('/registration/')
 
         render(request, 'submit.html')

@@ -1,5 +1,6 @@
 {% extends "registrationbase.html" %}
 {% load staticfiles %}
+{% load bootstrap4 %}
 
 {% block content %}
 
@@ -16,155 +17,42 @@
 
                 <!-- Member name information -->
                 <div id="names" class="row">
-                    <div class="form-group col-md-4 required">
-                        {% if DEBUG %}{{ form.surname.errors }}{% endif %}
-                        <label 
-                            for="{{ form.surname.id_for_label }}"
-                            class="{% if form.surname.errors %}is-invalid{% endif %}">
-                            {{ form.surname.label }}
-                        </label>
-                        {{ form.surname }}
-                    </div>
-                    <div class="form-group col-md-4 required">
-                        {% if DEBUG %}{{ form.given_names.errors }}{% endif %}
-                        <label 
-                            for="{{ form.given_names.id_for_label }}"
-                            class="{% if form.given_names.errors %}is-invalid{% endif %}">
-                            {{ form.given_names.label }}
-                        </label>
-                        {{ form.given_names }}
-                    </diV>
-                    <div class="form-group col-md-4">
-                        {% if DEBUG %}{{ form.preferred_name.errors }}{% endif %}
-                        <label 
-                            for="{{ form.preferred_name.id_for_label }}"
-                            class="{% if form.preferred_name.errors %}is-invalid{% endif %}">
-                            {{ form.preferred_name.label }}
-                        </label>
-                        {{ form.preferred_name }}
-                    </div>
+                    {% bootstrap_field form.surname        form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+                    {% bootstrap_field form.given_names    form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+                    {% bootstrap_field form.preferred_name form_group_class="form-group col-md-4" placeholder=False %}
                 </div>
 
                 <!-- Member address information -->
                 <div id="address" class="row">
-                    <div class="form-group col-md-6 required">
-                        {% if DEBUG %}{{ form.street_address.errors }}{% endif %}
-                        <label 
-                            for="{{ form.street_address.id_for_label }}"
-                            class="{% if form.street_address.errors %}is-invalid{% endif %}">
-                            {{ form.street_address.label }}
-                        </label>
-                        {{ form.street_address }}
-                    </div>
-                    <div class="form-group col-md-3 required">
-                        {% if DEBUG %}{{ form.postal_code.errors }}{% endif %}
-                        <label 
-                            for="{{ form.postal_code.id_for_label }}"
-                            class="{% if form.postal_code.errors %}is-invalid{% endif %}">
-                            {{ form.postal_code.label }}
-                        </label>
-                        {{ form.postal_code }}
-                    </div>
-                    <div class="form-group col-md-3 required">
-                        {% if DEBUG %}{{ form.city.errors }}{% endif %}
-                        <label 
-                            for="{{ form.city.id_for_label }}"
-                            class="{% if form.city.errors %}is-invalid{% endif %}">
-                            {{ form.city.label }}
-                        </label>
-                        {{ form.city }}
-                    </div>
+                    {% bootstrap_field form.street_address form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
+                    {% bootstrap_field form.postal_code    form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
+                    {% bootstrap_field form.city           form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
                 </div>
 
                 <!-- Member contact information -->
                 <div id="contact" class="row">
-                    <div class="form-group col-md-6 required">
-                        {% if DEBUG %}{{ form.phone.errors }}{% endif %}
-                        <label 
-                            for="{{ form.phone.id_for_label }}"
-                            class="{% if form.phone.errors %}is-invalid{% endif %}">
-                            {{ form.phone.label }}
-                        </label>
-                        {{ form.phone }}
-                    </div>
-                    <div class="form-group col-md-6 required">
-                        {% if DEBUG %}{{ form.email.errors }}{% endif %}
-                        <label 
-                            for="{{ form.email.id_for_label }}"
-                            class="{% if form.email.errors %}is-invalid{% endif %}">
-                            {{ form.email.label }}
-                        </label>
-                        {{ form.email }}
-                    </div>
+                    {% bootstrap_field form.phone form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
+                    {% bootstrap_field form.email form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
                 </div>
 
                 <!-- Applicant metadata -->
                 <div id="meta" class="row">
-                    <div class="form-group col-md-4 required">
-                        {% if DEBUG %}{{ form.student_id.errors }}{% endif %}
-                        <label
-                            for="{{ form.student_id.id_for_label }}"
-                            class="{% if form.student.errors %}is-invalid{% endif %}">
-                            {{ form.student_id.label }}
-                        </label>
-                        {{ form.student_id }}
-                    </div>
-
-                    <div class="form-group col-md-4 required">
-                        {% if DEBUG %}{{ form.birth_date.errors }}{% endif %}
-                        <label
-                            for="{{ form.birth_date.id_for_label }}"
-                            class="{% if form.birth_date.errors %}is-invalid{% endif %}">
-                            {{ form.birth_date.label }}
-                        </label>
-                        {{ form.birth_date }}
-                    </div>
-
-                    <div class="form-group col-md-4 required">
-                        {% if DEBUG %}{{ form.enrolment_year.errors }}{% endif %}
-                        <label
-                            for="{{ form.enrolment_year.id_for_label }}"
-                            class="{% if form.enrolment_year.errors %}is-invalid{% endif %}">
-                            {{ form.enrolment_year.label }}
-                        </label>
-                        {{ form.enrolment_year }}
-                    </div>
+                    {% bootstrap_field form.student_id     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+                    {% bootstrap_field form.birth_date     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+                    {% bootstrap_field form.enrolment_year form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
                 </div>
 
                 <!-- Field of study -->
                 <div id="programme">
-                    <div class="form-group required">
-                        {% if DEBUG %}{{ form.degree_programme_options.errors }}{% endif %}
-                        <label
-                            for="{{ form.degree_programme_options.id_for_label }}"
-                            class="{% if form.degree_programme_options.errors %}is-invalid{% endif %}">
-                            {{ form.degree_programme_options.label }}
-                        </label>
-                        {{ form.degree_programme_options }}
-                    </diV>
-
-                    <div id="unknown_degree" class="form-group required" style="display: none;">
-                        {% if DEBUG %}{{ form.degree_programme.errors }}{% endif %}
-                        <label
-                            for="{{ form.degree_programme.id_for_label }}"
-                            class="{% if form.degree_programme.errors %}is-invalid{% endif %}">
-                            {{ form.degree_programme.label }}
-                        </label>
-                        {{ form.degree_programme }}
+                    {% bootstrap_field form.degree_programme_options form_group_class="form-group" placeholder=False required_css_class="required" %}
+                    <div id="unknown_degree" style="display: none;">
+                        {% bootstrap_field form.degree_programme form_group_class="form-group" placeholder=False required_css_class="required" %}
                     </div>
                 </div>
 
                 <!-- Member motivation -->
                 <div id="motivation">
-                    <div class="form-group required">
-                        {% if DEBUG %}{{ form.motivation.errors }}{% endif %}
-                        <label 
-                            for="{{ form.motivation.id_for_label }}"
-                            class="{% if form.motivation.errors %}is-invalid{% endif %}">
-                            {{ form.motivation.label }}
-                        </label>
-                        {{ form.motivation }}
-                    </div>
+                    {% bootstrap_field form.motivation form_group_class="form-group" placeholder=False required_css_class="required" %}
                 </div>
 
                 <!-- TODO: check if even needed -->
@@ -195,24 +83,8 @@
 
                 <!-- Consents -->
                 <div id="consents">
-                    <div class="form-check">
-                        {% if DEBUG %}{{ form.subscribed_to_modulen.errors }}{% endif %}
-                        {{ form.subscribed_to_modulen }}
-                        <label 
-                            for="{{ form.subscribed_to_modulen.id_for_label }}"
-                            class="{% if form.subscribed_to_modulen.errors %}is-invalid{% endif %}">
-                            {{ form.subscribed_to_modulen.label }}
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        {% if DEBUG %}{{ form.allow_publish_info.errors }}{% endif %}
-                        {{ form.allow_publish_info }}
-                        <label
-                            for="{{ form.allow_publish_info.id_for_label }}"
-                            class="{% if form.allow_publish_info.errors %}is-invalid{% endif %}">
-                            {{ form.allow_publish_info.label }}
-                        </label>
-                    </div>
+                    {% bootstrap_field form.subscribed_to_modulen form_group_class="form-group" placeholder=False required_css_class="required" %}
+                    {% bootstrap_field form.allow_publish_info form_group_class="form-group" placeholder=False required_css_class="required" %}
                 </div>
 
                 {# TODO: add Google Captcha #}
