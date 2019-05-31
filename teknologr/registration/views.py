@@ -24,4 +24,5 @@ def home(request):
 
 
 def submit(request):
+    print(request)
     pass

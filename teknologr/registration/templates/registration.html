@@ -98,6 +98,39 @@
                     </div>
                 </div>
 
+                <!-- Applicant metadata -->
+                <div id="meta" class="row">
+                    <div class="form-group col-md-4 required">
+                        {% if DEBUG %}{{ form.student_id.errors }}{% endif %}
+                        <label
+                            for="{{ form.student_id.id_for_label }}"
+                            class="{% if form.student.errors %}is-invalid{% endif %}">
+                            {{ form.student_id.label }}
+                        </label>
+                        {{ form.student_id }}
+                    </div>
+
+                    <div class="form-group col-md-4 required">
+                        {% if DEBUG %}{{ form.birth_date.errors }}{% endif %}
+                        <label
+                            for="{{ form.birth_date.id_for_label }}"
+                            class="{% if form.birth_date.errors %}is-invalid{% endif %}">
+                            {{ form.birth_date.label }}
+                        </label>
+                        {{ form.birth_date }}
+                    </div>
+
+                    <div class="form-group col-md-4 required">
+                        {% if DEBUG %}{{ form.enrolment_year.errors }}{% endif %}
+                        <label
+                            for="{{ form.enrolment_year.id_for_label }}"
+                            class="{% if form.enrolment_year.errors %}is-invalid{% endif %}">
+                            {{ form.enrolment_year.label }}
+                        </label>
+                        {{ form.enrolment_year }}
+                    </div>
+                </div>
+
                 <!-- Field of study -->
                 <div id="programme">
                     <div class="form-group required">
@@ -134,6 +167,7 @@
                     </div>
                 </div>
 
+                <!-- TODO: check if even needed -->
                 <!-- FIXME: looks horrible on some window sizes -->
                 <!-- FIXME: render programmatically -->
                 <!-- Mother tongue -->
@@ -182,7 +216,7 @@
                 </div>
 
                 {# TODO: add Google Captcha #}
-                <input type="submit" class="btn" value="Skicka">
+                <input id="submit_btn" type="submit" class="btn" value="Skicka">
             </form>
         </div>
     </div>

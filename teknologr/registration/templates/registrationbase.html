@@ -12,15 +12,15 @@
     <title>TF Membership Registration</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="{% static "assets/css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "assets/css/bootstrap.min.css" %}" rel="stylesheet" type="text/css">
 
     <!-- Fonts -->
     <!--link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet"-->
 
     <!-- Custom styles for this template -->
-    <link href="{% static "css/registration.css" %}" rel="stylesheet">
+    <link href="{% static "css/registration.css" %}" rel="stylesheet" type="text/css">
     {% if DEBUG %}
-        <link href="{% static "css/debug.css" %}" rel="stylesheet">
+        <link href="{% static "css/debug.css" %}" rel="stylesheet" type="text/css">
     {% endif %}
 
   </head>
@@ -30,7 +30,7 @@
       {% endblock %}
 
       {% block scripts %}
-          <script src="{% static "assets/js/jquery-3.3.1.min.js" %}"></script>
+          <script src="{% static "assets/js/jquery-3.3.1.min.js" %}" type="application/javascript"></script>
       {% endblock %}
   </body>
 </html>

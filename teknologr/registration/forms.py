@@ -9,6 +9,14 @@ _BOOTSTRAP_RADIO_CLASS = 'form-check-input'
 _EMAIL_PLACEHOLDER = '@aalto.fi'
 
 
+def format_programmes():
+    return [
+        ('{}_{}'.format(school, programme), '{} - {}'.format(school, programme))
+        for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
+        for programme in programmes
+    ]
+
+
 class RegistrationForm(forms.ModelForm):
     class Meta:
         model = LimboMember
@@ -37,11 +45,7 @@ class RegistrationForm(forms.ModelForm):
         degree_programme_label = MEMBERSHIP_FORM_LABELS['degree_programme_options']
 
         programmes = [('', 'SKOLA - LINJE')]  # Default setting
-        programmes.extend([
-                ('{}_{}'.format(school, programme), '{} - {}'.format(school, programme))
-                for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
-                for programme in programmes
-        ])
+        programmes.extend(format_programmes())
         programmes.append(('extra', 'ÖVRIG'))
 
         self.fields['degree_programme_options'] = forms.ChoiceField(
