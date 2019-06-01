@@ -2,11 +2,7 @@ from django import forms
 from registration.models import LimboMember
 from registration.labels import MEMBERSHIP_FORM_LABELS
 from members.programmes import DEGREE_PROGRAMME_CHOICES
-
-
-_BOOTSTRAP_CLASS = 'form-control'
-_BOOTSTRAP_RADIO_CLASS = 'form-check-input'
-_EMAIL_PLACEHOLDER = '@aalto.fi'
+from datetime import datetime
 
 
 def format_programmes():
@@ -17,11 +13,20 @@ def format_programmes():
     ]
 
 
+# TODO: currently dates are formatted as "%m/%d/%Y" everywhere (both registration and admin pages)
+#       check if one can change this in the settings
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
+
 class RegistrationForm(forms.ModelForm):
     class Meta:
         model = LimboMember
         fields = '__all__'
         labels = MEMBERSHIP_FORM_LABELS
+        widgets = {
+            'birth_date': DateInput(),
+        }
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
@@ -32,14 +37,7 @@ class RegistrationForm(forms.ModelForm):
 
     def _set_attributes(self):
         for fname, f in self.fields.items():
-            f.widget.attrs['class'] = _BOOTSTRAP_CLASS
             f.widget.attrs['autocomplete'] = 'off'
-            if type(f.widget) == forms.widgets.CheckboxInput:
-                f.widget.attrs['class'] = _BOOTSTRAP_RADIO_CLASS
-            if type(f.widget) == forms.widgets.Select:
-                f.widget.attrs['class'] = 'form-control es-input'
-
-        self.fields['email'].widget.attrs['placeholder'] = _EMAIL_PLACEHOLDER
 
     def _set_programme_choices(self):
         degree_programme_label = MEMBERSHIP_FORM_LABELS['degree_programme_options']

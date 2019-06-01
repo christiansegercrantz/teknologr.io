@@ -1,4 +1,8 @@
 from django.db import models
+from datetime import datetime
+
+
+THIS_YEAR = datetime.now().year
 
 
 class LimboMember(models.Model):
@@ -18,7 +22,7 @@ class LimboMember(models.Model):
     # STUDIES
     student_id = models.CharField(max_length=10)
     degree_programme = models.CharField(max_length=256)
-    enrolment_year = models.IntegerField()
+    enrolment_year = models.IntegerField(choices=[(y, y) for y in range(1872, THIS_YEAR+1)], default=THIS_YEAR)
     # MEMBERSHIP MOTIVATION
     motivation = models.TextField(max_length=2048, default='')
     # CONSENTS
