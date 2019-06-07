@@ -9,14 +9,6 @@ from random import choices, choice, randint
 import string
 
 
-def _gen_rnd_str(length=6, chars=string.ascii_uppercase + string.digits):
-    return ''.join(choices(chars, k=length))
-
-
-def _num_str(l=0, u=12):
-    return choices([str(n) for n in range(l, u)])
-
-
 class RegistrationTest(LiveServerTestCase):
     def setUp(self):
         self.driver = webdriver.Firefox()
@@ -48,17 +40,17 @@ class RegistrationTest(LiveServerTestCase):
         degree_programme = Select(self.driver.find_element_by_id('id_degree_programme_options'))
 
         # Fill in all form elements
-        surname.send_keys(_gen_rnd_str())
-        given_names.send_keys(_gen_rnd_str())
-        preferred_name.send_keys(_gen_rnd_str())
-        street_address.send_keys(_gen_rnd_str())
-        postal_code.send_keys(_gen_rnd_str(chars=string.digits))
-        city.send_keys(_gen_rnd_str())
-        phone.send_keys(_gen_rnd_str(10, string.digits))
-        email.send_keys('{}@email.com'.format(_gen_rnd_str()))
-        student_id.send_keys(_gen_rnd_str())
-        enrolment_year.send_keys(_gen_rnd_str(4, string.digits))
-        motivation.send_keys(_gen_rnd_str())
+        surname.send_keys('Teknolog')
+        given_names.send_keys('Svatta Flicka')
+        preferred_name.send_keys('Svattarina')
+        street_address.send_keys('Urdsgjallar 1')
+        postal_code.send_keys('02150')
+        city.send_keys('Esbo')
+        phone.send_keys('040346863762')
+        email.send_keys('svatta.teknolog@tf.fi')
+        student_id.send_keys('111111')
+        enrolment_year.send_keys('2019')
+        motivation.send_keys('TF is bäst!')
 
         chosen_programme = choice(format_programmes())[0]
         degree_programme.select_by_value(chosen_programme)
