@@ -28,7 +28,9 @@ class RegistrationTest(LiveServerTestCase):
 
     def test_register(self):
         self.driver.get(self.live_server_url + reverse('registration.views.home'))
-        by_id = lambda form_id: self.driver.find_element_by_id(form_id)
+
+        def by_id(form_id):
+            return self.driver.find_element_by_id(form_id)
 
         # Find all form inputs
         surname = by_id('id_surname')
@@ -57,13 +59,18 @@ class RegistrationTest(LiveServerTestCase):
         student_id.send_keys(_gen_rnd_str())
         enrolment_year.send_keys(_gen_rnd_str(4, string.digits))
         motivation.send_keys(_gen_rnd_str())
-        degree_programme.select_by_value(choice(format_programmes())[0])
+
+        chosen_programme = choice(format_programmes())[0]
+        degree_programme.select_by_value(chosen_programme)
+        # We have to set the hidden input field manually as Django won't serve staticfiles in development
+        self.driver.execute_script(
+                'document.getElementById("id_degree_programme").value = "{}"'.format(chosen_programme))
+
         # Filling in the birth date is a bit trickier due to the calendar widget
         clicked_bd = ActionChains(self.driver).move_to_element(birth_date).click()
         # As clicking the birth date component results in the middle part getting selected
         # we have to simulate a "back-tab"
         shifted_bd = clicked_bd.key_down(Keys.SHIFT).send_keys(Keys.TAB).key_up(Keys.SHIFT)
-        #shifted_bd.send_keys(f'{randint(1, 12)}{randint(1, 28)}{randint(1950, 2020)}').perform()
         shifted_bd.send_keys('01011999').perform()
 
         # Submit form
