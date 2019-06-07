@@ -28,3 +28,6 @@ class LimboMember(models.Model):
     # CONSENTS
     subscribed_to_modulen = models.BooleanField(default=False)
     allow_publish_info = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.given_names} {self.surname}: {self.student_id}'
