@@ -27,6 +27,7 @@ class SubmitView(BaseView):
         if form.is_valid():
             # TODO: send mail to user as affirmation (check `api/mailutils.py`)
             self.context['name'] = form.instance.preferred_name or form.instance.given_names.split(' ')[0]
+            self.context['email'] = form.instance.email
 
             registration = form.instance
             registration.save()
