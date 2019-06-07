@@ -6,6 +6,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.action_chains import ActionChains
 from registration.forms import format_programmes
 import string
+import random
 
 
 class RegistrationTest(LiveServerTestCase):
@@ -51,7 +52,7 @@ class RegistrationTest(LiveServerTestCase):
         enrolment_year.send_keys('2019')
         motivation.send_keys('TF is bäst!')
 
-        chosen_programme = choice(format_programmes())[0]
+        chosen_programme = random.choice(format_programmes())[0]
         degree_programme.select_by_value(chosen_programme)
         # We have to set the hidden input field manually as Django won't serve staticfiles in development
         self.driver.execute_script(
