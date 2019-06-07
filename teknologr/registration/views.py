@@ -21,21 +21,16 @@ class HomeView(BaseView):
 
 
 class SubmitView(BaseView):
-    template = 'submit.view'
-
-    """
-    def get(self, request):
-        applicant = LimboMember()
-    """
+    template = 'submit.html'
 
     def post(self, request):
-        # TODO: add context
         form = RegistrationForm(request.POST)
         if form.is_valid():
+            # TODO: send mail to user as affirmation (check `api/mailutils.py`)
             registration = form.instance
             registration.save()
         else:
             self.context['form'] = form
-            return render(request, 'registration.html', self.context, status=400)
+            return render(request, HomeView.template, self.context, status=400)
 
-        render(request, 'submit.html')
+        return render(request, self.template, self.context)
