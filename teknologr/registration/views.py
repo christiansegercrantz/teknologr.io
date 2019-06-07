@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.http import HttpResponseRedirect
 from django.views import View
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.forms import RegistrationForm
@@ -27,6 +26,8 @@ class SubmitView(BaseView):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             # TODO: send mail to user as affirmation (check `api/mailutils.py`)
+            self.context['name'] = form.instance.preferred_name or form.instance.given_names.split(' ')[0]
+
             registration = form.instance
             registration.save()
         else:
