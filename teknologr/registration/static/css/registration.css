@@ -1,13 +1,32 @@
 /* Override Bootstrap's default font to TFs widely used: Montserrat */
-
 * {
     font-family: 'Montserrat', sans-serif;
+}
+
+
+/* General own CSS styling. */
+
+:root {
+    --black: #000;
+    --teknolog-röd: #b20738;
+}
+
+a {
+    color: var(--teknolog-röd);
+}
+
+hr.line-divider {
+    border-top: 12px solid var(--teknolog-röd);
+}
+
+body {
+    color: var(--black);
 }
 
 /* Taken from:
  *   https://stackoverflow.com/questions/23141854/adding-asterisk-to-required-fields-in-bootstrap-3 
  */
 .form-group.required label:after {
-   content:"*";
-   color:red;
+   content: "*";
+   color: var(--teknolog-röd);
 }

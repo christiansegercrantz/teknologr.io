@@ -66,4 +66,4 @@ class RegistrationTest(LiveServerTestCase):
         shifted_bd.send_keys('01011999').perform()
 
         # Submit form
-        by_id('submit_btn').click()
+        by_id('submit-btn').click()
