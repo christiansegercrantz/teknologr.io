@@ -6,12 +6,16 @@
 
 <div class="container-fluid">
     <div class="col-sm-12 col-md-8 offset-md-2">
+        {% include "header.html" %}
+
+        <hr class="line-divider" class="mb-4" />
+
         <div>
-            <h1>Tack {{ name }} för medlemsansökan till Teknologföreningen!</h1>
+            <h1>Tack {{ name }} för er medlemsansökan till Teknologföreningen!</h1>
         </div>
 
         <div>
-            Ett email med mera information skickas till din epostadress {{ email }}.
+            Ett e-post med mera information skickas till er e-postadress <strong>{{ email }}</strong>.
         </div>
     </div>
 </div>
