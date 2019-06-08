@@ -2,7 +2,8 @@
 .envrc
 .direnv/
 .direnv/**
-.swp
+*.swp
+.vimrc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
