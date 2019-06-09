@@ -26,7 +26,7 @@ body {
 /* Taken from:
  *   https://stackoverflow.com/questions/23141854/adding-asterisk-to-required-fields-in-bootstrap-3 
  */
-.form-group.required label:after {
+.form-group.required label:after, strong.required:after {
    content: "*";
    color: var(--teknolog-röd);
 }

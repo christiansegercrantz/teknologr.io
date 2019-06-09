@@ -16,4 +16,5 @@ MEMBERSHIP_FORM_LABELS = {
     'allow_publish_info': 'Jag tillåter att mina uppgifter utlämnas till Katalogen och Modulens redaktion',
     'degree_programme_options': 'Studieinriktning',
     'degree_programme': 'Mata in:',
+    'mother_tongue': 'Modersmål',
 }

@@ -48,36 +48,36 @@
                 </div>
             </div>
 
+            <!-- Mother tongue -->
+            <div id="language" class="row justify-content-center align-items-center mb-4 mt-4">
+                <div class="col-md-8">
+                    <strong class="col-md-4 required">
+                        Modersmål:
+                    </strong>
+                    <label class="radio-inline col-md-2">
+                        <input type="radio" name="language" value="Svenska">
+                        Svenska
+                    </label>
+                    <label class="radio-inline col-md-2">
+                        <input type="radio" name="language" value="Finska">
+                        Finska
+                    </label>
+                    <label class="radio-inline col-md-2">
+                        <input type="radio" name="language" value="<empty>">
+                        Tomt
+                    </label>
+                    <label id="language-extra" class="radio-inline col-md-2">
+                        <input type="radio" name="language" value="extra">
+                        Övrig
+                    </label>
+                </div>
+                {% bootstrap_field form.mother_tongue form_group_class="col-md-4" show_label=False placeholder=False required_css_class="required" %}
+            </div>
+
             <!-- Member motivation -->
             <div id="motivation">
                 {% bootstrap_field form.motivation form_group_class="form-group" placeholder=False required_css_class="required" %}
             </div>
-
-            <!-- TODO: check if even needed -->
-            <!-- FIXME: looks horrible on some window sizes -->
-            <!-- FIXME: render programmatically -->
-            <!-- Mother tongue -->
-            <!--div id="mother-tongue" class="row">
-                <div class="form-group col-md-4 required">
-                    <label><strong>Modersmål:</strong></label>
-                </div>
-
-                <div class="col-md-8 row">
-                    <label class="radio-inline col-md-2">
-                        <input type="radio" name="language">
-                        Svenska
-                    </label>
-                    <label class="radio-inline col-md-2">
-                        <input type="radio" name="language">
-                        Finska
-                    </label>
-                    <div class="row col-md-8">
-                        <label for="other-language" class="col-md-2">Annat:</label>
-                        <input type="text" class="form-control col-md-10" id="other-language" aria-describedby="other-language-help">
-                        <small id="other-language-help" class="form-text text-muted"></small>
-                    </div>
-                </div>
-            </div-->
 
             <!-- Consents -->
             <div id="consents">

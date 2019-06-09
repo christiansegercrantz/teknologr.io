@@ -34,10 +34,11 @@ class RegistrationTest(LiveServerTestCase):
         phone = by_id('id_phone')
         email = by_id('id_email')
         student_id = by_id('id_student_id')
-        birth_date = by_id('id_birth_date')
         enrolment_year = by_id('id_enrolment_year')
         motivation = by_id('id_motivation')
         degree_programme = Select(self.driver.find_element_by_id('id_degree_programme_options'))
+        mother_tongue = self.driver.find_element_by_css_selector('label.radio-inline:nth-child(2)')
+        birth_date = by_id('id_birth_date')
 
         # Fill in all form elements
         surname.send_keys('Teknolog')
@@ -57,6 +58,10 @@ class RegistrationTest(LiveServerTestCase):
         # We have to set the hidden input field manually as Django won't serve staticfiles in development
         self.driver.execute_script(
                 'document.getElementById("id_degree_programme").value = "{}"'.format(chosen_programme))
+
+        # Simlarly to above, we have to set the value of the required field
+        mother_tongue.click()
+        self.driver.execute_script('document.getElementById("id_mother_tongue").value = "Svenska"')
 
         # Filling in the birth date is a bit trickier due to the calendar widget
         clicked_bd = ActionChains(self.driver).move_to_element(birth_date).click()
