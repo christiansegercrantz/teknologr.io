@@ -5,98 +5,98 @@
 {% block content %}
 
 <div class="container-fluid">
-    <div class="col-sm-12 col-md-8 offset-md-2">
-        {% include "header.html" %}
+  <div class="col-sm-12 col-md-8 offset-md-2">
+    {% include "header.html" %}
 
-        <hr class="line-divider" class="mb-4" />
+    <hr class="line-divider" class="mb-4" />
 
-        <form id="registration-form" action="/registration/submit/" autocomplete="off" method="post">
-            {% csrf_token %}
+    <form id="registration-form" action="/registration/submit/" autocomplete="off" method="post">
+      {% csrf_token %}
 
-            <!-- Member name information -->
-            <div id="names" class="row">
-                {% bootstrap_field form.surname        form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
-                {% bootstrap_field form.given_names    form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
-                {% bootstrap_field form.preferred_name form_group_class="form-group col-md-4" placeholder=False %}
-            </div>
+      <!-- Member name information -->
+      <div id="names" class="row">
+        {% bootstrap_field form.surname        form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.given_names    form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.preferred_name form_group_class="form-group col-md-4" placeholder=False %}
+      </div>
 
-            <!-- Member address information -->
-            <div id="address" class="row">
-                {% bootstrap_field form.street_address form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
-                {% bootstrap_field form.postal_code    form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
-                {% bootstrap_field form.city           form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
-            </div>
+      <!-- Member address information -->
+      <div id="address" class="row">
+        {% bootstrap_field form.street_address form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.postal_code    form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.city           form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
+      </div>
 
-            <!-- Member contact information -->
-            <div id="contact" class="row">
-                {% bootstrap_field form.phone form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
-                {% bootstrap_field form.email form_group_class="form-group col-md-6" placeholder="@aalto.fi" required_css_class="required" %}
-            </div>
+      <!-- Member contact information -->
+      <div id="contact" class="row">
+        {% bootstrap_field form.phone form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.email form_group_class="form-group col-md-6" placeholder="@aalto.fi" required_css_class="required" %}
+      </div>
 
-            <!-- Applicant metadata -->
-            <div id="meta" class="row">
-                {% bootstrap_field form.student_id     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
-                {% bootstrap_field form.birth_date     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
-                {% bootstrap_field form.enrolment_year form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
-            </div>
+      <!-- Applicant metadata -->
+      <div id="meta" class="row">
+        {% bootstrap_field form.student_id     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.birth_date     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.enrolment_year form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+      </div>
 
-            <!-- Field of study -->
-            <div id="programme">
-                {% bootstrap_field form.degree_programme_options form_group_class="form-group" placeholder=False required_css_class="required" %}
-                <div id="unknown_degree" style="display: none;">
-                    {% bootstrap_field form.degree_programme form_group_class="form-group" placeholder=False required_css_class="required" %}
-                </div>
-            </div>
+      <!-- Field of study -->
+      <div id="programme">
+        {% bootstrap_field form.degree_programme_options form_group_class="form-group" placeholder=False required_css_class="required" %}
+        <div id="unknown_degree" style="display: none;">
+          {% bootstrap_field form.degree_programme form_group_class="form-group" placeholder=False required_css_class="required" %}
+        </div>
+      </div>
 
-            <!-- Mother tongue -->
-            <div id="language" class="row justify-content-center align-items-center mb-4 mt-4">
-                <div class="col-md-8">
-                    <strong class="col-md-4 required">
-                        Modersmål:
-                    </strong>
-                    <label class="radio-inline col-md-2">
-                        <input type="radio" name="language" value="Svenska">
-                        Svenska
-                    </label>
-                    <label class="radio-inline col-md-2">
-                        <input type="radio" name="language" value="Finska">
-                        Finska
-                    </label>
-                    <label class="radio-inline col-md-2">
-                        <input type="radio" name="language" value="<empty>">
-                        Tomt
-                    </label>
-                    <label id="language-extra" class="radio-inline col-md-2">
-                        <input type="radio" name="language" value="extra">
-                        Övrig
-                    </label>
-                </div>
-                {% bootstrap_field form.mother_tongue form_group_class="col-md-4" show_label=False placeholder=False required_css_class="required" %}
-            </div>
+      <!-- Mother tongue -->
+      <div id="language" class="row justify-content-center align-items-center mb-4 mt-4">
+        <div class="col-md-8">
+          <strong class="col-md-4 required">
+            <a href="#" data-toggle="tooltip" title="Modersmålet samlas in för statistik. Ifall du känner obekväm om detta så fyll i <Tomt>">Modersmål:</a>
+          </strong>
+          <label class="radio-inline col-md-2">
+            <input type="radio" name="language" value="Svenska">
+            Svenska
+          </label>
+          <label class="radio-inline col-md-2">
+            <input type="radio" name="language" value="Finska">
+            Finska
+          </label>
+          <label class="radio-inline col-md-2">
+            <input type="radio" name="language" value="<empty>">
+            Tomt
+          </label>
+          <label id="language-extra" class="radio-inline col-md-2">
+            <input type="radio" name="language" value="extra">
+            Övrig:
+          </label>
+        </div>
+        {% bootstrap_field form.mother_tongue form_group_class="col-md-4" show_label=False placeholder=False required_css_class="required" %}
+      </div>
 
-            <!-- Member motivation -->
-            <div id="motivation">
-                {% bootstrap_field form.motivation form_group_class="form-group" placeholder=False required_css_class="required" %}
-            </div>
+      <!-- Member motivation -->
+      <div id="motivation">
+        {% bootstrap_field form.motivation form_group_class="form-group" placeholder=False required_css_class="required" %}
+      </div>
 
-            <!-- Consents -->
-            <div id="consents">
-                {% bootstrap_field form.subscribed_to_modulen form_group_class="form-group" placeholder=False required_css_class="required" %}
-                {% bootstrap_field form.allow_publish_info form_group_class="form-group" placeholder=False required_css_class="required" %}
-            </div>
+      <!-- Consents -->
+      <div id="consents">
+        {% bootstrap_field form.subscribed_to_modulen form_group_class="form-group" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.allow_publish_info form_group_class="form-group" placeholder=False required_css_class="required" %}
+      </div>
 
-            {# TODO: add Google Captcha #}
-            {% bootstrap_button "Skicka" button_type="submit" button_class="btn font-weight-bold" %}
-        </form>
+      {# TODO: add Google Captcha #}
+      {% bootstrap_button "Skicka" button_type="submit" button_class="btn font-weight-bold" %}
+    </form>
 
-        <hr class="line-divider" />
-    </div>
+    <hr class="line-divider" />
+  </div>
 
 </div>
 
 {% endblock %}
 
 {% block scripts %}
-    {{ block.super }}
-    <script src="{% static "js/registration.js" %}"></script>
+{{ block.super }}
+<script src="{% static "js/registration.js" %}"></script>
 {% endblock %}
