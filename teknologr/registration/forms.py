@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext as _
 from registration.models import LimboMember
 from registration.labels import MEMBERSHIP_FORM_LABELS
 from members.programmes import DEGREE_PROGRAMME_CHOICES
@@ -6,11 +7,11 @@ from datetime import datetime
 
 
 def format_programmes():
-    return [
+    return sorted([
         ('{}_{}'.format(school, programme), '{} - {}'.format(school, programme))
         for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
         for programme in programmes
-    ]
+    ])
 
 
 # TODO: currently dates are formatted as "%m/%d/%Y" everywhere (both registration and admin pages)
