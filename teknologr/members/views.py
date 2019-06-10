@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import user_passes_test
 from members.models import *
 from members.forms import *
 from members.programmes import DEGREE_PROGRAMME_CHOICES
-from registration.models import LimboMember
+from registration.models import Applicant
 from registration.forms import RegistrationForm
 import datetime
 
@@ -57,7 +57,7 @@ def set_side_context(context, category, active_obj=None):
     elif category == 'applicants':
         side['sname'] = 'ansökning'
         side['newForm'] = RegistrationForm()
-        side['objects'] = LimboMember.objects.all()
+        side['objects'] = Applicant.objects.all()
 
     context['side'] = side
 
@@ -216,7 +216,7 @@ def decoration(request, decoration_id):
 def applicant(request, applicant_id):
     context = {}
 
-    applicant = get_object_or_404(LimboMember, id=applicant_id)
+    applicant = get_object_or_404(Applicant, id=applicant_id)
     context['applicant'] = applicant
 
     form = RegistrationForm(instance=applicant)

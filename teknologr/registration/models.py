@@ -5,7 +5,7 @@ from datetime import datetime
 THIS_YEAR = datetime.now().year
 
 
-class LimboMember(models.Model):
+class Applicant(models.Model):
     # NAMES
     surname = models.CharField(max_length=100)
     given_names = models.CharField(max_length=64)

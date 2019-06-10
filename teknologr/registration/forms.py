@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.translation import gettext as _
-from registration.models import LimboMember
+from registration.models import Applicant
 from registration.labels import MEMBERSHIP_FORM_LABELS
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from datetime import datetime
@@ -22,7 +22,7 @@ class DateInput(forms.DateInput):
 
 class RegistrationForm(forms.ModelForm):
     class Meta:
-        model = LimboMember
+        model = Applicant
         fields = '__all__'
         labels = MEMBERSHIP_FORM_LABELS
         widgets = {

@@ -3,7 +3,6 @@ from django.conf import settings
 from django.views import View
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.forms import RegistrationForm
-from registration.models import LimboMember
 
 
 class BaseView(View):
