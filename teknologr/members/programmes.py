@@ -35,5 +35,11 @@ DEGREE_PROGRAMME_CHOICES = {
         'Datateknik',
         'Informationsnätverk',
         'Produktionsekonomi',
+        'Data Science',
+    ),
+    'ELEC': (
+        'Automations- och informationsteknologi',
+        'Bioinformationsteknologi',
+        'Elektronik och elektroteknik',
     ),
 }
