@@ -55,3 +55,14 @@ class RegistrationForm(forms.ModelForm):
         self.fields['degree_programme'] = forms.CharField(
                 label=MEMBERSHIP_FORM_LABELS['degree_programme'],
                 widget=forms.widgets.TextInput(attrs={'placeholder': degree_programme_label}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        enrolment_year = cleaned_data.get('enrolment_year')
+
+        if enrolment_year and enrolment_year > datetime.now().year:
+            raise forms.ValidationError(
+                    _('Enrolment year is larger than current year: %(enrolment_year)d'),
+                    code='invalid',
+                    params={'enrolment_year': enrolment_year}
+            )
