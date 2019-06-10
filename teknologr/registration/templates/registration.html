@@ -52,7 +52,10 @@
       <div id="language" class="row justify-content-center align-items-center mb-4 mt-4">
         <div class="col-md-8">
           <strong class="col-md-4 required">
-            <a href="#" data-toggle="tooltip" title="Modersmålet samlas in för statistik. Ifall du känner obekväm om detta så fyll i <Tomt>">Modersmål:</a>
+            Modersmål:
+            <a class="a-tooltip" href="#" data-toggle="tooltip" data-placement="top" title="Modersmålet samlas in för statistik. Ifall du känner obekväm om detta så fyll i <Tomt>">
+              <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </a>
           </strong>
           <label class="radio-inline col-md-2">
             <input type="radio" name="language" value="Svenska">
@@ -97,6 +100,6 @@
 {% endblock %}
 
 {% block scripts %}
-{{ block.super }}
-<script src="{% static "js/registration.js" %}"></script>
+  {{ block.super }}
+  <script src="{% static "js/registration.js" %}"></script>
 {% endblock %}

@@ -1,6 +1,9 @@
 $(document).ready(function() {
     // There is no default option for disabling a field with django-bootstrap4
     $('#id_mother_tongue').prop('disabled', true);
+
+    // Set tooltips
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 $('#id_degree_programme_options').change(function() {

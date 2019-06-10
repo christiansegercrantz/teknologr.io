@@ -15,6 +15,11 @@ a {
     color: var(--teknolog-röd);
 }
 
+a.a-tooltip {
+    color: var(--black);
+    text-decoration: none;
+}
+
 hr.line-divider {
     border-top: 12px solid var(--teknolog-röd);
 }
