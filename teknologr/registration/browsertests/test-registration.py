@@ -24,6 +24,9 @@ class RegistrationTest(LiveServerTestCase):
         def by_id(form_id):
             return self.driver.find_element_by_id(form_id)
 
+        def by_css(selector):
+            return self.driver.find_element_by_css_selector(selector)
+
         # Find all form inputs
         surname = by_id('id_surname')
         given_names = by_id('id_given_names')
@@ -37,7 +40,7 @@ class RegistrationTest(LiveServerTestCase):
         enrolment_year = by_id('id_enrolment_year')
         motivation = by_id('id_motivation')
         degree_programme = Select(self.driver.find_element_by_id('id_degree_programme_options'))
-        mother_tongue = self.driver.find_element_by_css_selector('label.radio-inline:nth-child(2)')
+        mother_tongue = by_css('label.radio-inline:nth-child(2)')
         birth_date = by_id('id_birth_date')
 
         # Fill in all form elements
@@ -71,4 +74,4 @@ class RegistrationTest(LiveServerTestCase):
         shifted_bd.send_keys('01011999').perform()
 
         # Submit form
-        by_id('submit-btn').click()
+        by_css('.btn').click()
