@@ -65,9 +65,9 @@
 
       <div id="save-remove-buttons" class="row">
         <div class="col-md-12">
-          <button type="submit" class="btn btn-success">Spara</button>
+          {% bootstrap_button "Spara" button_type="submit" button_class="btn btn-success" %}
           <!-- TODO: implement deleteapplicant as JS (check `member.js`) -->
-          <!--button type="deleteapplicant" class="btn btn-danger" data-id={{ applicant.id }}>Radera</button-->
+          <!--button type="deleteapplicant" class="btn btn-danger" data-id={# applicant.id #}>Radera</button-->
         </div>
       </div>
     </form>
