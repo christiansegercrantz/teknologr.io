@@ -32,10 +32,10 @@ class Applicant(models.Model):
     mother_tongue = models.CharField(max_length=64, default='')
 
     def _get_full_name(self):
-        return f'{self.given_names} {self.surname}'
+        return '{} {}'.format(self.given_names, self.surname)
 
     full_name = property(_get_full_name)
     name = property(_get_full_name)
 
     def __str__(self):
-        return f'{self.given_names} {self.surname}: {self.student_id}'
+        return '{} {}: {}'.format(self.given_names, self.surname, self.student_id)
