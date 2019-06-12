@@ -217,9 +217,15 @@ def applicant(request, applicant_id):
     context = {}
 
     applicant = get_object_or_404(Applicant, id=applicant_id)
-    context['applicant'] = applicant
 
-    form = RegistrationForm(instance=applicant)
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST, instance=applicant)
+        if form.is_valid():
+            form.save()
+    else:
+        form = RegistrationForm(instance=applicant)
+
+    context['applicant'] = applicant
     context['form'] = form
 
     set_side_context(context, 'applicants', applicant.id)
