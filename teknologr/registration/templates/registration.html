@@ -13,21 +13,21 @@
     <form id="registration-form" action="/registration/submit/" autocomplete="off" method="post">
       {% csrf_token %}
 
-      <!-- Member name information -->
+      <!-- Applicant name information -->
       <div id="names" class="row">
         {% bootstrap_field form.surname        form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
         {% bootstrap_field form.given_names    form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
         {% bootstrap_field form.preferred_name form_group_class="form-group col-md-4" placeholder=False %}
       </div>
 
-      <!-- Member address information -->
+      <!-- Applicant address information -->
       <div id="address" class="row">
         {% bootstrap_field form.street_address form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
         {% bootstrap_field form.postal_code    form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
         {% bootstrap_field form.city           form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
       </div>
 
-      <!-- Member contact information -->
+      <!-- Applicant contact information -->
       <div id="contact" class="row">
         {% bootstrap_field form.phone form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
         {% bootstrap_field form.email form_group_class="form-group col-md-6" placeholder="@aalto.fi" required_css_class="required" %}
@@ -73,7 +73,7 @@
         {% bootstrap_field form.mother_tongue form_group_class="col-md-4" show_label=False placeholder=False required_css_class="required" %}
       </div>
 
-      <!-- Member motivation -->
+      <!-- Applicant motivation -->
       <div id="motivation">
         {% bootstrap_field form.motivation form_group_class="form-group" placeholder=False required_css_class="required" %}
       </div>
