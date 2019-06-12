@@ -35,6 +35,7 @@ class RegistrationForm(forms.ModelForm):
         self._set_attributes()
         # Specify unrequired fields
         self.fields['preferred_name'].required = False
+        self.fields['mother_tongue'].required = False
 
     def _set_attributes(self):
         for fname, f in self.fields.items():
