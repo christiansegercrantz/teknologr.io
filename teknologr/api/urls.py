@@ -13,6 +13,7 @@ router.register(r'functionaryTypes', FunctionaryTypeViewSet)
 router.register(r'decorations', DecorationViewSet)
 router.register(r'decorationOwnership', DecorationOwnershipViewSet)
 router.register(r'memberTypes', MemberTypeViewSet)
+router.register(r'applicants', ApplicantViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from members.models import GroupMembership, Member, Group
+from registration.models import Applicant
 from api.ldap import LDAPAccountManager
 from ldap import LDAPError
 from api.bill import BILLAccountManager, BILLException
@@ -223,6 +224,14 @@ class BILLAccountView(APIView):
         member.save()
 
         return Response(status=200)
+
+
+# Registration/Applicant
+
+class ApplicantViewSet(viewsets.ModelViewSet):
+    queryset = Applicant.objects.all()
+    serializer_class = ApplicantSerializer
+
 
 
 # JSON API:s
