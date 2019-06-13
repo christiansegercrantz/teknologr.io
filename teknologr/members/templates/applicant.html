@@ -44,7 +44,9 @@
       <!-- Field of study -->
       <div id="programme">
         {% bootstrap_field form.degree_programme_options form_group_class="form-group" placeholder=False required_css_class="required" %}
-        {% bootstrap_field form.degree_programme form_group_class="form-group" placeholder=False required_css_class="required" %}
+        <div id="unknown_degree" style="display: none;">
+          {% bootstrap_field form.degree_programme form_group_class="form-group" placeholder=False required_css_class="required" %}
+        </div>
       </div>
 
       <!-- Mother tongue -->
@@ -74,4 +76,9 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static "js/applicant.js" %}"></script>
 {% endblock %}
