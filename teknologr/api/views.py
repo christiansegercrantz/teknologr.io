@@ -233,7 +233,6 @@ class ApplicantViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicantSerializer
 
 
-
 # JSON API:s
 
 # Used by BILL
