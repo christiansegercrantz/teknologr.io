@@ -4,10 +4,10 @@ $(document).ready(function() {
         console.log('hello');
         if (this.value === 'extra') {
             $('#unknown_degree').show();
-            $('#unknown_degree input').val('');
+            $('#id_degree_programme').val('');
         } else {
             $('#unknown_degree').hide();
-            $('#unknown_degree input').val(this.value);
+            $('#id_degree_programme').val(this.value);
         }
     });
 
