@@ -26,4 +26,21 @@ $(document).ready(function() {
         }
     });
 
+    $('#deleteapplicant').click(function() {
+        if (confirm('Vill du radera denna ansökan?')) {
+            const id = $(this).data('id');
+			const request = $.ajax({
+                url: '/api/applicants/' + id + '/',
+                method: 'DELETE',
+            });
+
+            request.done(function() {
+                window.location = '/admin/applicants/';
+            });
+
+            request.fail(function(jqHXR, textStatus) {
+                alert('Request failed: ' + textStatus + ': ' + jqHXR.responseText);
+            });
+        }
+    });
 });
