@@ -34,7 +34,7 @@ def set_side_context(context, category, active_obj=None):
     side['active_obj'] = active_obj
     if category == 'members':
         side['sname'] = 'medlem'
-        side['newForm'] = MemberForm(initial={'given_names': '', 'surname': ''})
+        side['modalForm'] = MemberForm(initial={'given_names': '', 'surname': ''})
         objects = Member.objects.order_by('-modified')[:50]
         if active_obj:
             active = Member.objects.get(pk=active_obj)
@@ -44,19 +44,19 @@ def set_side_context(context, category, active_obj=None):
         side['objects'] = objects
     elif category == 'groups':
         side['sname'] = 'grupp'
-        side['newForm'] = GroupTypeForm()
+        side['modalForm'] = GroupTypeForm()
         side['objects'] = GroupType.objects.all()
     elif category == 'functionaries':
         side['sname'] = 'post'
-        side['newForm'] = FunctionaryTypeForm()
+        side['modalForm'] = FunctionaryTypeForm()
         side['objects'] = FunctionaryType.objects.all()
     elif category == 'decorations':
         side['sname'] = 'betygelse'
-        side['newForm'] = DecorationForm()
+        side['modalForm'] = DecorationForm()
         side['objects'] = Decoration.objects.all()
     elif category == 'applicants':
         side['sname'] = 'ansökning'
-        side['newForm'] = RegistrationForm()
+        side['modalForm'] = RegistrationForm()
         side['objects'] = Applicant.objects.all()
         side['no_new_button'] = True
 
