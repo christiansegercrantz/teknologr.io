@@ -34,6 +34,9 @@ class Applicant(models.Model):
     # MOTHER TONGUE
     mother_tongue = models.CharField(max_length=64, default='')
 
+    # FORM METADATA
+    created_at = models.DateTimeField(auto_now_add=True)
+
     def _get_full_name(self):
         return '{} {}'.format(self.given_names, self.surname)
 
