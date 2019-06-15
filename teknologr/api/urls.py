@@ -33,5 +33,5 @@ urlpatterns = [
     url(r'^regemaildump/$', regEmailDump, name='api.views.regEmailDump'),
     url(r'^membersByMemberType/([A-Z]{2})/(\w+)?$', membersByMemberType),
     url(r'^applicants/makeMember/(\d+)/$', ApplicantMembershipView.as_view()),
-    url(r'multiApplicantSubmission/$', multiApplicantSubmission, name='api.views.multiApplicantSubmission'),
+    url(r'^multiApplicantSubmission/$', multiApplicantSubmission, name='api.views.multiApplicantSubmission'),
 ]
