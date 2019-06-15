@@ -1,7 +1,8 @@
 from ajax_select import register, LookupChannel
 from members.models import *
+from registration.models import Applicant
 from django.utils.html import escape
-from api.utils import findMembers
+from api.utils import findMembers, findApplicants
 
 
 @register('member')
@@ -24,4 +25,22 @@ class MemberLookup(LookupChannel):
 
     def format_item_display(self, obj):
         """ (HTML) formatted item for displaying item in the selected deck area """
+        return obj._get_full_name()
+
+
+@register('applicant')
+class ApplicantLookup(LookupChannel):
+
+    model = Applicant
+
+    def get_query(self, q, request):
+        return findApplicants(q)
+
+    def get_result(self, obj):
+        return obj._get_full_name()
+
+    def format_match(self, obj):
+        return obj._get_full_name()
+
+    def format_item_display(self, obj):
         return obj._get_full_name()

@@ -256,9 +256,22 @@ class ApplicantMembershipView(APIView):
             new_member.save()
             applicant.delete()
         except IntegrityError as err:
-            Response(str(err), status=400)
+            return Response(str(err), status=400)
 
-        return Response(200)
+        return Response(status=200)
+
+
+@api_view(['POST'])
+def multiApplicantSubmission(request):
+    applicants = request.data.get('applicant').strip('|').split('|')
+
+    # Simulate a POST request to ApplicantMembershipView
+    am_view = ApplicantMembershipView()
+    for aid in applicants:
+        # TODO: add notification to user if unsuccesful applicant saving
+        am_view.post(request, aid)
+
+    return Response(status=200)
 
 
 # JSON API:s

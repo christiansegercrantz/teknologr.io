@@ -60,6 +60,7 @@ def set_side_context(context, category, active_obj=None):
         side['objects'] = Applicant.objects.all()
         side['new_button'] = False
         side['applicant_tool_icons'] = True
+        side['applicantmultipleform'] = MultipleApplicantAdditionForm()
 
     context['side'] = side
 
@@ -229,7 +230,6 @@ def applicant(request, applicant_id):
 
     context['applicant'] = applicant
     context['form'] = form
-    context['applicantmultipleform'] = MultipleApplicantAdditionForm()
 
     set_side_context(context, 'applicants', applicant.id)
     return render(request, 'applicant.html', context)
