@@ -3,6 +3,7 @@ from django.conf import settings
 from django.views import View
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.forms import RegistrationForm
+from registration.mailutils import mailApplicantSubmission
 
 
 class BaseView(View):
@@ -24,11 +25,13 @@ class SubmitView(BaseView):
     def post(self, request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            # TODO: send mail to user as affirmation (check `api/mailutils.py`)
             registration = form.instance
 
             self.context['name'] = registration.preferred_name or registration.given_names.split(' ')[0]
             self.context['email'] = registration.email
+
+            # FIXME: handle situation where email is not sent (e.g. admin log tool)
+            mailApplicantSubmission(self.context)
 
             registration.save()
         else:
