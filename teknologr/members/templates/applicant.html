@@ -65,13 +65,18 @@
         {% bootstrap_field form.allow_publish_info form_group_class="form-group" placeholder=False required_css_class="required" %}
       </div>
 
-      <div id="save-remove-buttons" class="row">
+      <div class="row">
         <div class="col-md-12">
           {% bootstrap_button "Spara" button_type="submit" button_class="btn btn-success" %}
-          <button id="deleteapplicant" class="btn btn-danger" data-id={{ applicant.id }}>Radera</button>
         </div>
       </div>
     </form>
+
+    <div class="row">
+      <div class="col-md-12">
+        <button id="deleteapplicant" class="btn btn-danger" data-id={{ applicant.id }}>Radera</button>
+      </div>
+    </div>
   </div>
 </div>
 
