@@ -619,3 +619,23 @@ def regEmailDump(request):
             status=200,
             headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
         )
+
+
+class ApplicantLanguages(csv_renderer.CSVRenderer):
+    header = ['language']
+
+
+@api_view(['GET'])
+@renderer_classes((ApplicantLanguages,))
+def applicantLanguages(request):
+    applicants = Applicant.objects.all()
+    content = [{
+        'language': applicant.mother_tongue}
+        for applicant in applicants]
+
+    dumpname = 'filename="applicantLanguages_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )

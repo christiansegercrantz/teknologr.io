@@ -21,6 +21,11 @@
     <button class="btn" data-toggle="modal" data-target="#addMultipleApplicants" data-toggle="tooltip" title="Acceptera flera ansökningar">
       <i class="fas fa-users text-info icon-20"></i>
     </button>
+    <button class="btn" data-toggle="tooltip" title="Ladda ner modersmålet för alla nuvarande ansökningar.">
+      <a href="{% url 'api.views.applicantLanguages' %}">
+        <i class="fas fa-download text-info icon-20"></i>
+      </a>
+    </button>
   {% endif %}
 </ul>
 <br>
