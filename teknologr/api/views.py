@@ -256,7 +256,7 @@ class ApplicantMembershipView(APIView):
             new_member.save()
             applicant.delete()
         except IntegrityError as err:
-            Reponse(str(err), status=400)
+            Response(str(err), status=400)
 
         return Response(200)
 
