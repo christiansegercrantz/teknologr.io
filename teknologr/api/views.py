@@ -1,11 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from django.db.utils import IntegrityError
 from rest_framework import viewsets
 from api.serializers import *
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from members.models import GroupMembership, Member, Group
+from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
 from api.ldap import LDAPAccountManager
 from ldap import LDAPError
@@ -231,6 +233,32 @@ class BILLAccountView(APIView):
 class ApplicantViewSet(viewsets.ModelViewSet):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantSerializer
+
+
+class ApplicantMembershipView(APIView):
+    def post(self, request, applicant_id):
+        applicant = get_object_or_404(Applicant, id=applicant_id)
+        new_member = Member()
+
+        # Copy all applicant fields to Member object (except primary key)
+        for field in filter(lambda _: not _.primary_key, applicant._meta.fields):
+            setattr(new_member, field.name, getattr(applicant, field.name))
+
+        # Fix needed fields
+        degree_programme = applicant.degree_programme.split('_')
+        if len(degree_programme) == 2:
+            school, programme = degree_programme
+            if programme in DEGREE_PROGRAMME_CHOICES.get(school, []):
+                new_member.degree_programme = programme
+
+        try:
+            # Saving a new member might fail (e.g. unique constraints)
+            new_member.save()
+            applicant.delete()
+        except IntegrityError as err:
+            Reponse(str(err), status=400)
+
+        return Response(200)
 
 
 # JSON API:s
