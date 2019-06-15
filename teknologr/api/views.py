@@ -581,3 +581,28 @@ def arskDump(request):
             status=200,
             headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
         )
+
+
+class RegEmailRenderer(csv_renderer.CSVRenderer):
+    header = ['name', 'surname', 'preferred_name', 'email']
+
+
+# Dump for receiving all emails from member applicants
+# Used by e.g. the PhuxMästare to send out information
+@api_view(['GET'])
+@renderer_classes((RegEmailRenderer,))
+def regEmailDump(request):
+    applicants = Applicant.objects.all()
+    content = [{
+        'name': applicant.given_names,
+        'surname': applicant.surname,
+        'preferred_name': applicant.preferred_name,
+        'email': applicant.email}
+        for applicant in applicants]
+
+    dumpname = 'filename="regEmailDump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
