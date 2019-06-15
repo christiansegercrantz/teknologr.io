@@ -10,7 +10,7 @@
   <li class="list-inline-item">
     <input id="side-search" type="text" class="form-control" placeholder="Sök..." data-active="{{side.active}}">
   </li>
-  {% if side.new_button %}
+  {% if not side.no_new_button %}
     <li class="list-inline-item">
         <button class="btn btn-success" data-toggle="modal" data-target="#newModal">Ny {{ side.sname }}</button>
     </li>

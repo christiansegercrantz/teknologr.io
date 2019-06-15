@@ -28,11 +28,10 @@ def getCurrentDate():
 
 # Create your views here
 
-def set_side_context(context, category, active_obj=None, new_button=True):
+def set_side_context(context, category, active_obj=None):
     side = {}
     side['active'] = category
     side['active_obj'] = active_obj
-    side['new_button'] = new_button
     if category == 'members':
         side['sname'] = 'medlem'
         side['newForm'] = MemberForm(initial={'given_names': '', 'surname': ''})
@@ -59,6 +58,7 @@ def set_side_context(context, category, active_obj=None, new_button=True):
         side['sname'] = 'ansökning'
         side['newForm'] = RegistrationForm()
         side['objects'] = Applicant.objects.all()
+        side['no_new_button'] = True
 
     context['side'] = side
 
@@ -66,7 +66,7 @@ def set_side_context(context, category, active_obj=None, new_button=True):
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
 def empty(request, category):
     context = {}
-    set_side_context(context, category, new_button='applicants' not in request.path)
+    set_side_context(context, category)
     return render(request, 'base.html', context)
 
 
@@ -229,5 +229,5 @@ def applicant(request, applicant_id):
     context['applicant'] = applicant
     context['form'] = form
 
-    set_side_context(context, 'applicants', applicant.id, new_button=False)
+    set_side_context(context, 'applicants', applicant.id)
     return render(request, 'applicant.html', context)
