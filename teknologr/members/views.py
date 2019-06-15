@@ -56,7 +56,6 @@ def set_side_context(context, category, active_obj=None):
         side['objects'] = Decoration.objects.all()
     elif category == 'applicants':
         side['sname'] = 'ansökning'
-        side['modalForm'] = RegistrationForm()
         side['objects'] = Applicant.objects.all()
         side['no_new_button'] = True
 
