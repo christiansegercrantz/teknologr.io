@@ -10,10 +10,17 @@
   <li class="list-inline-item">
     <input id="side-search" type="text" class="form-control" placeholder="Sök..." data-active="{{side.active}}">
   </li>
-  {% if not side.no_new_button %}
+
+  {% if side.new_button %}
     <li class="list-inline-item">
       <button class="btn btn-success" data-toggle="modal" data-target="#newModal">Ny {{ side.sname }}</button>
     </li>
+  {% endif %}
+
+  {% if side.applicant_tool_icons %}
+    <button class="btn" data-toggle="modal" data-target="#addMultipleApplicants">
+      <i class="fas fa-users text-info icon-20"></i>
+    </button>
   {% endif %}
 </ul>
 <br>

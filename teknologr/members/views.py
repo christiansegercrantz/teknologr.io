@@ -32,6 +32,7 @@ def set_side_context(context, category, active_obj=None):
     side = {}
     side['active'] = category
     side['active_obj'] = active_obj
+    side['new_button'] = True
     if category == 'members':
         side['sname'] = 'medlem'
         side['modalForm'] = MemberForm(initial={'given_names': '', 'surname': ''})
@@ -57,7 +58,8 @@ def set_side_context(context, category, active_obj=None):
     elif category == 'applicants':
         side['sname'] = 'ansökning'
         side['objects'] = Applicant.objects.all()
-        side['no_new_button'] = True
+        side['new_button'] = False
+        side['applicant_tool_icons'] = True
 
     context['side'] = side
 
@@ -227,6 +229,7 @@ def applicant(request, applicant_id):
 
     context['applicant'] = applicant
     context['form'] = form
+    context['applicantmultipleform'] = MultipleApplicantAdditionForm()
 
     set_side_context(context, 'applicants', applicant.id)
     return render(request, 'applicant.html', context)
