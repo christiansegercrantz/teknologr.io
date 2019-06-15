@@ -6,6 +6,7 @@ MEMBERSHIP_FORM_LABELS = {
     'street_address': 'Gatuadress',
     'postal_code': 'Postnummer',
     'city': 'Postanstalt',
+    'country': 'Land',
     'phone': 'Telefonnummer',
     'email': 'E-postadress',
     'birth_date': 'Födelsedatum',

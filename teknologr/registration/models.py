@@ -1,4 +1,5 @@
 from django.db import models
+from django_countries.fields import CountryField
 from datetime import datetime
 
 
@@ -14,6 +15,8 @@ class Applicant(models.Model):
     street_address = models.CharField(max_length=64)
     postal_code = models.CharField(max_length=64)
     city = models.CharField(max_length=64)
+    # Country
+    country = CountryField(blank=True, null=False, default='FI')
     # CONTACT INFO
     phone = models.CharField(max_length=128)
     email = models.EmailField(max_length=64)

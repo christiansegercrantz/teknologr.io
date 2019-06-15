@@ -27,6 +27,11 @@
         {% bootstrap_field form.city           form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
       </div>
 
+      <!-- Applicant country -->
+      <div id="country" class="row">
+        {% bootstrap_field form.country form_group_class="form-group col-md-12" required_css_class="required" %}
+      </div>
+
       <!-- Applicant contact information -->
       <div id="contact" class="row">
         {% bootstrap_field form.phone form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
