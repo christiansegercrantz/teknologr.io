@@ -86,7 +86,13 @@
       <!-- Consents -->
       <div id="consents">
         {% bootstrap_field form.subscribed_to_modulen form_group_class="form-group" placeholder=False required_css_class="required" %}
-        {% bootstrap_field form.allow_publish_info form_group_class="form-group" placeholder=False required_css_class="required" %}
+
+        <div class="row col-md-12">
+          {% bootstrap_field form.allow_publish_info form_group_class="form-group" placeholder=False required_css_class="required" %}
+          <a class="a-tooltip" href="javascript:;" data-toggle="tooltip" data-placement="top" title="Katalogen är namnet för Teknologföreningens medlemsregister. Kolla länken längst ner på sidan för en registerbeskrivning.">
+            <i class="fa fa-question-circle" aria-hidden="true"></i>
+          </a>
+        </div>
       </div>
 
       {# TODO: add Google Captcha #}
