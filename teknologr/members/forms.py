@@ -108,4 +108,5 @@ class MultipleApplicantAdditionForm(BSModelForm):
         fields = '__all__'
 
     membership_date = DateField(widget=DateInput(attrs={'type': 'date'}))
+    phux_date = DateField(widget=DateInput(attrs={'type': 'date'}), required=False)
     applicant = AutoCompleteSelectMultipleField('applicant', required=True, help_text=None)

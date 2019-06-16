@@ -12,11 +12,17 @@
         </label>
       </div>
 
-      <div class="col-6">{{ modalForm.membership_date }}</div>
+      <div class="col-9">{{ modalForm.membership_date }}</div>
+    </div>
 
+    <div class="row form-group w-100">
       <div class="col-3">
-        <button type="submit" class="btn btn-sucess float-right">Spara</button>
+        <label for="{{ modalForm.phux_date.id_for_label }}">
+          Datum för phuxskap
+        </label>
       </div>
+
+      <div class="col-9">{{ modalForm.phux_date }}</div>
     </div>
 
     <div class="row form-group w-100">
@@ -24,7 +30,11 @@
         <label for="{{ modalForm.applicant.id_for_label }}">Namn</label>
       </div>
 
-      <div class="col-9">{{ modalForm.applicant }}</div>
+      <div class="col-6">{{ modalForm.applicant }}</div>
+
+      <div class="col-3">
+        <button type="submit" class="btn btn-sucess float-right">Spara</button>
+      </div>
     </div>
 
     {{ modalForm.as_hidden }}
