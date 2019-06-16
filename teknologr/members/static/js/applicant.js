@@ -48,7 +48,6 @@ $(document).ready(function() {
     $('#makemember').click(function() {
         if (confirm('Vill du lägga till denna ansökan i medlemsregistret?')) {
             const id = $(this).data('id');
-            console.log(id);
             const request = $.ajax({
                 url: '/api/applicants/makeMember/' + id + '/',
                 method: 'POST',
