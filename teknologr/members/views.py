@@ -230,6 +230,7 @@ def applicant(request, applicant_id):
 
     context['applicant'] = applicant
     context['form'] = form
+    context['modalForm'] = ApplicantAdditionForm()
 
     set_side_context(context, 'applicants', applicant.id)
     return render(request, 'applicant.html', context)

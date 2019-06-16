@@ -45,21 +45,23 @@ $(document).ready(function() {
         }
     });
 
-    $('#makemember').click(function() {
-        if (confirm('Vill du lägga till denna ansökan i medlemsregistret?')) {
-            const id = $(this).data('id');
-            const request = $.ajax({
-                url: '/api/applicants/makeMember/' + id + '/',
-                method: 'POST',
-            });
+    $('#makemember').submit(function(event) {
+        const id = $(this).data('id');
+        const data = $(this).serialize();
+        const request = $.ajax({
+            url: '/api/applicants/makeMember/' + id + '/',
+            method: 'POST',
+            data: data,
+        });
 
-            request.done(function() {
-                window.location = '/admin/applicants/';
-            });
+        request.done(function() {
+            window.location = '/admin/applicants/';
+        });
 
-            request.fail(function(jqHXR, textStatus) {
-                alert('Request failed: ' + textStatus + ': ' + jqHXR.responseText);
-            });
-        }
+        request.fail(function(jqHXR, textStatus) {
+            alert('Request failed: ' + textStatus + ': ' + jqHXR.responseText);
+        });
+
+        event.preventDefault();
     });
 });

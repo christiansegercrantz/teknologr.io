@@ -278,7 +278,6 @@ class ApplicantMembershipView(APIView):
             pass
 
 
-
 @api_view(['POST'])
 def multiApplicantSubmission(request):
     applicants = request.data.get('applicant').strip('|').split('|')

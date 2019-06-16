@@ -83,14 +83,17 @@
       </div>
     </form>
 
+    <!-- Extra buttons -->
     <div class="row mt-2">
       <div class="col-md-8">
         <button id="deleteapplicant" class="btn btn-danger" data-id={{ applicant.id }}>Radera</button>
-        <button id="makemember" class="btn btn-warning" data-id={{ applicant.id }}>Deltagit i Namö</button>
+        <button class="btn btn-warning" data-toggle="modal" data-target="#makeMemberModal">Deltagit i Namö</button>
       </div>
     </div>
   </div>
 </div>
+
+{% include "modals/makeapplicantmember.html" with modalname="makeMemberModal" title="Gör medlem av "|add:applicant.name modalForm=modalForm applicantId=applicant.id only %}
 
 {% endblock %}
 
