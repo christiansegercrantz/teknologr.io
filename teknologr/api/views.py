@@ -258,7 +258,25 @@ class ApplicantMembershipView(APIView):
         except IntegrityError as err:
             return Response(str(err), status=400)
 
+        # Add MemberTypes if set
+        membership_date = request.data.get('membership_date')
+        if membership_date:
+            self._create_member_type(new_member, membership_date, 'OM')
+
+        phux_date = request.data.get('phux_date')
+        if phux_date:
+            self._create_member_type(new_member, phux_date, 'PH')
+
         return Response(status=200)
+
+    def _create_member_type(self, member, date, type):
+        try:
+            tmp_member_type = MemberType(member=member, begin_date=date, type=type)
+            tmp_member_type.save()
+        except:
+            # FIXME: inform user that MemberType saving was not succesful
+            pass
+
 
 
 @api_view(['POST'])
