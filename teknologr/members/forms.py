@@ -102,11 +102,14 @@ class BSAuthForm(AuthenticationForm):
     password = CharField(widget=PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Lösenord'}))
 
 
-class MultipleApplicantAdditionForm(BSModelForm):
+class ApplicantAdditionForm(BSModelForm):
     class Meta:
         model = Applicant
         fields = '__all__'
 
     membership_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     phux_date = DateField(widget=DateInput(attrs={'type': 'date'}), required=False)
+
+
+class MultipleApplicantAdditionForm(ApplicantAdditionForm):
     applicant = AutoCompleteSelectMultipleField('applicant', required=True, help_text=None)
