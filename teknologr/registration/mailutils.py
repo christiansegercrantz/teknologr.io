@@ -14,7 +14,7 @@ def mailApplicantSubmission(context, sender='phuxivator@tf.fi'):
     För att bli en fullständig medlem så är nästa steg att delta i ett Nationsmöte (Namö).
     Detta informeras mera senare.
 
-    Vid frågor eller ifall du inte ansökt om medlemskap, kontakt {sender}
+    Vid frågor eller ifall du inte ansökt om medlemskap, kontakta {sender}
 
     Detta är ett automatiskt meddelande, du behöver inte svara på det.
     '''.format(name=name, sender=sender)
