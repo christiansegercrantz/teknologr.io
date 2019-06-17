@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 
 
 # TODO: check whether this should be sent from Phuxivator
-def mailApplicantSubmission(context, sender='infochef@tf.fi'):
+def mailApplicantSubmission(context, sender='phuxivator@tf.fi'):
     name = context['name']
     receiver = context['email']
 
