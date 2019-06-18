@@ -638,12 +638,12 @@ def regEmailDump(request):
         )
 
 
-class ApplicantLanguages(csv_renderer.CSVRenderer):
+class ApplicantLanguagesRenderer(csv_renderer.CSVRenderer):
     header = ['language']
 
 
 @api_view(['GET'])
-@renderer_classes((ApplicantLanguages,))
+@renderer_classes((ApplicantLanguagesRenderer,))
 def applicantLanguages(request):
     applicants = Applicant.objects.all()
     content = [{
