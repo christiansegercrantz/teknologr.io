@@ -6,27 +6,27 @@
   {% if active == "members" %}
     <div class="row form-group">
       <div class="col-3">
-        <label for="{{ newForm.given_names.id_for_label}}">Förnamn</label>
+        <label for="{{ modalForm.given_names.id_for_label}}">Förnamn</label>
       </div>
       <div class="col-9">
-        {{ newForm.given_names }}
+        {{ modalForm.given_names }}
       </div>
     </div>
     <div class="row form-group">
       <div class="col-3">
-        <label for="{{ newForm.surname.id_for_label}}">Efternamn</label>
+        <label for="{{ modalForm.surname.id_for_label}}">Efternamn</label>
       </div>
       <div class="col-9">
-        {{ newForm.surname }}
+        {{ modalForm.surname }}
       </div>
     </div>
   {% else %}
     <div class="row form-group">
       <div class="col-3">
-        <label for="{{ newForm.name.id_for_label}}">Namn</label>
+        <label for="{{ modalForm.name.id_for_label}}">Namn</label>
       </div>
       <div class="col-9">
-        {{ newForm.name }}
+        {{ modalForm.name }}
       </div>
     </div>
   {% endif %}

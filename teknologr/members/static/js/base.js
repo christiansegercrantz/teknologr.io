@@ -67,4 +67,23 @@ $(document).ready(function() {
 		}
 	});
 
+    $('#choose-multiple-applicants').submit(function(event) {
+        const data = $(this).serialize();
+        const request = $.ajax({
+            url: '/api/multiApplicantSubmission/',
+            method: 'POST',
+            data: data,
+        });
+
+        request.done(function() {
+            window.location = '/admin/applicants/';
+        });
+
+        request.fail(function(jqHXR, textStatus) {
+            alert('Request failed: ' + textStatus + ': ' + jqHXR.responseText);
+        });
+
+        event.preventDefault();
+    });
+
 });

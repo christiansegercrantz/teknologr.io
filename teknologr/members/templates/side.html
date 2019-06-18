@@ -3,15 +3,30 @@
   <li class="nav-item"><a class="nav-link {% if side.active == "groups" %}active{% endif %}" href="/admin/groups/">Grupper</a></li>
   <li class="nav-item"><a class="nav-link {% if side.active == "functionaries" %}active{% endif %}" href="/admin/functionaries/">Poster</a></li>
   <li class="nav-item"><a class="nav-link {% if side.active == "decorations" %}active{% endif %}" href="/admin/decorations/">Betygelser</a></li>
+  <li class="nav-item"><a class="nav-link {% if side.active == "applicants" %}active{% endif %}" href="/admin/applicants/">Ansökande</a></li>
 </ul>
 <br>
 <ul class="list-inline">
   <li class="list-inline-item">
     <input id="side-search" type="text" class="form-control" placeholder="Sök..." data-active="{{side.active}}">
   </li>
-  <li class="list-inline-item">
-    <button class="btn btn-success" data-toggle="modal" data-target="#newModal">Ny {{ side.sname }}</button>
-  </li>
+
+  {% if side.new_button %}
+    <li class="list-inline-item">
+      <button class="btn btn-success" data-toggle="modal" data-target="#newModal">Ny {{ side.sname }}</button>
+    </li>
+  {% endif %}
+
+  {% if side.applicant_tool_icons %}
+    <button class="btn" data-toggle="modal" data-target="#addMultipleApplicants" data-toggle="tooltip" title="Acceptera flera ansökningar">
+      <i class="fas fa-users text-info icon-20"></i>
+    </button>
+    <button class="btn" data-toggle="tooltip" title="Ladda ner modersmålet för alla nuvarande ansökningar.">
+      <a href="{% url 'api.views.applicantLanguages' %}">
+        <i class="fas fa-download text-info icon-20"></i>
+      </a>
+    </button>
+  {% endif %}
 </ul>
 <br>
 <div id="side-objects" class="list-group">

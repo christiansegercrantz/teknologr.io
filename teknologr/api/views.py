@@ -1,11 +1,14 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from django.db.utils import IntegrityError
 from rest_framework import viewsets
 from api.serializers import *
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from members.models import GroupMembership, Member, Group
+from members.programmes import DEGREE_PROGRAMME_CHOICES
+from registration.models import Applicant
 from api.ldap import LDAPAccountManager
 from ldap import LDAPError
 from api.bill import BILLAccountManager, BILLException
@@ -223,6 +226,69 @@ class BILLAccountView(APIView):
         member.save()
 
         return Response(status=200)
+
+
+# Registration/Applicant
+
+class ApplicantViewSet(viewsets.ModelViewSet):
+    queryset = Applicant.objects.all()
+    serializer_class = ApplicantSerializer
+
+
+class ApplicantMembershipView(APIView):
+    def post(self, request, applicant_id):
+        applicant = get_object_or_404(Applicant, id=applicant_id)
+        new_member = Member()
+
+        # Copy all applicant fields to Member object (except primary key)
+        for field in filter(lambda _: not _.primary_key, applicant._meta.fields):
+            setattr(new_member, field.name, getattr(applicant, field.name))
+
+        # Fix needed fields
+        degree_programme = applicant.degree_programme.split('_')
+        if len(degree_programme) == 2:
+            school, programme = degree_programme
+            if programme in DEGREE_PROGRAMME_CHOICES.get(school, []):
+                new_member.degree_programme = programme
+
+        try:
+            # Saving a new member might fail (e.g. unique constraints)
+            new_member.save()
+            applicant.delete()
+        except IntegrityError as err:
+            return Response(str(err), status=400)
+
+        # Add MemberTypes if set
+        membership_date = request.data.get('membership_date')
+        if membership_date:
+            self._create_member_type(new_member, membership_date, 'OM')
+
+        phux_date = request.data.get('phux_date')
+        if phux_date:
+            self._create_member_type(new_member, phux_date, 'PH')
+
+        return Response(status=200)
+
+    def _create_member_type(self, member, date, type):
+        try:
+            tmp_member_type = MemberType(member=member, begin_date=date, type=type)
+            tmp_member_type.save()
+        except:
+            # FIXME: inform user that MemberType saving was not succesful
+            pass
+
+
+@api_view(['POST'])
+def multiApplicantSubmission(request):
+    applicants = request.data.get('applicant').strip('|').split('|')
+
+    # Simulate a POST request to ApplicantMembershipView
+    am_view = ApplicantMembershipView()
+    for aid in applicants:
+        # TODO: add notification to user if unsuccesful applicant saving
+        am_view.post(request, aid)
+
+    return Response(status=200)
 
 
 # JSON API:s
@@ -540,6 +606,51 @@ def arskDump(request):
         for member, association in by_association.items()]
 
     dumpname = 'filename="arskdump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
+
+
+class RegEmailRenderer(csv_renderer.CSVRenderer):
+    header = ['name', 'surname', 'preferred_name', 'email']
+
+
+# Dump for receiving all emails from member applicants
+# Used by e.g. the PhuxMästare to send out information
+@api_view(['GET'])
+@renderer_classes((RegEmailRenderer,))
+def regEmailDump(request):
+    applicants = Applicant.objects.all()
+    content = [{
+        'name': applicant.given_names,
+        'surname': applicant.surname,
+        'preferred_name': applicant.preferred_name,
+        'email': applicant.email}
+        for applicant in applicants]
+
+    dumpname = 'filename="regEmailDump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
+
+
+class ApplicantLanguagesRenderer(csv_renderer.CSVRenderer):
+    header = ['language']
+
+
+@api_view(['GET'])
+@renderer_classes((ApplicantLanguagesRenderer,))
+def applicantLanguages(request):
+    applicants = Applicant.objects.all()
+    content = [{
+        'language': applicant.mother_tongue}
+        for applicant in applicants]
+
+    dumpname = 'filename="applicantLanguages_{}.csv"'.format(datetime.today().date())
     return Response(
             content,
             status=200,

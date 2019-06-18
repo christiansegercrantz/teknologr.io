@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load bootstrap4 %}
+
+{% block main %}
+
+<div class="container-fluid">
+  <div class="page-header">
+    <div class="row h-100">
+      <h1 class="mr-4">
+        {{ applicant.full_name }}
+      </h1>
+      <h5 class="my-auto">
+        <em>Ansökan gjord: {{ applicant.created_at }}</em>
+      </h5>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <form autocomplete="off" role="form" action="/admin/applicants/{{ applicant.id }}/" method="post">
+      {% csrf_token %}
+
+      <!-- Applicant name information -->
+      <div id="names" class="row">
+        {% bootstrap_field form.surname        form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.given_names    form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.preferred_name form_group_class="form-group col-md-4" placeholder=False %}
+      </div>
+
+      <!-- Applicant address information -->
+      <div id="address" class="row">
+        {% bootstrap_field form.street_address form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.postal_code    form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.city           form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
+      </div>
+
+      <!-- Applicant country -->
+      <div id="country" class="row">
+        {% bootstrap_field form.country form_group_class="form-group col-md-12" required_css_class="required" %}
+      </div>
+
+      <!-- Applicant contact information -->
+      <div id="contact" class="row">
+        {% bootstrap_field form.phone form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.email form_group_class="form-group col-md-6" placeholder="@aalto.fi" required_css_class="required" %}
+      </div>
+
+      <!-- Applicant metadata -->
+      <div id="meta" class="row">
+        {% bootstrap_field form.student_id     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.birth_date     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.enrolment_year form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+      </div>
+
+      <!-- Field of study -->
+      <div id="programme">
+        {% bootstrap_field form.degree_programme_options form_group_class="form-group" placeholder=False required_css_class="required" %}
+        <div id="unknown_degree" style="display: none;">
+          {% bootstrap_field form.degree_programme form_group_class="form-group" placeholder=False required_css_class="required" %}
+        </div>
+      </div>
+
+      <!-- Mother tongue -->
+      <div id="language">
+        {% bootstrap_field form.mother_tongue form_group_class="form-group" placeholder=False required_css_class="required" %}
+      </div>
+
+      <!-- Applicant motivation -->
+      <div id="motivation">
+        {% bootstrap_field form.motivation form_group_class="form-group" placeholder=False required_css_class="required" %}
+      </div>
+
+      <!-- Consents -->
+      <div id="consents">
+        {% bootstrap_field form.subscribed_to_modulen form_group_class="form-group" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.allow_publish_info form_group_class="form-group" placeholder=False required_css_class="required" %}
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          {% bootstrap_button "Spara" button_type="submit" button_class="btn btn-success" %}
+        </div>
+      </div>
+    </form>
+
+    <!-- Extra buttons -->
+    <div class="row mt-2">
+      <div class="col-md-8">
+        <button id="deleteapplicant" class="btn btn-danger" data-id={{ applicant.id }}>Radera</button>
+        <button class="btn btn-warning" data-toggle="modal" data-target="#makeMemberModal">Deltagit i Namö</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include "modals/makeapplicantmember.html" with modalname="makeMemberModal" title="Gör medlem av "|add:applicant.name modalForm=modalForm applicantId=applicant.id only %}
+
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static "js/applicant.js" %}"></script>
+{% endblock %}

@@ -1,4 +1,5 @@
 from members.models import *
+from registration.models import Applicant
 from django.forms import ModelForm, DateField, ChoiceField, CharField
 from django.forms.widgets import CheckboxInput, DateInput, HiddenInput, TextInput, PasswordInput
 from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
@@ -99,3 +100,16 @@ class MemberTypeForm(BSModelForm):
 class BSAuthForm(AuthenticationForm):
     username = CharField(widget=TextInput(attrs={'class': 'form-control', 'placeholder': 'Användarnamn'}))
     password = CharField(widget=PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Lösenord'}))
+
+
+class ApplicantAdditionForm(BSModelForm):
+    class Meta:
+        model = Applicant
+        fields = '__all__'
+
+    membership_date = DateField(widget=DateInput(attrs={'type': 'date'}))
+    phux_date = DateField(widget=DateInput(attrs={'type': 'date'}), required=False)
+
+
+class MultipleApplicantAdditionForm(ApplicantAdditionForm):
+    applicant = AutoCompleteSelectMultipleField('applicant', required=True, help_text=None)

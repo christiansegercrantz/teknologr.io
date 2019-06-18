@@ -19,11 +19,11 @@ def mailNewPassword(member, password, sender="infochef@tf.fi"):
     Detta är ett automatiskt meddelande, du behöver inte svara på det.
     ''' % (password, sender)
 
-    reciever = member.email
+    receiver = member.email
 
     return send_mail(
         subject,
         message,
         sender,
-        [reciever],
+        [receiver],
         fail_silently=False)

@@ -1,6 +1,7 @@
 from django_countries import Countries
 from rest_framework import serializers
 from members.models import *
+from registration.models import Applicant
 
 
 class SerializableCountryField(serializers.ChoiceField):
@@ -76,4 +77,12 @@ class DecorationOwnershipSerializer(serializers.ModelSerializer):
 class MemberTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MemberType
+        fields = '__all__'
+
+
+# Applicant
+
+class ApplicantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Applicant
         fields = '__all__'

@@ -1,0 +1,28 @@
+{% extends "registrationbase.html" %}
+{% load staticfiles %}
+{% load bootstrap4 %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="col-sm-12 col-md-8 offset-md-2">
+        {% include "header.html" %}
+
+        <hr class="line-divider" class="mb-4" />
+
+        <div>
+            <h1>Tack {{ name }} för er medlemsansökan till Teknologföreningen!</h1>
+        </div>
+
+        <div>
+            Ett e-post med mera information skickas till er e-postadress <strong>{{ email }}</strong>.
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static "js/registration.js" %}"></script>
+{% endblock %}

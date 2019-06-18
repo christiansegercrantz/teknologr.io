@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import user_passes_test
 from members.models import *
 from members.forms import *
 from members.programmes import DEGREE_PROGRAMME_CHOICES
+from registration.models import Applicant
+from registration.forms import RegistrationForm
 import datetime
 
 
@@ -30,9 +32,10 @@ def set_side_context(context, category, active_obj=None):
     side = {}
     side['active'] = category
     side['active_obj'] = active_obj
+    side['new_button'] = True
     if category == 'members':
         side['sname'] = 'medlem'
-        side['newForm'] = MemberForm(initial={'given_names': '', 'surname': ''})
+        side['modalForm'] = MemberForm(initial={'given_names': '', 'surname': ''})
         objects = Member.objects.order_by('-modified')[:50]
         if active_obj:
             active = Member.objects.get(pk=active_obj)
@@ -42,16 +45,23 @@ def set_side_context(context, category, active_obj=None):
         side['objects'] = objects
     elif category == 'groups':
         side['sname'] = 'grupp'
-        side['newForm'] = GroupTypeForm()
+        side['modalForm'] = GroupTypeForm()
         side['objects'] = GroupType.objects.all()
     elif category == 'functionaries':
         side['sname'] = 'post'
-        side['newForm'] = FunctionaryTypeForm()
+        side['modalForm'] = FunctionaryTypeForm()
         side['objects'] = FunctionaryType.objects.all()
     elif category == 'decorations':
         side['sname'] = 'betygelse'
-        side['newForm'] = DecorationForm()
+        side['modalForm'] = DecorationForm()
         side['objects'] = Decoration.objects.all()
+    elif category == 'applicants':
+        side['sname'] = 'ansökning'
+        side['objects'] = Applicant.objects.all()
+        side['new_button'] = False
+        side['applicant_tool_icons'] = True
+        side['applicantmultipleform'] = MultipleApplicantAdditionForm()
+
     context['side'] = side
 
 
@@ -83,7 +93,11 @@ def member(request, member_id):
     else:
         form = MemberForm(instance=member)
 
-    context['programmes'] = DEGREE_PROGRAMME_CHOICES
+    context['programmes'] = [
+            programme
+            for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
+            for programme in programmes
+    ]
     context['form'] = form
     context['full_name'] = member
 
@@ -199,3 +213,24 @@ def decoration(request, decoration_id):
 
     set_side_context(context, 'decorations', decoration.id)
     return render(request, 'decoration.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff, login_url='/login')
+def applicant(request, applicant_id):
+    context = {}
+
+    applicant = get_object_or_404(Applicant, id=applicant_id)
+
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST, instance=applicant)
+        if form.is_valid():
+            form.save()
+    else:
+        form = RegistrationForm(instance=applicant)
+
+    context['applicant'] = applicant
+    context['form'] = form
+    context['modalForm'] = ApplicantAdditionForm()
+
+    set_side_context(context, 'applicants', applicant.id)
+    return render(request, 'applicant.html', context)
