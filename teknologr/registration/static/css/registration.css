@@ -13,6 +13,12 @@
 
 a {
     color: var(--teknolog-röd);
+    text-decoration: underline;
+}
+
+a:hover {
+    color: var(--teknolog-röd);
+    text-decoration: none;
 }
 
 a.a-tooltip {
