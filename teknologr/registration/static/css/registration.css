@@ -28,6 +28,13 @@ body {
     color: var(--black);
 }
 
+/* Make database description small enough to fit on one line if device screen is mobile. */
+@media (max-width: 767.98px) {
+    #description {
+        font-size: 0.7rem;
+    }
+}
+
 /* Taken from:
  *   https://stackoverflow.com/questions/23141854/adding-asterisk-to-required-fields-in-bootstrap-3 
  */
