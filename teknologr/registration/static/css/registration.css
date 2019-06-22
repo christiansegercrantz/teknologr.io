@@ -39,6 +39,11 @@ body {
     #description {
         font-size: 0.7rem;
     }
+
+    .justified-row {
+        display: flex;
+        justify-content: center;
+    }
 }
 
 /* Taken from:
