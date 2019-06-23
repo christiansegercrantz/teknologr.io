@@ -27,6 +27,7 @@ $(document).ready(function() {
             changeMonth: true,
             changeYear: true,
             yearRange: `1930:${currentYear}`,
+            firstDay: 1, // Start week with Monday
         });
     }
 });
