@@ -1,15 +1,15 @@
 {% load static %}
 
-<div id="header" class="row justify-content-center align-items-center mb-4 mt-4">
-  <div class="col-md-2 w-75">
+<div id="header" class="mt-3">
+  <div id="logo-container" class="mr-3">
     <a href="https://tf.fi">
-      <img class="img-fluid" src="{% static "assets/tfs_icke_formell_logo.svg" %}" alt="Teknologföreningens logo">
+      <img id="tf-logo" class="img-fluid" src="{% static "assets/tfs_icke_formell_logo.svg" %}" alt="Teknologföreningens logo">
     </a>
   </div>
-  <div class="col-md-10 align-self-center">
-    <h1>
+  <div>
+    <h1 id="header-text">
       Ansökan om medlemskap
-      <p class="lead font-italic">i <a href="https://tf.fi">Teknologföreningen</a></p>
+      <p id="header-secondary" class="lead font-italic">i <a href="https://tf.fi">Teknologföreningen</a></p>
     </h1>
   </div>
 </div>
