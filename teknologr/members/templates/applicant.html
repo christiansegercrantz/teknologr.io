@@ -73,7 +73,15 @@
       <!-- Consents -->
       <div id="consents">
         {% bootstrap_field form.subscribed_to_modulen form_group_class="form-group" placeholder=False required_css_class="required" bound_css_class="" %}
-        {% bootstrap_field form.allow_publish_info form_group_class="form-group" placeholder=False required_css_class="required" bound_css_class="" %}
+        <div class="form-group">
+          <div class="form-check">
+            {% if form.allow_publish_info.errors %}<div class="alert alert-danger">{{ form.allow_publish_info.errors }}</div>{% endif %}
+            <input id="{{ form.allow_publish_info.id_for_label }}" class="form-check-input" type="checkbox" name="{{ form.allow_publish_info.name }}" autocomplete="off">
+            <label class="form-check-label" for="{{ form.allow_publish_info.id_for_label }}">
+              Jag tillåter att mina uppgifter utlämnas till Katalogen och Modulens redaktion
+            </label>
+          </div>
+        </div>
       </div>
 
       <div class="row">
