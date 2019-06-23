@@ -3,7 +3,7 @@
  * This enables a jQuery datepicker.
  */
 
-const datefield = document.createElement('input');
+var datefield = document.createElement('input');
 datefield.setAttribute('type', 'date');
 
 if (datefield.type != 'date') {
@@ -23,7 +23,7 @@ $(document).ready(function() {
     if (datefield.type != 'date') {
         const currentYear = new Date().getFullYear();
 
-        $('id_birth_date').datepicker({
+        $('#id_birth_date').datepicker({
             changeMonth: true,
             changeYear: true,
             yearRange: `1930:${currentYear}`,
