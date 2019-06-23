@@ -40,7 +40,7 @@ class SubmitView(BaseView):
             }
 
             # FIXME: handle situation where email is not sent (e.g. admin log tool)
-            mailApplicantSubmission(self.context)
+            mailApplicantSubmission(next_context)
 
             registration.save()
 
