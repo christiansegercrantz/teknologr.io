@@ -13,8 +13,8 @@ MEMBERSHIP_FORM_LABELS = {
     'student_id': 'Studienummer',
     'enrolment_year': 'Inskrivningsår vid Aalto-universitetet',
     'motivation': 'Motivering till medlemskapet',
-    'subscribed_to_modulen': 'Jag vill få Teknologföreningens medlemstidning Modulen hemskickad',
-    # Keep this empty as the Bootstrap4 module for Django is not predictable for checkboxes (i.e. manual labelling)
+    # Keep these empty as the Bootstrap4 module for Django is not predictable for checkboxes (i.e. manual labelling)
+    'subscribed_to_modulen': '',
     'allow_publish_info': '',
     'degree_programme_options': 'Studieinriktning',
     'degree_programme': 'Mata in:',
