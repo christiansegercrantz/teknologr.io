@@ -14,8 +14,6 @@ def format_programmes():
     ])
 
 
-# TODO: currently dates are formatted as "%m/%d/%Y" everywhere (both registration and admin pages)
-#       check if one can change this in the settings
 class DateInput(forms.DateInput):
     input_type = 'date'
 

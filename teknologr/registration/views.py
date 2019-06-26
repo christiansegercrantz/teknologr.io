@@ -34,16 +34,18 @@ class SubmitView(BaseView):
         if form.is_valid():
             registration = form.instance
 
-            self.context['name'] = registration.preferred_name or registration.given_names.split(' ')[0]
-            self.context['email'] = registration.email
+            next_context = {
+                'name': registration.preferred_name or registration.given_names.split(' ')[0],
+                'email': registration.email,
+            }
 
             # FIXME: handle situation where email is not sent (e.g. admin log tool)
-            mailApplicantSubmission(self.context)
+            mailApplicantSubmission(next_context)
 
             registration.save()
+
+            request.session['context'] = next_context
+            return redirect('registration.views.submit')
         else:
             self.context['form'] = form
             return render(request, HomeView.template, self.context, status=400)
-
-        request.session['context'] = self.context
-        return redirect('registration.views.submit')

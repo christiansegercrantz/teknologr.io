@@ -9,10 +9,17 @@
 :root {
     --black: #000;
     --teknolog-rÃ¶d: #b20738;
+    --mÃrk-rÃd: #490318;
 }
 
 a {
     color: var(--teknolog-rÃ¶d);
+    text-decoration: underline;
+}
+
+a:hover {
+    color: var(--mÃrk-rÃd);
+    text-decoration: none;
 }
 
 a.a-tooltip {
@@ -26,6 +33,53 @@ hr.line-divider {
 
 body {
     color: var(--black);
+}
+
+#header {
+    max-height: 100px;
+    display: flex;
+    align-items: center;
+}
+
+img#tf-logo {
+    height: 100px;
+}
+
+/* Make database description small enough to fit on one line if device screen is mobile. */
+@media (max-width: 767.98px) {
+    #description {
+        font-size: 0.7rem;
+    }
+
+    .justified-row {
+        display: flex;
+        justify-content: center;
+    }
+
+    h1#header-text {
+        font-size: 1.3rem;
+        margin-bottom: 0;
+    }
+
+    h1#header-text > p {
+        margin-bottom: 0;
+    }
+    
+    #header-secondary {
+        font-size: 0.75rem;
+    }
+
+    #header {
+        max-height: 60px;
+    }
+
+    #logo-container {
+        margin-right: 0.75rem !important;
+    }
+
+    img#tf-logo {
+        max-height: 60px;
+    }
 }
 
 /* Taken from:

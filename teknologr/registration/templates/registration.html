@@ -15,41 +15,41 @@
 
       <!-- Applicant name information -->
       <div id="names" class="row">
-        {% bootstrap_field form.surname        form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
-        {% bootstrap_field form.given_names    form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
-        {% bootstrap_field form.preferred_name form_group_class="form-group col-md-4" placeholder=False %}
+        {% bootstrap_field form.given_names    form_group_class="form-group col-md-4" placeholder=False required_css_class="required" bound_css_class="" %}
+        {% bootstrap_field form.surname        form_group_class="form-group col-md-4" placeholder=False required_css_class="required" bound_css_class="" %}
+        {% bootstrap_field form.preferred_name form_group_class="form-group col-md-4" placeholder=False bound_css_class="" %}
       </div>
 
       <!-- Applicant address information -->
       <div id="address" class="row">
-        {% bootstrap_field form.street_address form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
-        {% bootstrap_field form.postal_code    form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
-        {% bootstrap_field form.city           form_group_class="form-group col-md-3" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.street_address form_group_class="form-group col-md-6" placeholder=False required_css_class="required" bound_css_class="" %}
+        {% bootstrap_field form.postal_code    form_group_class="form-group col-md-3" placeholder=False required_css_class="required" bound_css_class="" %}
+        {% bootstrap_field form.city           form_group_class="form-group col-md-3" placeholder=False required_css_class="required" bound_css_class="" %}
       </div>
 
       <!-- Applicant country -->
       <div id="country" class="row">
-        {% bootstrap_field form.country form_group_class="form-group col-md-12" required_css_class="required" %}
+        {% bootstrap_field form.country form_group_class="form-group col-md-12" required_css_class="required" bound_css_class="" %}
       </div>
 
       <!-- Applicant contact information -->
       <div id="contact" class="row">
-        {% bootstrap_field form.phone form_group_class="form-group col-md-6" placeholder=False required_css_class="required" %}
-        {% bootstrap_field form.email form_group_class="form-group col-md-6" placeholder="@aalto.fi" required_css_class="required" %}
+        {% bootstrap_field form.phone form_group_class="form-group col-md-6" placeholder=False required_css_class="required" bound_css_class="" %}
+        {% bootstrap_field form.email form_group_class="form-group col-md-6" placeholder=False required_css_class="required" bound_css_class="" %}
       </div>
 
       <!-- Applicant metadata -->
       <div id="meta" class="row">
-        {% bootstrap_field form.student_id     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
-        {% bootstrap_field form.birth_date     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
-        {% bootstrap_field form.enrolment_year form_group_class="form-group col-md-4" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.student_id     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" bound_css_class="" %}
+        {% bootstrap_field form.birth_date     form_group_class="form-group col-md-4" placeholder=False required_css_class="required" bound_css_class="" %}
+        {% bootstrap_field form.enrolment_year form_group_class="form-group col-md-4" placeholder=False required_css_class="required" bound_css_class="" %}
       </div>
 
       <!-- Field of study -->
       <div id="programme">
-        {% bootstrap_field form.degree_programme_options form_group_class="form-group" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.degree_programme_options form_group_class="form-group" placeholder=False required_css_class="required" bound_css_class="" %}
         <div id="unknown_degree" style="display: none;">
-          {% bootstrap_field form.degree_programme form_group_class="form-group" placeholder=False required_css_class="required" %}
+          {% bootstrap_field form.degree_programme form_group_class="form-group" placeholder=False required_css_class="required" bound_css_class="" %}
         </div>
       </div>
 
@@ -75,36 +75,53 @@
             Övrig:
           </label>
         </div>
-        {% bootstrap_field form.mother_tongue form_group_class="col-md-4" show_label=False placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.mother_tongue form_group_class="col-md-4" show_label=False placeholder=False bound_css_class="" %}
       </div>
 
       <!-- Applicant motivation -->
       <div id="motivation">
-        {% bootstrap_field form.motivation form_group_class="form-group" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.motivation form_group_class="form-group" placeholder=False required_css_class="required" bound_css_class="" %}
       </div>
 
       <!-- Consents -->
       <div id="consents">
-        {% bootstrap_field form.subscribed_to_modulen form_group_class="form-group" placeholder=False required_css_class="required" %}
+        {% bootstrap_field form.subscribed_to_modulen form_group_class="form-group" placeholder=False required_css_class="required" bound_css_class="" %}
 
-        <div class="row col-md-12">
-          {% bootstrap_field form.allow_publish_info form_group_class="form-group" placeholder=False required_css_class="required" %}
-          <a class="a-tooltip" href="javascript:;" data-toggle="tooltip" data-placement="top" title="Katalogen är namnet för Teknologföreningens medlemsregister. Kolla länken längst ner på sidan för en registerbeskrivning.">
-            <i class="fa fa-question-circle" aria-hidden="true"></i>
-          </a>
+        <!-- To ensure that the tooltip stays "as a part of the label text" we have to do a small hack and write out the input manually. -->
+        <div class="form-group">
+          <div class="form-check">
+            {% if form.allow_publish_info.errors %}<div class="alert alert-danger">{{ form.allow_publish_info.errors }}</div>{% endif %}
+            <input id="{{ form.allow_publish_info.id_for_label }}" class="form-check-input" type="checkbox" name="{{ form.allow_publish_info.name }}" autocomplete="off">
+            <label class="form-check-label" for="{{ form.allow_publish_info.id_for_label }}">
+              Jag tillåter att mina uppgifter utlämnas till Katalogen och Modulens redaktion
+              <a
+                class="a-tooltip"
+                href="javascript:;"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="Katalogen är namnet för Teknologföreningens medlemsregister. Kolla länken längst ner på sidan för en registerbeskrivning."
+              >
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+              </a>
+            </label>
+          </div>
         </div>
       </div>
 
       {# TODO: add Google Captcha #}
-      {% bootstrap_button "Skicka" button_type="submit" button_class="btn font-weight-bold" %}
+      <div class="justified-row">
+        {% bootstrap_button "Skicka" button_type="submit" button_class="btn btn-light font-weight-bold" %}
+      </div>
     </form>
 
     <hr class="line-divider" />
 
     <div class="row justify-content-center mt-4 mb-5">
-      <a href="https://about.teknologforeningen.fi/index.php/564-registerbeskrivning-foer-teknologfoereningens-medlemsregister">
-        <h4>Registerbeskrivning för Teknologföreningens Medlemsregister</h4>
-      </a>
+      <h4 id="description">
+        <a href="https://about.teknologforeningen.fi/index.php/564-registerbeskrivning-foer-teknologfoereningens-medlemsregister">
+          Registerbeskrivning för Teknologföreningens Medlemsregister
+        </a>
+      </h4>
     </div>
 
   </div>
