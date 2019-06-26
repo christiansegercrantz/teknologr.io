@@ -9,6 +9,7 @@
 :root {
     --black: #000;
     --teknolog-r√∂d: #b20738;
+    --m√rk-r√d: #490318;
 }
 
 a {
@@ -17,7 +18,7 @@ a {
 }
 
 a:hover {
-    color: var(--teknolog-r√∂d);
+    color: var(--m√rk-r√d);
     text-decoration: none;
 }
 
