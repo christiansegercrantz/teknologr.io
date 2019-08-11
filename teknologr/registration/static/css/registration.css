@@ -89,3 +89,7 @@ img#tf-logo {
    content: "*";
    color: var(--teknolog-red);
 }
+
+#more-info:after {
+   content: attr(toggle-icon);
+}
