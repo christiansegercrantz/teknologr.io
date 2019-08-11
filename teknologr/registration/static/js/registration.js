@@ -53,3 +53,7 @@ $('input:radio[name="language"]').change(function() {
         }
     }
 });
+
+$('#more-info').click(function() {
+    $('#collapse-info').collapse('toggle');
+});
