@@ -13,12 +13,12 @@
 }
 
 a {
-    color: var(--teknolog-rod);
+    color: var(--teknolog-red);
     text-decoration: underline;
 }
 
 a:hover {
-    color: var(--mork-rod);
+    color: var(--mork-red);
     text-decoration: none;
 }
 
@@ -28,7 +28,7 @@ a.a-tooltip {
 }
 
 hr.line-divider {
-    border-top: 12px solid var(--teknolog-rod);
+    border-top: 12px solid var(--teknolog-red);
 }
 
 body {
@@ -87,5 +87,5 @@ img#tf-logo {
  */
 .form-group.required label:after, strong.required:after {
    content: "*";
-   color: var(--teknolog-rod);
+   color: var(--teknolog-red);
 }
