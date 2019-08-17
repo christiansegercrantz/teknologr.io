@@ -45,9 +45,13 @@ img#tf-logo {
     height: 100px;
 }
 
-/* Make database description small enough to fit on one line if device screen is mobile. */
+/* Make footer information small enough to fit on one line if device screen is mobile. */
 @media (max-width: 767.98px) {
     #description {
+        font-size: 0.7rem;
+    }
+
+    #extra-information {
         font-size: 0.7rem;
     }
 
@@ -88,4 +92,8 @@ img#tf-logo {
 .form-group.required label:after, strong.required:after {
    content: "*";
    color: var(--teknolog-red);
+}
+
+#more-info:after {
+   content: attr(toggle-icon);
 }

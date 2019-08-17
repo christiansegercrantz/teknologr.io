@@ -53,3 +53,14 @@ $('input:radio[name="language"]').change(function() {
         }
     }
 });
+
+$('#more-info').click(function() {
+    $('#collapse-info').collapse('toggle');
+
+    $('#more-info').attr(
+        'toggle-icon',
+        $('#more-info').attr('toggle-icon') === '⮞'
+            ? '⮟'
+            : '⮞'
+    );
+});

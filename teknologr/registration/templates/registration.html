@@ -7,7 +7,6 @@
 <div class="container-fluid">
   <div class="col-sm-12 col-md-8 offset-md-2">
     {% include "header.html" %}
-
     <hr class="line-divider mb-4" />
 
     <form id="registration-form" action="/registration/submit/" autocomplete="off" method="post">
@@ -139,7 +138,7 @@
 
     <hr class="line-divider" />
 
-    <div class="row justify-content-center mt-4 mb-5">
+    <div class="row justify-content-center mt-4">
       <h4 id="description">
         <a href="https://about.teknologforeningen.fi/index.php/564-registerbeskrivning-foer-teknologfoereningens-medlemsregister">
           Registerbeskrivning för Teknologföreningens Medlemsregister
@@ -147,6 +146,7 @@
       </h4>
     </div>
 
+    {% include "info.html" %}
   </div>
 </div>
 
