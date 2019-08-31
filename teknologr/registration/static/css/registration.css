@@ -27,6 +27,11 @@ a.a-tooltip {
     text-decoration: none;
 }
 
+a.a-info {
+    color: var(--teknolog-red);
+    text-decoration: none;
+}
+
 hr.line-divider {
     border-top: 12px solid var(--teknolog-red);
 }

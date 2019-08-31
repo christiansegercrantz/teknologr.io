@@ -135,18 +135,27 @@
               {% if form.allow_studentbladet.errors %}<div class="alert alert-danger">{{ form.allow_studentbladet }}</div>{% endif %}
               <input id="{{ form.allow_studentbladet.id_for_label }}" class="form-check-input" type="checkbox" name="{{ form.allow_studentbladet.name }}" autocomplete="off">
               <label class="form-check-label pl-2" for="{{ form.allow_studentbladet.id_for_label }}">
-                Jag vill få Studentbladet hemskickad och tillåter att<br />
+                Jag vill få <a href="https://stbl.fi">Studentbladet</a> hemskickad och tillåter att<br />
                 mina uppgifter utlämnas till Studentbladets redaktion
                 <a
                   class="a-tooltip"
                   href="https://www.stbl.fi/"
                   data-toggle="tooltip"
                   data-placement="top"
-                  title=""
+                  title="Studentbladet är Nordens äldsta studenttidning (utgiven sedan 1910) och fungerar som den enda heltäckande svenskspråkiga studentpublikationen i Finland. På hemsidan stbl.fi publiceras artiklar varje vecka och 1-2 gånger om året utges en papperstidning."
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <i class="fa fa-question-circle" aria-hidden="true"></i>
+                </a>
+                <a
+                  class="a-info"
+                  href="javascript:;"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="Uppgifter som utlämnas till Studentbladets redaktion är följande: förnamn, efternamn, hemadress, postnummer, stad och land."
+                >
+                  <i class="fa fa-info-circle" aria-hidden="true"></i>
                 </a>
               </label>
             </div>
