@@ -31,6 +31,7 @@ class Applicant(models.Model):
     # CONSENTS
     subscribed_to_modulen = models.BooleanField(default=False)
     allow_publish_info = models.BooleanField(default=False)
+    allow_studentbladet = models.BooleanField(default=False)
     # MOTHER TONGUE
     mother_tongue = models.CharField(max_length=64, default='')
 

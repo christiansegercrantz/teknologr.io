@@ -114,16 +114,22 @@
               {%if form.graduated_year.errors %}<div class="alert alert-danger">{{form.graduated_year.errors}}</div>{%endif%}
               {{form.graduated_year}}
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label class="form-check-label" for="{{form.subscribed_to_modulen.id_for_label}}">
                 {%if form.subscribed_to_modulen.errors %}<div class="alert alert-danger">{{form.subscribed_to_modulen.errors}}</div>{%endif%}
                 {{form.subscribed_to_modulen}} Vill ha modulen hemskickad
               </label>
             </div>
-            <div class="col-md-3 form-check">
+            <div class="col-md-2 form-check">
               <label class="form-check-label" for="{{form.allow_publish_info.id_for_label}}">
                 {%if form.allow_publish_info.errors %}<div class="alert alert-danger">{{form.allow_publish_info.errors}}</div>{%endif%}
                 {{form.allow_publish_info}} Tillåter utlämning av uppgifter
+              </label>
+            </div>
+            <div class="col-md-2 form-check">
+              <label class="form-check-label" for="{{form.allow_studentbladet.id_for_label}}">
+                {%if form.allow_studentbladet.errors %}<div class="alert alert-danger">{{form.allow_studentbladet.errors}}</div>{%endif%}
+                {{form.allow_studentbladet}} Vill ha Studentbladet hemskickad
               </label>
             </div>
             <div class="col-md-2 form-check">

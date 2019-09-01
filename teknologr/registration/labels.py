@@ -16,6 +16,7 @@ MEMBERSHIP_FORM_LABELS = {
     # Keep these empty as the Bootstrap4 module for Django is not predictable for checkboxes (i.e. manual labelling)
     'subscribed_to_modulen': '',
     'allow_publish_info': '',
+    'allow_studentbladet': '',
     'degree_programme_options': 'Studieinriktning',
     'degree_programme': 'Mata in:',
     'mother_tongue': 'Modersmål',

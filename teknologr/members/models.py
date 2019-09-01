@@ -39,6 +39,7 @@ class Member(SuperClass):
     dead = models.BooleanField(default=False)
     subscribed_to_modulen = models.BooleanField(default=False)
     allow_publish_info = models.BooleanField(default=False)
+    allow_studentbladet = models.BooleanField(default=False)
     comment = models.TextField(blank=True, null=True)
     # IT-username and BILL
     username = models.CharField(max_length=32, blank=False, null=True, editable=False, unique=True)
