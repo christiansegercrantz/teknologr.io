@@ -128,7 +128,7 @@ class LDAPAccountView(APIView):
         if mailToUser:
             status = mailNewPassword(member, password)
             if not status:
-                return Response("Password changed, failed to send mail", status=500)
+                return Response("Password created, failed to send mail", status=500)
 
         # TODO: Send mail to user to notify about new account?
 
