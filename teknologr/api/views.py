@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from rest_framework import viewsets
@@ -645,7 +645,7 @@ class ApplicantLanguagesRenderer(csv_renderer.CSVRenderer):
 @api_view(['GET'])
 @renderer_classes((ApplicantLanguagesRenderer,))
 def applicantLanguages(request):
-    applicants = Applicant.objects.all()
+    applicants = Applicant.objects.exclude(Q(mother_tongue__isnull=True) | Q(mother_tongue__exact=''))
     content = [{
         'language': applicant.mother_tongue}
         for applicant in applicants]
