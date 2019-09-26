@@ -1,5 +1,4 @@
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models import Q
 from members.models import Member
 from os.path import isfile
 import csv
