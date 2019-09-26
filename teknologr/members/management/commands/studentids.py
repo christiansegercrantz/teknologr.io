@@ -32,10 +32,10 @@ class Command(BaseCommand):
 
         if options['add_phux']:
             last_year = datetime.now().year - 1
-            phux_filter = filter(
+            phux_filter = list(filter(
                 lambda phux: phux.getPhuxYear() == last_year,
                 Member.objects.all()
-            )
+            ))
             student_ids.extend(phux_filter)
             self.stdout.write(self.style.SUCCESS('Added Phux year {}'.format(last_year)))
 
