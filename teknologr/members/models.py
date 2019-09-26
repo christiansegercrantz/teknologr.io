@@ -134,7 +134,8 @@ class Member(SuperClass):
 
     def getPhuxYear(self):
         phuxYear = MemberType.objects.filter(member=self).filter(type='PH').order_by('begin_date')
-        return None if len(phuxYear) == 0 else phuxYear[0].begin_date.year
+        phux_year_begin_date = len(phuxYear) and phuxYear[0].begin_date
+        return phux_year_begin_date.year if phux_year_begin_date else None
 
 
 class DecorationOwnership(SuperClass):
