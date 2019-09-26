@@ -37,6 +37,7 @@ class Command(BaseCommand):
                 Member.objects.all()
             )
             student_ids.extend(phux_filter)
+            self.stdout.write(self.style.SUCCESS('Added Phux year {}'.format(last_year)))
 
         output_file = options['output_file']
         with open(output_file, 'w+') as fp:
