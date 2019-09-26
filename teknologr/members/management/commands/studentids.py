@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from members.models import Member
 from os.path import isfile
+from datetime import datetime
 import csv
 
 
@@ -10,6 +11,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('email_file', nargs=1, type=str)
         parser.add_argument('--output-file', nargs='?', type=str, help='Name output file', default='found_ids.csv')
+        parser.add_argument('--add-phux', action='store_true', help='Add last years phuxes to list')
 
     def handle(self, *args, **options):
         email_file = options['email_file'][0]
@@ -28,8 +30,18 @@ class Command(BaseCommand):
             )
         ]
 
+        if options['add_phux']:
+            last_year = datetime.now().year - 1
+            phux_filter = filter(
+                lambda phux: phux.getPhuxYear() == last_year,
+                Member.objects.all()
+            )
+            student_ids.extend(phux_filter)
+
         output_file = options['output_file']
         with open(output_file, 'w+') as fp:
-            fp.write('\n'.join(student_ids))
+            for student_id in student_ids:
+                if student_id:
+                    fp.write('{}\n'.format(student_id))
 
         self.stdout.write(self.style.SUCCESS('Saved all found student ids to {}'.format(output_file)))
