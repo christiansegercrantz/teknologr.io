@@ -194,6 +194,11 @@ class Functionary(SuperClass):
     str_member = property(_get_str_member)
     str_type = property(_get_str_type)
 
+    def _get_funcationary_type_id(self):
+        return self.functionarytype.id
+
+    functionary_type_id = property(_get_funcationary_type_id)
+
     class Meta:
         unique_together = (("member", "functionarytype", "begin_date", "end_date"),)
 

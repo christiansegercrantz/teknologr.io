@@ -220,12 +220,12 @@
               <th>Till</th>
             </tr></thead>
             {% for functionary in functionaries %}
-            <tr>
-              <td><i class="fas fa-times removeFunctionary text-danger" role="button" data-id="{{ functionary.id }}"></i></td>
-              <td><a href="/admin/functionaries/{{functionary.id}}/">{{functionary.functionarytype.name}}</a></td>
-              <td>{{functionary.begin_date}}</td>
-              <td>{{functionary.end_date}}</td>
-            </tr>
+              <tr>
+                <td><i class="fas fa-times removeFunctionary text-danger" role="button" data-id="{{ functionary.id }}"></i></td>
+                <td><a href="/admin/functionaries/{{functionary.functionary_type_id}}/">{{functionary.functionarytype.name}}</a></td>
+                <td>{{functionary.begin_date}}</td>
+                <td>{{functionary.end_date}}</td>
+              </tr>
             {% endfor %}
         </table>
         <ul class="list-inline">
