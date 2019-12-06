@@ -656,3 +656,31 @@ def applicantLanguages(request):
             status=200,
             headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
         )
+
+
+# CSV-render class
+class StudentbladetRenderer(csv_renderer.CSVRenderer):
+    header = ['name', 'street_address', 'postal_code', 'city', 'country']
+
+
+# List of addresses whom to post Studentbladet to
+@api_view(['GET'])
+@renderer_classes((StudentbladetRenderer,))
+def studentbladetDump(request):
+    recipients = Member.objects.exclude(dead=True).filter(allow_studentbladet=True)
+    recipients = [m for m in recipients if m.isValidMember()]
+
+    content = [{
+        'name': recipient._get_full_name(),
+        'street_address': recipient.street_address,
+        'postal_code': recipient.postal_code,
+        'city': recipient.city,
+        'country': recipient.country
+        } for recipient in recipients]
+
+    dumpname = 'filename="studentbladetdump_{}.csv"'.format(datetime.today().date())
+    return Response(
+            content,
+            status=200,
+            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+        )
