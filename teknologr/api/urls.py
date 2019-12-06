@@ -35,4 +35,5 @@ urlpatterns = [
     url(r'^membersByMemberType/([A-Z]{2})/(\w+)?$', membersByMemberType),
     url(r'^applicants/makeMember/(\d+)/$', ApplicantMembershipView.as_view()),
     url(r'^multiApplicantSubmission/$', multiApplicantSubmission, name='api.views.multiApplicantSubmission'),
+    url(r'^studentbladetdump/$', studentbladetDump, name='api.views.studentbladetDump'),
 ]
