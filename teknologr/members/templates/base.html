@@ -41,6 +41,7 @@
           <div class="dropdown-menu">
             <a class="dropdown-item" href="{% url 'api.views.fullDump' %}">Full dump</a>
             <a class="dropdown-item" href="{% url 'api.views.modulenDump' %}">Modulen dump</a>
+            <a class="dropdown-item" href="{% url 'api.views.studentbladetDump' %}" data-toggle="tooltip" title="Lista av alla medlemmar som prenumererar på Studentbladet">Studentbladet dump</a>
             <a class="dropdown-item" href="{% url 'api.views.activeDump' %}" data-toggle="tooltip" title="Lista av medlemmar som är funkkisar eller i kommittéer med aktiva mandat">Aktiva dump</a>
             <a class="dropdown-item" href="{% url 'api.views.htkDump' %}?format=json">Full HTK dump</a>
             <a class="dropdown-item" href="{% url 'api.views.arskDump' %}" data-toggle="tooltip" title="Lista av hedersmedlemmar, alla råd, alla styrelsen 5 år tillbaka, och styrelsen 10 år, och även alla funktionärer. Används för Årsfestlistor.">Arsk dump</a>

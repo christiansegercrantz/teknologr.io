@@ -37,6 +37,7 @@ class Member(SuperClass):
     graduated_year = models.IntegerField(blank=True, null=True)
     # OTHER
     dead = models.BooleanField(default=False)
+    # TODO: separate consent to own table
     subscribed_to_modulen = models.BooleanField(default=False)
     allow_publish_info = models.BooleanField(default=False)
     allow_studentbladet = models.BooleanField(default=False)
