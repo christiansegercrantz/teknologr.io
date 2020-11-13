@@ -1,7 +1,8 @@
 install: bin/python
 
 bin/python:
-	virtualenv -p /usr/bin/python3 .
+	python3 -m venv .
+	bin/pip install wheel
 	bin/pip install -r requirements.txt
 
 migrate: bin/python
