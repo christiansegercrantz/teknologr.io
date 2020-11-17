@@ -11,4 +11,5 @@ djangorestframework-csv~=2.1.0
 pep8~=1.7.1
 requests~=2.24.0
 psycopg2~=2.8.6
+gunicorn~=19.10.0
 git+https://github.com/Work4Labs/django-test-pep8
