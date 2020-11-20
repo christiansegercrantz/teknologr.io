@@ -1,0 +1,35 @@
+version: '3.5'
+
+services:
+  teknologr:
+    image: teknologr:latest
+    hostname: teknologr
+    env_file:
+      - test.env
+    depends_on:
+      - postgres
+
+  nginx:
+    image: nginx:latest
+    hostname: nginx
+    env_file:
+      - test.env
+    ports:
+      - 8080:80
+    volumes:
+      - ./testenv/nginx.conf
+      - ./teknologr/members/static:/var/www/teknologr_static
+
+  postgres:
+    image: postgres:12.0-alpine
+    volumes:
+      - teknologr_data:/var/lib/postgresql/data/
+    env_file:
+      - test.env
+
+  openldap:
+    image: osixia/openldap:latest
+    env_file:
+      - test.env
+volumes:
+  teknologr_data:

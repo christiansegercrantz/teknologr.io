@@ -1,8 +1,9 @@
-FROM python:3.7-buster
+FROM python:3.7-alpine
 
 # Install prereqs
-RUN apt-get update && apt-get install -y libsasl2-dev libldap2-dev libssl-dev libpq-dev
-
+#RUN apt-get update && apt-get install -y libsasl2-dev libldap2-dev libssl-dev libpq-dev
+RUN apk update
+RUN apk add openssl-dev libpq musl openldap-dev
 # Create directories
 RUN mkdir -p /var/log/teknologr
 RUN mkdir -p /opt/app/pip_cache
@@ -12,6 +13,7 @@ RUN mkdir -p /opt/app/teknologr
 COPY requirements.txt start-teknologr.sh /opt/app/
 COPY .pip_cache /opt/app/pip_cache/
 COPY teknologr /opt/app/teknologr
+COPY testenv/test.env /opt/app/teknologr/.env
 
 # Set workdir
 WORKDIR /opt/app
