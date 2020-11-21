@@ -30,17 +30,18 @@ RUN adduser -HDS -s /bin/false -G www-data www-data
 # Install pip requirements
 RUN pip install -r requirements.txt --cache-dir /opt/app/pip_cache
 
-# Chown directories
-RUN chown -R www-data:www-data /opt/app
-RUN chown -R www-data:www-data /var/log/teknologr
-
 # Create logfile
 RUN touch /var/log/teknologr/info.log
 RUN chmod -R 775 /var/log/teknologr/info.log
 RUN chmod -R 775 /opt/app/start-teknologr.sh
 
+# Chown directories
+RUN chown -R www-data:www-data /opt/app
+RUN chown -R www-data:www-data /var/log/teknologr
+
 # Link teknologr log to stdout
-RUN ln -sf /dev/stdout /var/log/teknologr/info.log
+# Commented out because of error
+#RUN ln -sf /dev/stdout /var/log/teknologr/info.log
 
 # Start server
 EXPOSE 8010
