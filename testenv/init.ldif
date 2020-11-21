@@ -1,0 +1,68 @@
+# Sets up a basic LDAP structure,
+# containing two users and two 
+# groups.
+dn: ou=People,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: organizationalUnit
+ou: People
+
+dn: ou=Groups,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: organizationalUnit
+ou: Groups
+
+dn: uid=svakar,ou=People,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: posixAccount
+uidNumber: 4001
+gidNumber: 1000
+loginShell: /bin/bash
+homeDirectory: /rhome/svakar
+uid: svakar
+cn: Svakar Teknolog
+givenName: Svakar
+sn: Teknolog
+mail: svakar@teknologr.io
+userPassword: admin
+
+dn: uid=svatta,ou=People,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: posixAccount
+uidNumber: 4000
+gidNumber: 1000
+loginShell: /bin/bash
+homeDirectory: /rhome/svatta
+uid: svakar
+uid: svatta
+cn: Svatta Teknolog
+givenName: Svatta
+sn: Teknolog
+mail: svatta@teknologr.io
+userPassword: admin
+
+dn: cn=member,ou=Groups,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: posixGroup
+cn: member
+gidNumber: 1000
+memberUid: svatta
+memberUid: svakar
+
+dn: cn=staff,ou=Groups,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: posixGroup
+cn: staff
+gidNumber: 1001
+memberUid: svatta
