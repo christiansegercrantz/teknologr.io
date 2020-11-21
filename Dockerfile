@@ -1,4 +1,4 @@
-FROM python:3.7-alpine
+FROM python:3.5.2-alpine
 
 # Install prereqs
 RUN apk update
@@ -12,15 +12,20 @@ RUN mkdir -p /opt/app/teknologr
 
 # Copy files
 COPY requirements.txt start-teknologr.sh /opt/app/
+RUN true
 COPY .pip_cache /opt/app/pip_cache/
+RUN true
 COPY teknologr /opt/app/teknologr
 
 # Set workdir
 WORKDIR /opt/app
 
-# Create user
-RUN addgroup --system www-data
-RUN adduser --no-create-home --disabled-password --system --shell /bin/false --ingroup www-data www-data
+# Create systemgroup
+RUN addgroup -S www-data
+
+# Create user; no home dir, no password,
+# system user, shell, and group
+RUN adduser -HDS -s /bin/false -G www-data www-data
 
 # Install pip requirements
 RUN pip install -r requirements.txt --cache-dir /opt/app/pip_cache

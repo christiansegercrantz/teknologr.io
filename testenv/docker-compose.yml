@@ -8,7 +8,7 @@ services:
       - teknologr.env
     depends_on:
       - postgres
-  
+
   nginx:
     image: nginx:latest
     hostname: nginx
