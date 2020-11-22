@@ -12,13 +12,17 @@ services:
   nginx:
     image: nginx:latest
     hostname: nginx
-    env_file:
-      - teknologr.env
+    env_file: teknologr.env
     ports:
-      - 8080:80
+      - 443:8443
+      - 80:8080
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ../teknologr/members/static:/var/www/teknologr_static/static
+      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
+      - ./reverse_proxy/proxy.conf:/etc/nginx/conf.d/proxy.conf
+      - ./reverse_proxy/ssl.conf:/etc/nginx/conf.d/ssl.conf
+      - ./reverse_proxy/localhost.crt:/etc/ssl/certs/localhost.crt
+      - ./reverse_proxy/localhost.key:/etc/ssl/private/localhost.key
+      - ../teknologr/members/static:/var/www/teknologr_static
     depends_on:
       - teknologr
   
@@ -27,18 +31,35 @@ services:
     hostname: postgres
     volumes:
       - teknologr_data:/var/lib/postgresql/data/
-    env_file:
-      - teknologr.env
+    env_file: teknologr.env
 
   openldap:
     image: osixia/openldap:latest
     hostname: openldap
+    env_file: teknologr.env
     command: "--copy-service --loglevel debug"
+    ports:
+      - 10389:389
+      - 10636:636
     volumes:
       - ./permissions.ldif:/container/service/slapd/assets/config/bootstrap/ldif/02-security.ldif
       - ./init.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/init.ldif
-    env_file:
-      - teknologr.env
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    hostname: keycloak
+    env_file: keycloak.env
+    depends_on:
+      - kc_postgres
+
+  kc_postgres:
+    image: postgres:12.0-alpine
+    hostname: kc_postgres
+    env_file: keycloak.env
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data/
 
 volumes:
   teknologr_data:
+  keycloak_data:
+version: '3.5'

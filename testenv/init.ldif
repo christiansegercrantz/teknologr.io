@@ -42,7 +42,6 @@ uidNumber: 4000
 gidNumber: 1000
 loginShell: /bin/bash
 homeDirectory: /rhome/svatta
-uid: svakar
 uid: svatta
 cn: Svatta Teknolog
 givenName: Svatta
