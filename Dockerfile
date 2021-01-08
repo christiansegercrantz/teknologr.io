@@ -1,4 +1,4 @@
-FROM python:3.5.2-alpine
+FROM python:3.9-alpine
 
 # Install prereqs
 RUN apk update
@@ -27,6 +27,8 @@ RUN addgroup -S www-data
 # system user, shell, and group
 RUN adduser -HDS -s /bin/false -G www-data www-data
 
+RUN pip install --upgrade pip
+RUN pip install wheel
 # Install pip requirements
 RUN pip install -r requirements.txt --cache-dir /opt/app/pip_cache
 
