@@ -41,7 +41,7 @@ RUN chown -R www-data:www-data /var/log/teknologr
 
 # Link teknologr log to stdout
 # Commented out because of error
-#RUN ln -sf /dev/stdout /var/log/teknologr/info.log
+RUN ln -sf /dev/stdout /var/log/teknologr/info.log
 
 # Start server
 EXPOSE 8010

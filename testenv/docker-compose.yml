@@ -2,16 +2,18 @@ version: '3.5'
 
 services:
   teknologr:
-    image: teknologr-test:latest
+    build: ..
     hostname: teknologr
+    volumes:
+      - teknologr_static:/opt/app/teknologr/members/static
     env_file:
       - teknologr.env
     depends_on:
-      - postgres
+      - teknologr-postgres
 
-  nginx:
+  teknologr-nginx:
     image: nginx:latest
-    hostname: nginx
+    hostname: teknologr-nginx
     env_file: teknologr.env
     ports:
       - 443:8443
@@ -22,44 +24,43 @@ services:
       - ./reverse_proxy/ssl.conf:/etc/nginx/conf.d/ssl.conf
       - ./reverse_proxy/localhost.crt:/etc/ssl/certs/localhost.crt
       - ./reverse_proxy/localhost.key:/etc/ssl/private/localhost.key
-      - ../teknologr/members/static:/var/www/teknologr_static
+      - teknologr_static:/var/www/teknologr_static
     depends_on:
       - teknologr
   
-  postgres:
+  teknologr-postgres:
     image: postgres:12.0-alpine
-    hostname: postgres
+    hostname: teknologr-postgres
+    env_file: teknologr.env
     volumes:
       - teknologr_data:/var/lib/postgresql/data/
-    env_file: teknologr.env
 
-  openldap:
+  teknologr-openldap:
     image: osixia/openldap:latest
-    hostname: openldap
+    hostname: teknologr-openldap
     env_file: teknologr.env
     command: "--copy-service --loglevel debug"
     ports:
       - 10389:389
       - 10636:636
     volumes:
-      - ./permissions.ldif:/container/service/slapd/assets/config/bootstrap/ldif/02-security.ldif
       - ./init.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/init.ldif
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    hostname: keycloak
-    env_file: keycloak.env
-    depends_on:
-      - kc_postgres
-
-  kc_postgres:
-    image: postgres:12.0-alpine
-    hostname: kc_postgres
-    env_file: keycloak.env
-    volumes:
-      - keycloak_data:/var/lib/postgresql/data/
+        #  keycloak:
+        #    image: quay.io/keycloak/keycloak:latest
+        #    hostname: keycloak
+        #    env_file: keycloak.env
+        #    depends_on:
+        #      - kc_postgres
+        #
+        #  kc_postgres:
+        #    image: postgres:12.0-alpine
+        #    hostname: kc_postgres
+        #    env_file: keycloak.env
+        #    volumes:
+        #      - keycloak_data:/var/lib/postgresql/data/
 
 volumes:
+  teknologr_static:
   teknologr_data:
-  keycloak_data:
-version: '3.5'
+    #keycloak_data:

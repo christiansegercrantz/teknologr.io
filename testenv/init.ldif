@@ -29,7 +29,7 @@ cn: Svakar Teknolog
 givenName: Svakar
 sn: Teknolog
 mail: svakar@teknologr.io
-userPassword: admin
+userPassword: {SSHA}PmuWZdvvG2glcyKmd3w/p8jwuIrjxo5p
 
 dn: uid=svatta,ou=People,dc=teknologr,dc=io
 changetype: add
@@ -47,7 +47,7 @@ cn: Svatta Teknolog
 givenName: Svatta
 sn: Teknolog
 mail: svatta@teknologr.io
-userPassword: admin
+userPassword: {SSHA}PmuWZdvvG2glcyKmd3w/p8jwuIrjxo5p
 
 dn: cn=member,ou=Groups,dc=teknologr,dc=io
 changetype: add
@@ -65,3 +65,13 @@ objectclass: posixGroup
 cn: staff
 gidNumber: 1001
 memberUid: svatta
+
+# Set permissions 
+dn: olcDatabase={1}{{ LDAP_BACKEND }},cn=config
+changetype: modify
+delete: olcAccess
+-
+add: olcAccess
+olcAccess: to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage by * break
+olcAccess: to attrs=userPassword,shadowLastChange by self write by dn="cn=admin,{{ LDAP_BASE_DN }}" write by * break
+olcAccess: to * by self read by dn="cn=admin,{{ LDAP_BASE_DN }}" write by dn="cn={{ LDAP_READONLY_USER_USERNAME }},{{ LDAP_BASE_DN }}" read by anonymous read
