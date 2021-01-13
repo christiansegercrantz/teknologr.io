@@ -2,19 +2,36 @@ version: '3.5'
 
 services:
   teknologr:
-    build: ..
+    build: ../..
     hostname: teknologr
     volumes:
-      - teknologr_static:/opt/app/teknologr/members/static
+      - static:/opt/app/teknologr/members/static
     env_file:
-      - teknologr.env
+      - docker.env
     depends_on:
-      - teknologr-postgres
+      - db 
 
-  teknologr-nginx:
+  db:
+    image: postgres:12.0-alpine
+    hostname: db
+    env_file:
+      - docker.env
+    volumes:
+      - data:/var/lib/postgresql/data/
+
+  ldap:
+    image: osixia/openldap:latest
+    hostname: ldap
+    env_file:
+      - docker.env
+    command: "--copy-service --loglevel debug"
+    volumes:
+      - ./init_ldap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/01-init.ldif
+
+
+  nginx:
     image: nginx:latest
-    hostname: teknologr-nginx
-    env_file: teknologr.env
+    hostname: nginx
     ports:
       - 443:8443
       - 80:8080
@@ -24,28 +41,10 @@ services:
       - ./reverse_proxy/ssl.conf:/etc/nginx/conf.d/ssl.conf
       - ./reverse_proxy/localhost.crt:/etc/ssl/certs/localhost.crt
       - ./reverse_proxy/localhost.key:/etc/ssl/private/localhost.key
-      - teknologr_static:/var/www/teknologr_static
+      - static:/var/www/teknologr_static
     depends_on:
       - teknologr
   
-  teknologr-postgres:
-    image: postgres:12.0-alpine
-    hostname: teknologr-postgres
-    env_file: teknologr.env
-    volumes:
-      - teknologr_data:/var/lib/postgresql/data/
-
-  teknologr-openldap:
-    image: osixia/openldap:latest
-    hostname: teknologr-openldap
-    env_file: teknologr.env
-    command: "--copy-service --loglevel debug"
-    ports:
-      - 10389:389
-      - 10636:636
-    volumes:
-      - ./init.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/init.ldif
-
         #  keycloak:
         #    image: quay.io/keycloak/keycloak:latest
         #    hostname: keycloak
@@ -61,6 +60,6 @@ services:
         #      - keycloak_data:/var/lib/postgresql/data/
 
 volumes:
-  teknologr_static:
-  teknologr_data:
+  static:
+  data:
     #keycloak_data:

@@ -1,0 +1,81 @@
+# Sets up a basic LDAP structure,
+# containing two users and two 
+# groups.
+dn: ou=People,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: organizationalUnit
+ou: People
+
+dn: ou=Groups,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: organizationalUnit
+ou: Groups
+
+dn: uid=svakar,ou=People,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: posixAccount
+uidNumber: 4001
+gidNumber: 1000
+loginShell: /bin/bash
+homeDirectory: /rhome/svakar
+uid: svakar
+cn: Svakar Teknolog
+givenName: Svakar
+sn: Teknolog
+mail: svakar@teknologr.io
+userPassword: {SSHA}PmuWZdvvG2glcyKmd3w/p8jwuIrjxo5p
+
+dn: uid=svatta,ou=People,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: posixAccount
+uidNumber: 4000
+gidNumber: 1000
+loginShell: /bin/bash
+homeDirectory: /rhome/svatta
+uid: svatta
+cn: Svatta Teknolog
+givenName: Svatta
+sn: Teknolog
+mail: svatta@teknologr.io
+userPassword: {SSHA}PmuWZdvvG2glcyKmd3w/p8jwuIrjxo5p
+
+dn: cn=member,ou=Groups,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: posixGroup
+cn: member
+gidNumber: 1000
+memberUid: svatta
+memberUid: svakar
+
+dn: cn=staff,ou=Groups,dc=teknologr,dc=io
+changetype: add
+objectclass: top
+objectclass: posixGroup
+cn: staff
+gidNumber: 1001
+memberUid: svatta
+
+# Set permissions 
+dn: olcDatabase={1}{{ LDAP_BACKEND }},cn=config
+changetype: modify
+delete: olcAccess
+-
+add: olcAccess
+olcAccess: to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage by * break
+olcAccess: to attrs=userPassword,shadowLastChange by self write by dn="cn=admin,{{ LDAP_BASE_DN }}" write by anonymous auth by * none
+olcAccess: to * by dn="cn=admin,{{ LDAP_BASE_DN }}" manage by * read
+
+#olcAccess: to * by dn="cn=admin,{{ LDAP_BASE_DN }}" manage by * break
+#olcAccess: to attrs=userPassword,shadowLastChange by self write by dn="cn=admin,{{ LDAP_BASE_DN }}" write by anonymous auth by * none
+#olcAccess: to * by dn="cn=admin,{{ LDAP_BASE_DN }}" write by dn="cn={{ LDAP_READONLY_USER_USERNAME }},{{ LDAP_BASE_DN }}" read by self read by anonymous read

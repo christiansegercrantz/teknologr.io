@@ -1,0 +1,32 @@
+version: '3.5'
+
+services:
+  teknologr_local_db:
+    image: postgres:12.0-alpine
+    hostname: teknologr_local_db 
+    container_name: teknologr_local_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=teknologr-postgres
+    volumes:
+      - teknologr_local_data:/var/lib/postgresql/data/
+    ports:
+      - 15432:5432
+
+  teknologr_local_ldap:
+    image: osixia/openldap:latest
+    hostname: teknologr_local_ldap
+    container_name: teknologr_local_ldap
+    environment:
+      - LDAP_DOMAIN=teknologr.io
+      - LDAP_ORGANISATION="Ab Teknologr Oy"
+    command: "--copy-service --loglevel debug"
+    ports:
+      - 10389:389
+      - 10636:636
+    volumes:
+      - ./ldif/01-init.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/01-init.ldif
+
+volumes:
+  teknologr_local_data:
