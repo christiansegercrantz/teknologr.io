@@ -77,8 +77,8 @@
         </tbody>
       </table>
     </div>
-
     <div class="col-12 col-lg-5">
+      {% if decorations %}
       <h3>Hedersbetygelser</h3>
       <table class="table table-striped table-borderless table-sm">
         {% for decoration in decorations %}
@@ -90,13 +90,9 @@
               {{ decoration.acquired }}
             </td>
           </tr>
-        {% empty %}
-          <tr>
-            <th>Inga hedersbetygelser. </th>
-            <td align="right"></td>
-          </tr>
         {% endfor %}
       </table>
+      {% endif %}
       <h3>Poster</h3>
       <table class="table table-striped table-borderless table-sm">
         {% for functionary in functionaries %}
