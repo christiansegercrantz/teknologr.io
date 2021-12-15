@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db import connection
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from rest_framework import viewsets
@@ -417,6 +418,11 @@ def modulenDump(request):
         ).filter(
             subscribed_to_modulen=True
         )
+
+    # NOTE: DISTINCT ON is a postgresql feature, this feature will not work with other databases
+    # Installing pandas to do this seemed like a waste since we currently run postgres in prod anyway // Jonas
+    if connection.vendor == 'postgresql':
+        recipients = recipients.distinct('street_address', 'city')
 
     recipients = [x for x in recipients if x.isValidMember()]
 
