@@ -648,6 +648,7 @@ def dump_htk(request, member_id=None):
         return {
             "id": member.id,
             "name": member.full_name,
+            "graduated": member.graduated_year if member.graduated else member.graduated,
             "functionaries": func_list,
             "groups": group_list,
             "membertypes": type_list,
