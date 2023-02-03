@@ -206,6 +206,28 @@
 
       <div class="col-md-4">
         <ul class="list-inline">
+          <li class="list-inline-item"><h3>Hedersbetygelser</h3></li>
+          <li class="list-inline-item float-right">
+            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addDecoration">Lägg till ny</button>
+            {% include "modals/memberdecoration.html" with modalname="addDecoration" title="Lägg till hedersbetygelse" form=adddecorationform only %}
+          </li>
+        </ul>
+        <table class="table table-sm table-striped table-borderless">
+          <thead><tr>
+              <th></th>
+              <th>Betygelse</th>
+              <th>Datum</th>
+            </tr></thead>
+            {% for ownership in decorations %}
+            <tr>
+              <td><i class="fas fa-times removeGroup text-danger" role="button" data-id="{{ ownership.id }}"></i></td>
+              <td><a href="/admin/decorations/{{ownership.decoration.id}}/">{{ownership.decoration.name}}</a></td>
+              <td>{{ownership.acquired}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <ul class="list-inline">
           <li class="list-inline-item"><h3>Poster</h3></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addFunctionary">Lägg till ny</button>
@@ -228,6 +250,7 @@
               </tr>
             {% endfor %}
         </table>
+
         <ul class="list-inline">
           <li class="list-inline-item"><h3>Grupper</h3></li>
           <li class="list-inline-item float-right">
@@ -251,6 +274,7 @@
             </tr>
             {% endfor %}
         </table>
+
         <ul class="list-inline">
           <li class="list-inline-item"><h3>Medlemstyper</h3></li>
           <li class="list-inline-item float-right">
