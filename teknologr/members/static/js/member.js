@@ -2,161 +2,80 @@ var changed = false;
 
 $(document).ready(function() {
 
-	$("#addmembertypeform").submit(function(event){
-		var data = $(this).serialize();
-		var request = $.ajax({
-			url: "/api/memberTypes/",
-			method: "POST",
-			data: data
-		});
-
-		request.done(function() {
-			location.reload();
-		});
-
-		request.fail(function( jqHXR, textStatus ){
-			alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-		});
-
-		event.preventDefault();
+	// Buttons for adding items to the selected member
+	// XXX: Could probably be combined
+	add_request_listener({
+		element: "#adddecorationform",
+		method: "POST",
+		url: "/api/decorationOwnership/",
+	});
+	add_request_listener({
+		element: "#addfunctionaryform",
+		method: "POST",
+		url: "/api/functionaries/",
+	});
+	add_request_listener({
+		element: "#addgroupform",
+		method: "POST",
+		url: "/api/groupMembership/",
+	});
+	add_request_listener({
+		element: "#addmembertypeform",
+		method: "POST",
+		url: "/api/memberTypes/",
 	});
 
-	$("#deletemember").click(function(){
-		if(confirm("Vill du radera denna medlem?")) {
-			var id = $(this).data('id');
-			var request = $.ajax({
-				url: "/api/members/" + id + "/",
-				method: "DELETE",
-			});
- 
-			request.done(function() { 
-				window.location = "/admin/members/"; 
-			});
-
-			request.fail(function( jqHXR, textStatus ){
-				alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-			});
-		}
+	// Buttons for deleting individual items from the selected member
+	// XXX: Could probably be combined
+	add_request_listener({
+		element: ".removeDecoration",
+		method: "DELETE",
+		url: element => `/api/decorationOwnership/${element.data("id")}/`,
+		confirmMessage: "Vill du radera detta hedersbetygelseinnehav?",
+	});
+	add_request_listener({
+		element: ".removeFunctionary",
+		url: element => `/api/functionaries/${element.data("id")}/`,
+		method: "DELETE",
+		confirmMessage: "Vill du radera denna post?",
+	});
+	add_request_listener({
+		element: ".removeGroup",
+		method: "DELETE",
+		url: element => `/api/groupMembership/${element.data("id")}/`,
+		confirmMessage: "Vill du radera detta gruppmedlemskap?",
+	});
+	add_request_listener({
+		element: ".removeMemberType",
+		method: "DELETE",
+		url: element => `/api/memberTypes/${element.data("id")}/`,
+		confirmMessage: "Vill du radera denna medlemstyp?",
 	});
 
-	$('[data-toggle="tooltip"]').tooltip({
-		placement : 'top'
-	});
-
-	$('.removeMemberType').click(function(){
-		if(confirm("Vill du radera denna medlemstyp?")) {
-			var id = $(this).data('id');
-			var request = $.ajax({
-				url: "/api/memberTypes/" + id + "/",
-				method: "DELETE",
-			});
-
-			request.done(function() {
-				location.reload();
-			});
-
-			request.fail(function( jqHXR, textStatus ){
-				alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-			});	
-		}
+	// Delete the selected member
+	add_request_listener({
+		element: "#deletemember",
+		method: "DELETE",
+		url: element => `/api/members/${element.data("id")}/`,
+		confirmMessage: "Vill du radera denna medlem?",
+		newLocation: "/admin/members/",
 	});
 
 	$('.editMemberType').click(function(){
-		var id = $(this).data('id');
-		$("#editMemberTypeModal .modal-body").load("/admin/membertype/" + id + "/form/", function() {
-			$("#editmembertypeform").submit(function(event){
-				var data = $(this).serialize();
-				var request = $.ajax({
-					url: "/api/memberTypes/" + id + "/",
-					method: "PUT",
-					data: data
-				});
-
-				request.done(function() {
-					location.reload();
-				});
-
-				request.fail(function( jqHXR, textStatus ){
-					alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-				});
-				event.preventDefault();
+		const id = $(this).data("id");
+		$("#editMemberTypeModal .modal-body").load("/admin/membertype/" + id + "/form/", function () {
+			add_request_listener({
+				element: "#editmembertypeform",
+				method: "PUT",
+				url: `/api/memberTypes/${id}/`,
 			});
+
 			$('#editMemberTypeModal').modal();
 		});
 	});
 
-	$('#addfunctionaryform').submit(function(event){
-		var data = $(this).serialize();
-		var request = $.ajax({
-			url: "/api/functionaries/",
-			method: "POST",
-			data: data
-		});
-
-		request.done(function() {
-			location.reload();
-		});
-
-		request.fail(function( jqHXR, textStatus ){
-			alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-		});
-
-		event.preventDefault();
-	});
-
-	$('#addgroupform').submit(function(event){
-		var data = $(this).serialize();
-		var request = $.ajax({
-			url: "/api/groupMembership/",
-			method: "POST",
-			data: data
-		});
-
-		request.done(function() {
-			location.reload();
-		});
-
-		request.fail(function( jqHXR, textStatus ){
-			alert( "Request failed (" + textStatus + ") " + jqHXR.responseText );
-		});
-
-		event.preventDefault();
-	});
-
-	$('.removeFunctionary').click(function(){
-		if(confirm("Vill du radera denna post?")) {
-			var id = $(this).data('id');
-			var request = $.ajax({
-				url: "/api/functionaries/" + id + "/",
-				method: "DELETE",
-			});
-
-			request.done(function() {
-				location.reload();
-			});
-
-			request.fail(function( jqHXR, textStatus ){
-				alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-			});	
-		}
-	});
-
-	$('.removeGroup').click(function(){
-		if(confirm("Vill du radera detta gruppmedlemskap?")) {
-			var id = $(this).data('id');
-			var request = $.ajax({
-				url: "/api/groupMembership/" + id + "/",
-				method: "DELETE",
-			});
-
-			request.done(function() {
-				location.reload();
-			});
-
-			request.fail(function( jqHXR, textStatus ){
-				alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-			});	
-		}
+	$('[data-toggle="tooltip"]').tooltip({
+		placement : 'top'
 	});
 
 	$('#memberform').change(function(){

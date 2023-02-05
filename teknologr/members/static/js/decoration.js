@@ -1,77 +1,30 @@
-$(document).ready(function() {
-	
-	$("#decorationform").submit(function(event){
-		var id = $(this).data('id');	
-		var request = $.ajax({
-			url: "/api/decorations/" + id + "/",
-			method: 'PUT',
-			data: $(this).serialize()
-		});
-
-		request.done(function() {
-			location.reload();
-		});
-
-		request.fail(function( jqHXR, textStatus ){
-			alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-		});
-
-		event.preventDefault();
+$(document).ready(function () {
+	// Update the decoration type
+	add_request_listener({
+		element: "#decorationform",
+		method: "PUT",
+		url: element => `/api/decorations/${element.data("id")}/`,
+	});
+	// Delete the decoration type
+	add_request_listener({
+		element: "#deleteDecoration",
+		method: "DELETE",
+		url: element => `/api/decorations/${element.data("id")}/`,
+		confirmMessage: "Vill du radera denna hedersbetygelse?",
+		newLocation: "/admin/decorations/",
 	});
 
-
-	$("#deleteDecoration").click(function(){
-		if(confirm("Vill du radera denna betygelse?")) {
-			var id = $(this).data('id');
-			var request = $.ajax({
-				url: "/api/decorations/" + id + "/",
-				method: "DELETE",
-			});
- 
-			request.done(function() { 
-				window.location = "/admin/decorations/";
-			});
-
-			request.fail(function( jqHXR, textStatus ){
-				alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-			});
-		}
+	// Add a person to the list
+	add_request_listener({
+		element: "#adddecorationform",
+		method: "POST",
+		url: "/api/decorationOwnership/",
 	});
-
-	$("#adddecorationform").submit(function(event){
-		var request = $.ajax({
-			url: "/api/decorationOwnership/",
-			method: 'POST',
-			data: $(this).serialize()
-		});
-
-		request.done(function() {
-			location.reload();
-		});
-
-		request.fail(function( jqHXR, textStatus ){
-			alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-		});
-
-		event.preventDefault();
-	});
-
-	$(".removeDecoration").click(function(){
-		if(confirm("Vill du radera detta betygelseinnehav?")) {
-			var id = $(this).data('id');
-			var decorationid = $(this).data("decoration_id");
-			var request = $.ajax({
-				url: "/api/decorationOwnership/" + id + "/",
-				method: "DELETE",
-			});
-
-			request.done(function() { 
-				window.location = "/admin/decorations/" + decorationid + "/"; 
-			});
-
-			request.fail(function( jqHXR, textStatus ){
-				alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-			});
-		}
+	// Delete a person from the list
+	add_request_listener({
+		element: ".removeDecoration",
+		method: "DELETE",
+		url: element => `/api/decorationOwnership/${element.data("id")}/`,
+		confirmMessage: "Vill du radera detta hedersbetygelseinnehav?",
 	});
 });

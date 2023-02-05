@@ -54,40 +54,21 @@ const add_request_listener = options => {
 	});
 }
 
-$(document).ready(function() {
-	$("#newform").submit(function(event){
-		var active = $(this).data('active');
-		switch(active) {
-			case 'members':
-				var apipath = 'members'
-				break;
-			case 'groups':
-				var apipath = 'groupTypes'
-				break;
-			case 'functionaries':
-				var apipath = 'functionaryTypes'
-				break;
-			case 'decorations':
-				var apipath = 'decorations'
-				break;
+$(document).ready(function () {
+	const element_to_api_path = element => {
+		switch(element.data("active")) {
+			case "members": return "members";
+			case "groups": return "groupTypes";
+			case "functionaries": return "functionaryTypes";
+			case "decorations": return "decorations";
 		}
+	}
 
-
-		var request = $.ajax({
-			url: "/api/" + apipath + "/",
-			method: 'POST',
-			data: $(this).serialize()
-		});
-
-		request.done(function(msg) {
-			window.location = "/admin/"+ active +"/" + msg.id + "/";
-		});
-
-		request.fail(function( jqHXR, textStatus ){
-			alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-		});
-
-		event.preventDefault();
+	add_request_listener({
+		element: "#newform",
+		method: "POST",
+		url: element => `/api/${element_to_api_path(element)}/`,
+		newLocation: (element, msg) => `/admin/${element.data("active")}/${msg.id}/`,
 	});
 
 	$('#side-search').keyup(function(event) {
