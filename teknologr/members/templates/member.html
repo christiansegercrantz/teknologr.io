@@ -220,7 +220,7 @@
             </tr></thead>
             {% for ownership in decorations %}
             <tr>
-              <td><i class="fas fa-times removeGroup text-danger" role="button" data-id="{{ ownership.id }}"></i></td>
+              <td><i class="fas fa-times removeDecoration text-danger" role="button" data-id="{{ ownership.id }}"></i></td>
               <td><a href="/admin/decorations/{{ownership.decoration.id}}/">{{ownership.decoration.name}}</a></td>
               <td>{{ownership.acquired}}</td>
             </tr>
