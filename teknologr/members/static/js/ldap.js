@@ -13,97 +13,41 @@ function validatePassword(){
 }
 
 $(document).ready(function() {
-  $('#addldapform').submit(function(event){
-    event.preventDefault();
-    var data = $(this).serialize();
-    var id = $(this).data('id')
-    var request = $.ajax({
-      url: "/api/accounts/ldap/" + id + "/",
-      method: "POST",
-      data: data
-    });
-
-    request.done(function() {
-      location.reload();
-    });
-
-    request.fail(function(jqHXR, textStatus ) {
-      alert( "Request failed (" + textStatus + "): " + jqHXR.responseText );
-    });
-  });
-
-  $('#changeldappwform').submit(function(event){
-    event.preventDefault();
-    var data = $(this).serialize();
-    var id = $(this).data('id')
-    var request = $.ajax({
-      url: "/api/accounts/ldap/change_pw/" + id + "/",
-      method: "POST",
-      data: data
-    });
-
-    request.done(function() {
-      location.reload();
-    });
-
-    request.fail(function(jqHXR, textStatus ) {
-      alert( "Request failed (" + textStatus + "): " + jqHXR.responseText );
-    });
-  });
-
   $('#confirm_password').keyup(validatePassword);
   $('#ldap_password').change(validatePassword)
 
-  $('#delldap').click(function() {
-    if(confirm("Vill du ta bort detta LDAP konto?")){
-      var id = $(this).data('id');
-      var request = $.ajax({
-        url: "/api/accounts/ldap/" + id + "/",
-        method: "DELETE",
-      })
-
-      request.done(function() {
-        location.reload();
-      });
-
-      request.fail(function(jqHXR, textStatus ) {
-        alert( "Request failed (" + textStatus + "): " + jqHXR.responseText );
-      });
-    }
+  // Create an LDAP account for the selected user
+  add_request_listener({
+    element: "#addldapform",
+    method: "POST",
+    url: element => `/api/accounts/ldap/${element.data('id')}/`,
+  });
+  // Delete the LDAP account for the selected user
+  add_request_listener({
+    element: "#delldap",
+    method: "DELETE",
+    url: element => `/api/accounts/ldap/${element.data('id')}/`,
+    confirmMessage: "Vill du ta bort detta LDAP konto?",
+  });
+  // Change the LDAP password for the selected user
+  add_request_listener({
+    element: "#changeldappwform",
+    method: "POST",
+    url: element => `/api/accounts/ldap/change_pw/${element.data('id')}/`,
   });
 
-  $('#addbill').click(function() {
-    var id = $(this).data('id');
-    var request = $.ajax({
-      url: "/api/accounts/bill/" + id + "/",
-      method: "POST",
-      data: {"member_id": id}
-    })
-
-    request.done(function() {
-      location.reload();
-    });
-
-    request.fail(function(jqHXR, textStatus ) {
-      alert( "Request failed (" + textStatus + "): " + jqHXR.responseText );
-      });
+  // Create a BILL account for the selected memeber
+  add_request_listener({
+    element: "#addbill",
+    method: "POST",
+    url: element => `/api/accounts/bill/${element.data('id')}/`,
+    data: element => ({ "member_id": element.data('id') }),
   });
-
-  $('#delbill').click(function() {
-    if(confirm("Vill du ta bort detta BILL konto?")){
-      var id = $(this).data('id');
-      var request = $.ajax({
-        url: "/api/accounts/bill/" + id + "/",
-        method: "DELETE",
-      })
-
-      request.done(function() {
-        location.reload();
-      });
-
-      request.fail(function(jqHXR, textStatus ) {
-        alert( "Request failed (" + textStatus + "): " + jqHXR.responseText );
-      });
-    }
+  // Delete the BILL account for the selected memeber
+  add_request_listener({
+    element: "#delbill",
+    method: "DELETE",
+    url: element => `/api/accounts/bill/${element.data('id')}/`,
+    confirmMessage: "Vill du ta bort detta BILL konto?",
   });
 });

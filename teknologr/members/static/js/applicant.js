@@ -40,43 +40,27 @@ $(document).ready(function() {
         }
     });
 
-    $('#deleteapplicant').click(function() {
-        if (confirm('Vill du radera denna ansökan?')) {
-            const id = $(this).data('id');
-			const request = $.ajax({
-                url: '/api/applicants/' + id + '/',
-                method: 'DELETE',
-                data: {'applicant_id': id},
-            });
-
-            request.done(function() {
-                window.location = '/admin/applicants/';
-            });
-
-            request.fail(function(jqHXR, textStatus) {
-                alert('Request failed: ' + textStatus + ': ' + jqHXR.responseText);
-            });
-        }
+    add_request_listener({
+        element: "#deleteapplicant",
+        method: "DELETE",
+        url: element => `/api/applicants/${element.data("id")}/`,
+        data: element => ({ "applicant_id": element.data("id") }),
+        confirmMessage: "Vill du radera denna ansökan?",
+        newLocation: "/admin/applicants/",
     });
 
-    $('#makemember').submit(function(event) {
-        const id = $(this).data('id');
-        const data = $(this).serialize();
-        const request = $.ajax({
-            url: '/api/applicants/makeMember/' + id + '/',
-            method: 'POST',
-            data: data,
-        });
+    add_request_listener({
+        element: "#makemember",
+        method: "POST",
+        url: element => `/api/applicants/makeMember/${element.data("id")}/`,
+        newLocation: "/admin/applicants/",
+    });
 
-        request.done(function() {
-            window.location = '/admin/applicants/';
-        });
-
-        request.fail(function(jqHXR, textStatus) {
-            alert('Request failed: ' + textStatus + ': ' + jqHXR.responseText);
-        });
-
-        event.preventDefault();
+    add_request_listener({
+        element: "#choose-multiple-applicants",
+        method: "POST",
+        url: "/api/multiApplicantSubmission/",
+        newLocation: "/admin/applicants/",
     });
 
     // Set the datepicker on birth date, in case input type of date is not supported
