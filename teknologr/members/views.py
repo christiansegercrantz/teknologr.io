@@ -98,6 +98,8 @@ def member(request, member_id):
             for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
             for programme in programmes
     ]
+    context['programmes'].sort()
+
     context['form'] = form
     context['full_name'] = member
 
