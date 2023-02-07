@@ -48,7 +48,7 @@ class GroupMembershipViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['POST'])
-def memberListSave(request):
+def multiGroupMembershipSave(request):
     gid = request.data.get('group')
     members = request.data.get('member').strip("|").split("|")
 
