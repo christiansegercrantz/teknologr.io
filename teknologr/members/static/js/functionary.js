@@ -40,7 +40,7 @@ $(document).ready(function() {
 
 	$("#addfunctionaryform").submit(function(event){
 		var request = $.ajax({
-			url: "/api/functionaries/",
+			url: "/api/multiFunctionary/",
 			method: 'POST',
 			data: $(this).serialize()
 		});

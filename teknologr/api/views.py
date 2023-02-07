@@ -58,6 +58,19 @@ def memberListSave(request):
 
     return Response(status=200)
 
+@api_view(['POST'])
+def multiFunctionarySave(request):
+    fid = request.data.get('functionarytype')
+    members = request.data.get('member').strip("|").split("|")
+    begin_date = request.data.get('begin_date')
+    end_date = request.data.get('end_date')
+
+    for mid in members:
+        # get_or_create is used to ignore duplicates
+        Functionary.objects.get_or_create(member_id=int(mid), functionarytype_id=int(fid), end_date=end_date, begin_date=begin_date)
+
+    return Response(status=200)
+
 
 # Functionaries
 

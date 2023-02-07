@@ -49,7 +49,8 @@ class FunctionaryForm(BSModelForm):
         model = Functionary
         fields = '__all__'
 
-    member = AutoCompleteSelectField('member', required=True, help_text=None)
+    # member = AutoCompleteSelectField('member', required=True, help_text=None)
+    member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
 
