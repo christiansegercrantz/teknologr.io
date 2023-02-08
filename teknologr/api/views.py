@@ -71,6 +71,18 @@ def multiFunctionarySave(request):
 
     return Response(status=200)
 
+@api_view(['POST'])
+def multiDecorationOwnershipSave(request):
+    did = request.data.get('decoration')
+    members = request.data.get('member').strip("|").split("|")
+    acquired = request.data.get('acquired')
+
+    for mid in members:
+        # get_or_create is used to ignore duplicates
+        DecorationOwnership.objects.get_or_create(member_id=int(mid), decoration_id=int(did), acquired=acquired)
+
+    return Response(status=200)
+
 
 # Functionaries
 

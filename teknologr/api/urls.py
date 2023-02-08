@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^multiGroupMembership/$', multiGroupMembershipSave),
     url(r'^multiFunctionary/$', multiFunctionarySave),
+    url(r'^multiDecorationOwnership/$', multiDecorationOwnershipSave),
     url(r'^memberTypesForMember/(?P<mode>username|studynumber)/(?P<query>[A-Za-z0-9]+)/$', memberTypesForMember),
     url(r'^accounts/ldap/(\d+)/$', LDAPAccountView.as_view()),
     url(r'^accounts/ldap/change_pw/(\d+)/$', change_ldap_password),

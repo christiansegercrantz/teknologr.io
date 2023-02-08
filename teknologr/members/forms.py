@@ -67,7 +67,8 @@ class DecorationOwnershipForm(BSModelForm):
         fields = '__all__'
 
     acquired = DateField(widget=DateInput(attrs={'type': 'date'}))
-    member = AutoCompleteSelectField('member', required=True, help_text=None)
+    # member = AutoCompleteSelectField('member', required=True, help_text=None)
+    member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
 
 
 class GroupForm(BSModelForm):

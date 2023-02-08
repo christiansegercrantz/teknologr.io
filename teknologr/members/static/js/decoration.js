@@ -40,7 +40,7 @@ $(document).ready(function() {
 
 	$("#adddecorationform").submit(function(event){
 		var request = $.ajax({
-			url: "/api/decorationOwnership/",
+			url: "/api/multiDecorationOwnership/",
 			method: 'POST',
 			data: $(this).serialize()
 		});
