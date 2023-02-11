@@ -18,7 +18,7 @@ $(document).ready(function () {
 	add_request_listener({
 		element: "#adddecorationform",
 		method: "POST",
-		url: "/api/decorationOwnership/",
+		url: "/api/multiDecorationOwnership/",
 	});
 	// Delete a person from the list
 	add_request_listener({

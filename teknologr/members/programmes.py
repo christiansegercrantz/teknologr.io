@@ -29,6 +29,10 @@ DEGREE_PROGRAMME_CHOICES = {
         'Den byggda miljön',
         'Energi– och miljöteknik',
         'Maskin– och byggnadsteknik',
+        'Energi- och maskinteknik',
+        'Byggnadsteknik',
+        'Fastighetsekonomi och geoinformatik',
+        'Hållbara samhällen'
     ),
     'SCI': (
         'Teknisk fysik och matematik',
@@ -36,6 +40,7 @@ DEGREE_PROGRAMME_CHOICES = {
         'Informationsnätverk',
         'Produktionsekonomi',
         'Data Science',
+        'Teknisk psykologi'
     ),
     'ELEC': (
         'Automations- och informationsteknologi',

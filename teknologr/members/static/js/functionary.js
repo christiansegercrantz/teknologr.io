@@ -18,7 +18,7 @@ $(document).ready(function () {
 	add_request_listener({
 		element: "#addfunctionaryform",
 		method: "POST",
-		url: `/api/functionaries/`,
+		url: `/api/multiFunctionary/`,
 	});
 	// Remove a person from the list
 	add_request_listener({

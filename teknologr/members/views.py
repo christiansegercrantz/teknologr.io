@@ -98,15 +98,21 @@ def member(request, member_id):
             for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
             for programme in programmes
     ]
+    context['programmes'].sort()
+
     context['form'] = form
     context['full_name'] = member
 
+    # Get decorations
+    context['decorations'] = DecorationOwnership.objects.filter(member__id=member_id).order_by('-acquired')
+    context['adddecorationform'] = DecorationOwnershipForm(initial={'member': member_id})
+
     # Get functionary positions
-    context['functionaries'] = Functionary.objects.filter(member__id=member_id)
+    context['functionaries'] = Functionary.objects.filter(member__id=member_id).order_by('-begin_date')
     context['addfunctionaryform'] = FunctionaryForm(initial={'member': member_id})
 
     # Get groups
-    context['groups'] = GroupMembership.objects.filter(member__id=member_id)
+    context['groups'] = GroupMembership.objects.filter(member__id=member_id).order_by('-group__begin_date')
     context['addgroupform'] = GroupMembershipForm(initial={'member': member_id})
 
     # Get membertypes

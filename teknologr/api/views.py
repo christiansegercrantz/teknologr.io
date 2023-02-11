@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db import connection
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from rest_framework import viewsets
@@ -47,13 +48,38 @@ class GroupMembershipViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['POST'])
-def memberListSave(request):
+def multiGroupMembershipSave(request):
     gid = request.data.get('group')
     members = request.data.get('member').strip("|").split("|")
 
     for mid in members:
         # get_or_create is used to ignore duplicates
         GroupMembership.objects.get_or_create(member_id=int(mid), group_id=int(gid))
+
+    return Response(status=200)
+
+@api_view(['POST'])
+def multiFunctionarySave(request):
+    fid = request.data.get('functionarytype')
+    members = request.data.get('member').strip("|").split("|")
+    begin_date = request.data.get('begin_date')
+    end_date = request.data.get('end_date')
+
+    for mid in members:
+        # get_or_create is used to ignore duplicates
+        Functionary.objects.get_or_create(member_id=int(mid), functionarytype_id=int(fid), end_date=end_date, begin_date=begin_date)
+
+    return Response(status=200)
+
+@api_view(['POST'])
+def multiDecorationOwnershipSave(request):
+    did = request.data.get('decoration')
+    members = request.data.get('member').strip("|").split("|")
+    acquired = request.data.get('acquired')
+
+    for mid in members:
+        # get_or_create is used to ignore duplicates
+        DecorationOwnership.objects.get_or_create(member_id=int(mid), decoration_id=int(did), acquired=acquired)
 
     return Response(status=200)
 
@@ -402,7 +428,7 @@ def htkDump(request, member_id=None):
 
 # CSV-render class
 class ModulenRenderer(csv_renderer.CSVRenderer):
-    header = ['name', 'street_address', 'postal_code', 'city', 'country']
+    header = ['given_names', 'preferred_name', 'surname', 'street_address', 'postal_code', 'city', 'country']
 
 
 # List of addresses whom to post modulen to
@@ -418,10 +444,17 @@ def modulenDump(request):
             subscribed_to_modulen=True
         )
 
+    # NOTE: DISTINCT ON is a postgresql feature, this feature will not work with other databases
+    # Installing pandas to do this seemed like a waste since we currently run postgres in prod anyway // Jonas
+    if connection.vendor == 'postgresql':
+        recipients = recipients.distinct('street_address', 'city')
+
     recipients = [x for x in recipients if x.isValidMember()]
 
     content = [{
-        'name': recipient._get_full_name(),
+        'given_names': recipient.given_names,
+        'preferred_name': recipient.preferred_name,
+        'surname': recipient.surname,
         'street_address': recipient.street_address,
         'postal_code': recipient.postal_code,
         'city': recipient.city,

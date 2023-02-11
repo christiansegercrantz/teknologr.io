@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% block main %}
 <div class="container-fluid">
   <ul class="list-inline page-header">
@@ -10,7 +10,7 @@
       <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#groupTypeModal"></i>
     </li>
     <li class="list-inline-item">
-      <i id="deleteGroupType" class="fas fa-times text-danger icon-20" role="button" data-id="{{ subgroup.id }}"></i>
+      <i id="deleteGroupType" class="fas fa-times text-danger icon-20" role="button" data-id="{{ grouptype.id }}"></i>
     </li>
   </ul>
   {% include "modals/grouptype.html" with modalname="groupTypeModal" title="Editera grupptyp" groupTypeForm=groupTypeForm grouptype=grouptype only %}
