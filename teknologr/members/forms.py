@@ -22,14 +22,18 @@ class MemberForm(ModelForm):
             'comment': forms.Textarea(attrs={'rows': 3, 'cols': 15}),
         }
 
+    birth_date = DateField(widget=DateInput(attrs={'type': 'date'}), required=False)
+
     def __init__(self, *args, **kwargs):
+        # Make sure automatic dom element ids are different from other forms'
+        if "auto_id" not in kwargs: kwargs["auto_id"] = "mform_%s"
         super(MemberForm, self).__init__(*args, **kwargs)
+
         for name, field in self.fields.items():
             if type(field.widget) is CheckboxInput:
                 field.widget.attrs['class'] = 'form-check-input'
             else:
                 field.widget.attrs['class'] = 'form-control'
-    birth_date = DateField(widget=DateInput(attrs={'type': 'date'}), required=False)
 
 
 class GroupTypeForm(BSModelForm):
@@ -37,11 +41,21 @@ class GroupTypeForm(BSModelForm):
         model = GroupType
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        # Make sure automatic dom element ids are different from other forms'
+        if "auto_id" not in kwargs: kwargs["auto_id"] = "gtform_%s"
+        super(GroupTypeForm, self).__init__(*args, **kwargs)
+
 
 class FunctionaryTypeForm(BSModelForm):
     class Meta:
         model = FunctionaryType
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        # Make sure automatic dom element ids are different from other forms'
+        if "auto_id" not in kwargs: kwargs["auto_id"] = "ftform_%s"
+        super(FunctionaryTypeForm, self).__init__(*args, **kwargs)
 
 
 class FunctionaryForm(BSModelForm):
@@ -53,11 +67,21 @@ class FunctionaryForm(BSModelForm):
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
 
+    def __init__(self, *args, **kwargs):
+        # Make sure automatic dom element ids are different from other forms'
+        if "auto_id" not in kwargs: kwargs["auto_id"] = "fform_%s"
+        super(FunctionaryForm, self).__init__(*args, **kwargs)
+
 
 class DecorationForm(BSModelForm):
     class Meta:
         model = Decoration
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        # Make sure automatic dom element ids are different from other forms'
+        if "auto_id" not in kwargs: kwargs["auto_id"] = "dform_%s"
+        super(DecorationForm, self).__init__(*args, **kwargs)
 
 
 class DecorationOwnershipForm(BSModelForm):
@@ -68,6 +92,11 @@ class DecorationOwnershipForm(BSModelForm):
     acquired = DateField(widget=DateInput(attrs={'type': 'date'}))
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
 
+    def __init__(self, *args, **kwargs):
+        # Make sure automatic dom element ids are different from other forms'
+        if "auto_id" not in kwargs: kwargs["auto_id"] = "doform_%s"
+        super(DecorationOwnershipForm, self).__init__(*args, **kwargs)
+
 
 class GroupForm(BSModelForm):
     class Meta:
@@ -77,14 +106,23 @@ class GroupForm(BSModelForm):
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
 
+    def __init__(self, *args, **kwargs):
+        # Make sure automatic dom element ids are different from other forms'
+        if "auto_id" not in kwargs: kwargs["auto_id"] = "gform_%s"
+        super(GroupForm, self).__init__(*args, **kwargs)
+
 
 class GroupMembershipForm(BSModelForm):
-
     class Meta:
         model = GroupMembership
         fields = '__all__'
 
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
+
+    def __init__(self, *args, **kwargs):
+        # Make sure automatic dom element ids are different from other forms'
+        if "auto_id" not in kwargs: kwargs["auto_id"] = "gmform_%s"
+        super(GroupMembershipForm, self).__init__(*args, **kwargs)
 
 
 class MemberTypeForm(BSModelForm):
@@ -94,6 +132,11 @@ class MemberTypeForm(BSModelForm):
 
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     end_date = DateField(required=False, widget=DateInput(attrs={'type': 'date'}))
+
+    def __init__(self, *args, **kwargs):
+        # Make sure automatic dom element ids are different from other forms'
+        if "auto_id" not in kwargs: kwargs["auto_id"] = "mtform_%s"
+        super(MemberTypeForm, self).__init__(*args, **kwargs)
 
 
 class BSAuthForm(AuthenticationForm):
@@ -110,6 +153,11 @@ class ApplicantAdditionForm(BSModelForm):
 
     membership_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     phux_date = DateField(widget=DateInput(attrs={'type': 'date'}), required=False)
+
+    def __init__(self, *args, **kwargs):
+        # Make sure automatic dom element ids are different from other forms'
+        if "auto_id" not in kwargs: kwargs["auto_id"] = "aaform_%s"
+        super(ApplicantAdditionForm, self).__init__(*args, **kwargs)
 
 
 class MultipleApplicantAdditionForm(ApplicantAdditionForm):
