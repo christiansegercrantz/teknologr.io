@@ -48,13 +48,38 @@ class GroupMembershipViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['POST'])
-def memberListSave(request):
+def multiGroupMembershipSave(request):
     gid = request.data.get('group')
     members = request.data.get('member').strip("|").split("|")
 
     for mid in members:
         # get_or_create is used to ignore duplicates
         GroupMembership.objects.get_or_create(member_id=int(mid), group_id=int(gid))
+
+    return Response(status=200)
+
+@api_view(['POST'])
+def multiFunctionarySave(request):
+    fid = request.data.get('functionarytype')
+    members = request.data.get('member').strip("|").split("|")
+    begin_date = request.data.get('begin_date')
+    end_date = request.data.get('end_date')
+
+    for mid in members:
+        # get_or_create is used to ignore duplicates
+        Functionary.objects.get_or_create(member_id=int(mid), functionarytype_id=int(fid), end_date=end_date, begin_date=begin_date)
+
+    return Response(status=200)
+
+@api_view(['POST'])
+def multiDecorationOwnershipSave(request):
+    did = request.data.get('decoration')
+    members = request.data.get('member').strip("|").split("|")
+    acquired = request.data.get('acquired')
+
+    for mid in members:
+        # get_or_create is used to ignore duplicates
+        DecorationOwnership.objects.get_or_create(member_id=int(mid), decoration_id=int(did), acquired=acquired)
 
     return Response(status=200)
 
