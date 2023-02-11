@@ -24,32 +24,35 @@ const call_if_function = (fn, ...params) => {
  * @param {Object | (e: Element) => Object} dption.data
  * @param {String | (e: Element) => String} option.newLocation
  */
-const add_request_listener = options => {
-	const { element, method, url, data, confirmMessage, newLocation } = options;
-	const ELEMENT = $(element);
+const add_request_listener = ({ element, method, url, data, confirmMessage, newLocation }) => {
+	// Get the element(s) to attach the listener to
+	$(element).each((_, domElement) => {
+		// Deduce what to listen for based on the element tag
+		const type = domElement.tagName.toLowerCase() === "form" ? "submit" : "click";
 
-	let TYPE = ELEMENT.get(0)?.tagName.toLowerCase() === "form" ? "submit" : "click";
+		const e = $(domElement);
+		// Add a listener to the element
+		e.on(type, event => {
+			event.preventDefault();
 
-	// Add a listener to the element(s)
-	ELEMENT.on(TYPE, event => {
-		event.preventDefault();
+			if (confirmMessage && !confirm(confirmMessage)) return;
 
-		if (confirmMessage && !confirm(confirmMessage)) return;
+			// Do the request
+			const request = $.ajax({
+				method,
+				url: call_if_function(url, e),
+				data: data ? call_if_function(data, e) : e.serialize(),
+			});
 
-		// Do the request
-		const request = $.ajax({
-			method,
-			url: call_if_function(url, ELEMENT),
-			data: data ? call_if_function(data, ELEMENT) : ELEMENT.serialize(),
-		});
-
-		// Add listeners to the request
-		request.done(msg => {
-			if (newLocation) window.location = call_if_function(newLocation, ELEMENT, msg);
-			else location.reload();
-		});
-		request.fail((jqHXR, textStatus) => {
-			alert(`Request failed (${textStatus}): ${jqHXR.responseText}`);
+			// Add listeners to the request
+			request.done(msg => {
+				if (newLocation) window.location = call_if_function(newLocation, e, msg);
+				else location.reload();
+			});
+			// XXX: The error message is not very helpful for the user, so should probably change this to something else
+			request.fail((jqHXR, textStatus) => {
+				alert(`Request failed (${textStatus}): ${jqHXR.responseText}`);
+			});
 		});
 	});
 }
