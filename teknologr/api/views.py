@@ -46,11 +46,14 @@ class GroupMembershipViewSet(viewsets.ModelViewSet):
     queryset = GroupMembership.objects.all()
     serializer_class = GroupMembershipSerializer
 
+def getMultiParameter(request, key):
+    members = request.data.get(key).strip("|").split("|")
+    return [m for m in members if m]
 
 @api_view(['POST'])
 def multiGroupMembershipSave(request):
     gid = request.data.get('group')
-    members = request.data.get('member').strip("|").split("|")
+    members = getMultiParameter(request, 'member')
 
     for mid in members:
         # get_or_create is used to ignore duplicates
@@ -61,7 +64,7 @@ def multiGroupMembershipSave(request):
 @api_view(['POST'])
 def multiFunctionarySave(request):
     fid = request.data.get('functionarytype')
-    members = request.data.get('member').strip("|").split("|")
+    members = getMultiParameter(request, 'member')
     begin_date = request.data.get('begin_date')
     end_date = request.data.get('end_date')
 
@@ -74,7 +77,7 @@ def multiFunctionarySave(request):
 @api_view(['POST'])
 def multiDecorationOwnershipSave(request):
     did = request.data.get('decoration')
-    members = request.data.get('member').strip("|").split("|")
+    members = getMultiParameter(request, 'member')
     acquired = request.data.get('acquired')
 
     for mid in members:
@@ -306,7 +309,7 @@ class ApplicantMembershipView(APIView):
 
 @api_view(['POST'])
 def multiApplicantSubmission(request):
-    applicants = request.data.get('applicant').strip('|').split('|')
+    applicants = getMultiParameter(request, 'applicant')
 
     # Simulate a POST request to ApplicantMembershipView
     am_view = ApplicantMembershipView()
