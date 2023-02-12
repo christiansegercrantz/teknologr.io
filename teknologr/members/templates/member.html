@@ -8,6 +8,7 @@
       <a href="/api/members/{{member.id}}/" class="btn btn-outline-dark float-right">API länk</a>
       <a href="/api/htkdump/{{member.id}}" class="btn btn-outline-dark float-right">HTK dump</a>
     </h1>
+
     {% if result %}
     <div class="row">
       {% if result == 'success' %}
@@ -17,8 +18,12 @@
       {% endif %}
     </div>
     {% endif %}
+
     <div class="row form-group">
-      <div class="col-md-8">
+
+      <!-- Form -->
+
+      <div class="col-lg-8">
         <form id="memberform" autocomplete="off" role ="form" action="/admin/members/{{member.id}}/" method="post">
           {% csrf_token %}
           <div class="row form-group">
@@ -103,7 +108,7 @@
             </div>
           </div>
           <div class="row form-group">
-            <div class="col-md-2">
+            <div class="col-md-2 form-check">
               <label class="form-check-label" for="{{form.graduated.id_for_label}}">
                 {%if form.graduated.errors %}<div class="alert alert-danger">{{form.graduated.errors}}</div>{%endif%}
                 {{form.graduated}} Utexaminerad
@@ -114,7 +119,7 @@
               {%if form.graduated_year.errors %}<div class="alert alert-danger">{{form.graduated_year.errors}}</div>{%endif%}
               {{form.graduated_year}}
             </div>
-            <div class="col-md-2">
+            <div class="col-md-2 form-check">
               <label class="form-check-label" for="{{form.subscribed_to_modulen.id_for_label}}">
                 {%if form.subscribed_to_modulen.errors %}<div class="alert alert-danger">{{form.subscribed_to_modulen.errors}}</div>{%endif%}
                 {{form.subscribed_to_modulen}} Vill ha modulen hemskickad
@@ -146,7 +151,7 @@
               {{ form.comment }}
             </div>
           </div>
-          <div id="save-remove-buttons" class="row">
+          <div class="row mt-4">
             <div class="col-md-12">
               <button type="submit" class="btn btn-success">Spara</button>
               <button id="deletemember" class="btn btn-danger" data-id={{member.id}}>Radera</button>
@@ -154,11 +159,11 @@
           </div>
         </form>
 
-        <div class="row">
+        <div class="row mt-4">
           <h2 class="col-12">Användarkonton</h2>
         </div>
-        <div class="row">
-          <div class="col-md-6">
+        <div class="row mb-4">
+          <div class="col-sm-6">
             <h3>LDAP</h3>
             {% if LDAP %}
             {% if LDAP.error %}
@@ -181,7 +186,7 @@
             {% include "modals/addldap.html" with modalname="addldap_modal" title="Skapa LDAP konto" member_id=member.id only %}
             {% endif %}
           </div>
-          <div class="col-md-6">
+          <div class="col-sm-6">
             <h3>BILL</h3>
             {% if BILL %}
             {% if BILL.error %}
@@ -204,8 +209,8 @@
 
       <!-- Right Column -->
 
-      <div class="col-md-4">
-        <ul class="list-inline">
+      <div class="col-lg-4">
+        <ul class="list-inline mt-4 mb-0">
           <li class="list-inline-item"><h3>Hedersbetygelser</h3></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addDecoration">Lägg till ny</button>
@@ -227,7 +232,7 @@
             {% endfor %}
         </table>
 
-        <ul class="list-inline">
+        <ul class="list-inline mt-4 mb-0">
           <li class="list-inline-item"><h3>Poster</h3></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addFunctionary">Lägg till ny</button>
@@ -251,7 +256,7 @@
             {% endfor %}
         </table>
 
-        <ul class="list-inline">
+        <ul class="list-inline mt-4 mb-0">
           <li class="list-inline-item"><h3>Grupper</h3></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addGroup">Lägg till ny</button>
@@ -275,7 +280,7 @@
             {% endfor %}
         </table>
 
-        <ul class="list-inline">
+        <ul class="list-inline mt-4 mb-0">
           <li class="list-inline-item"><h3>Medlemstyper</h3></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addMemberType">Lägg till ny</button>
