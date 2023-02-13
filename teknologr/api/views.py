@@ -50,14 +50,22 @@ def getMultiParameter(request, key):
     members = request.data.get(key).strip("|").split("|")
     return [m for m in members if m]
 
+def getMemberIdFromMultiParmeter(id_or_names):
+    if id_or_names[0] == '$':
+        names = id_or_names[1:].split()
+        member = Member.objects.create(given_names=''.join(names[0:-1]), surname=names[-1])
+        return member.id
+    return int(id_or_names)
+
 @api_view(['POST'])
 def multiGroupMembershipSave(request):
     gid = request.data.get('group')
     members = getMultiParameter(request, 'member')
 
-    for mid in members:
+    for id_or_name in members:
+        mid = getMemberIdFromMultiParmeter(id_or_name)
         # get_or_create is used to ignore duplicates
-        GroupMembership.objects.get_or_create(member_id=int(mid), group_id=int(gid))
+        GroupMembership.objects.get_or_create(member_id=mid, group_id=int(gid))
 
     return Response(status=200)
 
@@ -68,9 +76,10 @@ def multiFunctionarySave(request):
     begin_date = request.data.get('begin_date')
     end_date = request.data.get('end_date')
 
-    for mid in members:
+    for id_or_name in members:
+        mid = getMemberIdFromMultiParmeter(id_or_name)
         # get_or_create is used to ignore duplicates
-        Functionary.objects.get_or_create(member_id=int(mid), functionarytype_id=int(fid), end_date=end_date, begin_date=begin_date)
+        Functionary.objects.get_or_create(member_id=mid, functionarytype_id=int(fid), end_date=end_date, begin_date=begin_date)
 
     return Response(status=200)
 
@@ -80,9 +89,10 @@ def multiDecorationOwnershipSave(request):
     members = getMultiParameter(request, 'member')
     acquired = request.data.get('acquired')
 
-    for mid in members:
+    for id_or_name in members:
+        mid = getMemberIdFromMultiParmeter(id_or_name)
         # get_or_create is used to ignore duplicates
-        DecorationOwnership.objects.get_or_create(member_id=int(mid), decoration_id=int(did), acquired=acquired)
+        DecorationOwnership.objects.get_or_create(member_id=mid, decoration_id=int(did), acquired=acquired)
 
     return Response(status=200)
 

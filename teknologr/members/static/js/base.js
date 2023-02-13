@@ -1,6 +1,48 @@
 // Sidebar ajax search delay timer
 var timer;
 
+/**
+ * Extend the functionality of the AutoCompleteSelectMultipleField from django-ajax-selects by also allowing new members to be created simultaneously. This is how it's done:
+ * 1. Add click-listener to a button
+ * 2. When clicked, the name is taken from the member search box
+ * 3. The name is appended to the hidden input and appended to the list
+ * 4. A button for removing the name is also created
+ * 5. When the form is submitted, the api endpoint handles splitting the hidden input and creating new members
+ */
+const add_ajax_multiselect_extension = ({ selector_button, selector_input, selector_hidden_input, selector_deck }) => {
+	$(selector_button).click(e => {
+		e.preventDefault();
+
+		const input = $(selector_input);
+		const name = input.val().trim();
+		if (!name || !name.includes(" ") || name.includes("|") || name.includes("$")) return;
+		input.val("");
+
+		const hidden_input = $(selector_hidden_input);
+
+		// Add name to hidden (real) input
+		const substring = `$${name}|`;
+		hidden_input.val(hidden_input.val() + substring);
+
+		// Add name to list
+		const div = $("<div>", {
+			html: `<b>Ny:</b> ${name}`,
+		}).appendTo(selector_deck);
+
+		// Create button for removing the name from the list
+		$("<span>", {
+			class: "ui-icon ui-icon-trash",
+			text: "X",
+			click: () => {
+				const value = hidden_input.val();
+				const i = value.indexOf(substring);
+				hidden_input.val(value.slice(0, i) + value.slice(i + substring.length));
+				div.remove();
+			},
+		}).prependTo(div);
+	});
+}
+
 $(document).ready(function() {
 	$("#newform").submit(function(event){
 		var active = $(this).data('active');

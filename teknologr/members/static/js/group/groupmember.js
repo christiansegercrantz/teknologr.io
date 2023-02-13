@@ -41,4 +41,11 @@ $(document).ready(function() {
 		$("#members_email_list").select();
     document.execCommand('copy');
 	});
+
+	add_ajax_multiselect_extension({
+		selector_button: "#gmform-create-member",
+		selector_input: "#gmform_member_text",
+		selector_hidden_input: "#gmform_member",
+		selector_deck: "#gmform_member_on_deck",
+	});
 });

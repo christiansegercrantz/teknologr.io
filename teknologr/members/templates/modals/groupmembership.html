@@ -4,10 +4,13 @@
 <form id="addgroupmemberform" action="" method="post">
   {% csrf_token %}
   {{ groupmembershipform.media }}
-  <div class="row form-group w-100">
+  <div class="row form-group">
     <div class="col-3"><label for="{{groupmembershipform.member.id_for_label}}">Namn</label></div>
-    <div class="col-6">{{ groupmembershipform.member }}</div>
-    <div class="col-3"><button type="submit" class="btn btn-success float-right">Spara</button></div>
+    <div class="col-7">{{ groupmembershipform.member }}</div>
+    <div class="col-2"><button id="gmform-create-member" class="btn btn-warning float-right">Ny</button></div>
+  </div>
+  <div class="row form-group">
+    <div class="col"><button type="submit" class="btn btn-success float-right">Spara</button></div>
   </div>
   {{ groupmembershipform.group.as_hidden }}
 </form>
