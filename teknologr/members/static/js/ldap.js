@@ -18,34 +18,34 @@ $(document).ready(function() {
 
   // Create an LDAP account for the selected user
   add_request_listener({
-    element: "#addldapform",
+    selector: "#addldapform",
     method: "POST",
     url: element => `/api/accounts/ldap/${element.data('id')}/`,
   });
   // Delete the LDAP account for the selected user
   add_request_listener({
-    element: "#delldap",
+    selector: "#delldap",
     method: "DELETE",
     url: element => `/api/accounts/ldap/${element.data('id')}/`,
     confirmMessage: "Vill du ta bort detta LDAP konto?",
   });
   // Change the LDAP password for the selected user
   add_request_listener({
-    element: "#changeldappwform",
+    selector: "#changeldappwform",
     method: "POST",
     url: element => `/api/accounts/ldap/change_pw/${element.data('id')}/`,
   });
 
   // Create a BILL account for the selected memeber
   add_request_listener({
-    element: "#addbill",
+    selector: "#addbill",
     method: "POST",
     url: element => `/api/accounts/bill/${element.data('id')}/`,
     data: element => ({ "member_id": element.data('id') }),
   });
   // Delete the BILL account for the selected memeber
   add_request_listener({
-    element: "#delbill",
+    selector: "#delbill",
     method: "DELETE",
     url: element => `/api/accounts/bill/${element.data('id')}/`,
     confirmMessage: "Vill du ta bort detta BILL konto?",

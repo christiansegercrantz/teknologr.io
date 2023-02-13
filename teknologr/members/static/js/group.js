@@ -1,13 +1,13 @@
 $(document).ready(function () {
 	// Update the selected group type
 	add_request_listener({
-		element: "#grouptypeform",
+		selector: "#grouptypeform",
 		method: "PUT",
 		url: element => `/api/groupTypes/${element.data("id")}/`
 	});
 	// Remove the selected group type
 	add_request_listener({
-		element: "#deleteGroupType",
+		selector: "#deleteGroupType",
 		method: "DELETE",
 		url: element => `/api/groupTypes/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna grupptyp och alla dess undergrupper?",
@@ -16,13 +16,13 @@ $(document).ready(function () {
 
 	// Add a subgroup to the list
 	add_request_listener({
-		element: "#addgroupform",
+		selector: "#addgroupform",
 		method: "POST",
 		url: "/api/groups/",
 	});
 	// Remove a subgroup from the list
 	add_request_listener({
-		element: ".removeGroup",
+		selector: ".removeGroup",
 		method: "DELETE",
 		url: element => `/api/groups/${element.data("id")}/`,
 		confirmMessage: "Vill du ta bort denna undergrupp?",
@@ -31,19 +31,19 @@ $(document).ready(function () {
 
 	// Edit the selected subgroup
 	add_request_listener({
-		element: "#editgroupform",
+		selector: "#editgroupform",
 		method: "PUT",
 		url: element => `/api/groups/${element.data("id")}/`,
 	});
 	// Add members to the selected subgroup
 	add_request_listener({
-		element: "#addgroupmemberform",
+		selector: "#addgroupmemberform",
 		method: "POST",
 		url: "/api/multiGroupMembership/",
 	});
 	// Remove a member from the selected subgroup
 	add_request_listener({
-		element: ".removeMembership",
+		selector: ".removeMembership",
 		method: "DELETE",
 		url: element => `/api/groupMembership/${element.data("id")}/`,
 		confirmMessage: "Vill du ta bort detta undergruppsmedlemskap?",

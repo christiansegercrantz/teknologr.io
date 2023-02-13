@@ -5,22 +5,22 @@ $(document).ready(function() {
 	// Buttons for adding items to the selected member
 	// XXX: Could probably be combined
 	add_request_listener({
-		element: "#adddecorationform",
+		selector: "#adddecorationform",
 		method: "POST",
 		url: "/api/decorationOwnership/",
 	});
 	add_request_listener({
-		element: "#addfunctionaryform",
+		selector: "#addfunctionaryform",
 		method: "POST",
 		url: "/api/functionaries/",
 	});
 	add_request_listener({
-		element: "#addgroupform",
+		selector: "#addgroupform",
 		method: "POST",
 		url: "/api/groupMembership/",
 	});
 	add_request_listener({
-		element: "#addmembertypeform",
+		selector: "#addmembertypeform",
 		method: "POST",
 		url: "/api/memberTypes/",
 	});
@@ -28,25 +28,25 @@ $(document).ready(function() {
 	// Buttons for deleting individual items from the selected member
 	// XXX: Could probably be combined
 	add_request_listener({
-		element: ".removeDecoration",
+		selector: ".removeDecoration",
 		method: "DELETE",
 		url: element => `/api/decorationOwnership/${element.data("id")}/`,
 		confirmMessage: "Vill du radera detta hedersbetygelseinnehav?",
 	});
 	add_request_listener({
-		element: ".removeFunctionary",
+		selector: ".removeFunctionary",
 		url: element => `/api/functionaries/${element.data("id")}/`,
 		method: "DELETE",
 		confirmMessage: "Vill du radera denna post?",
 	});
 	add_request_listener({
-		element: ".removeGroup",
+		selector: ".removeGroup",
 		method: "DELETE",
 		url: element => `/api/groupMembership/${element.data("id")}/`,
 		confirmMessage: "Vill du radera detta gruppmedlemskap?",
 	});
 	add_request_listener({
-		element: ".removeMemberType",
+		selector: ".removeMemberType",
 		method: "DELETE",
 		url: element => `/api/memberTypes/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna medlemstyp?",
@@ -54,7 +54,7 @@ $(document).ready(function() {
 
 	// Delete the selected member
 	add_request_listener({
-		element: "#deletemember",
+		selector: "#deletemember",
 		method: "DELETE",
 		url: element => `/api/members/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna medlem?",
@@ -65,7 +65,7 @@ $(document).ready(function() {
 		const id = $(this).data("id");
 		$("#editMemberTypeModal .modal-body").load("/admin/membertype/" + id + "/form/", function () {
 			add_request_listener({
-				element: "#editmembertypeform",
+				selector: "#editmembertypeform",
 				method: "PUT",
 				url: `/api/memberTypes/${id}/`,
 			});

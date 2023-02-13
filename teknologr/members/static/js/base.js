@@ -24,9 +24,9 @@ const call_if_function = (fn, ...params) => {
  * @param {Object | (e: Element) => Object} dption.data
  * @param {String | (e: Element) => String} option.newLocation
  */
-const add_request_listener = ({ element, method, url, data, confirmMessage, newLocation }) => {
+const add_request_listener = ({ selector, method, url, data, confirmMessage, newLocation }) => {
 	// Get the element(s) to attach the listener to
-	$(element).each((_, domElement) => {
+	$(selector).each((_, domElement) => {
 		// Deduce what to listen for based on the element tag
 		const type = domElement.tagName.toLowerCase() === "form" ? "submit" : "click";
 
@@ -68,7 +68,7 @@ $(document).ready(function () {
 	}
 
 	add_request_listener({
-		element: "#newform",
+		selector: "#newform",
 		method: "POST",
 		url: element => `/api/${element_to_api_path(element)}/`,
 		newLocation: (element, msg) => `/admin/${element.data("active")}/${msg.id}/`,

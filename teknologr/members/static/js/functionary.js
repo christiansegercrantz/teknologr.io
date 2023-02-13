@@ -1,13 +1,13 @@
 $(document).ready(function () {
 	// Update the selected functionary type
 	add_request_listener({
-		element: "#functionaryTypeForm",
+		selector: "#functionaryTypeForm",
 		method: "PUT",
 		url: element => `/api/functionaryTypes/${element.data("id")}/`,
 	});
 	// Remove the selected functionary type
 	add_request_listener({
-		element: "#deleteFunctionaryType",
+		selector: "#deleteFunctionaryType",
 		method: "DELETE",
 		url: element => `/api/functionaryTypes/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna funktionärstyp?",
@@ -16,13 +16,13 @@ $(document).ready(function () {
 
 	// Add a person to the list
 	add_request_listener({
-		element: "#addfunctionaryform",
+		selector: "#addfunctionaryform",
 		method: "POST",
 		url: `/api/multiFunctionary/`,
 	});
 	// Remove a person from the list
 	add_request_listener({
-		element: ".removeFunctionary",
+		selector: ".removeFunctionary",
 		method: "DELETE",
 		url: element => `/api/functionaries/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna funktionär?",
