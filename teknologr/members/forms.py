@@ -1,8 +1,8 @@
 from members.models import *
 from registration.models import Applicant
-from django.forms import ModelForm, DateField, ChoiceField, CharField
-from django.forms.widgets import CheckboxInput, DateInput, HiddenInput, TextInput, PasswordInput
-from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
+from django.forms import ModelForm, DateField, CharField
+from django.forms.widgets import CheckboxInput, DateInput, TextInput, PasswordInput
+from ajax_select.fields import AutoCompleteSelectMultipleField
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
 
@@ -10,7 +10,7 @@ from django import forms
 class BSModelForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(BSModelForm, self).__init__(*args, **kwargs)
-        for name, field in self.fields.items():
+        for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
 
 
@@ -28,8 +28,7 @@ class MemberForm(ModelForm):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs: kwargs["auto_id"] = "mform_%s"
         super(MemberForm, self).__init__(*args, **kwargs)
-
-        for name, field in self.fields.items():
+        for field in self.fields.values():
             if type(field.widget) is CheckboxInput:
                 field.widget.attrs['class'] = 'form-check-input'
             else:

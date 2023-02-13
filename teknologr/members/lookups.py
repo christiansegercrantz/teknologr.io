@@ -1,7 +1,6 @@
 from ajax_select import register, LookupChannel
 from members.models import *
 from registration.models import Applicant
-from django.utils.html import escape
 from api.utils import findMembers, findApplicants
 
 
