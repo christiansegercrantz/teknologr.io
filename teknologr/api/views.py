@@ -46,11 +46,20 @@ class GroupMembershipViewSet(viewsets.ModelViewSet):
     queryset = GroupMembership.objects.all()
     serializer_class = GroupMembershipSerializer
 
-def getMultiParameter(request, key):
+"""
+In multi-select fields the values are divided by '|'.
+Example: '|<value1>|<value2>|<value3>|'
+"""
+def getMultiSelectValues(request, key):
     members = request.data.get(key).strip("|").split("|")
     return [m for m in members if m]
 
-def getMemberIdFromMultiParmeter(id_or_names):
+"""
+In multi-select Member fields each value can be:
+ - the ID of an existing Member, or
+ - the name of a new Member that should be created, prefixed with '$'
+"""
+def getOrCreateMemeberIdFromMultiSelectValue(id_or_names):
     if id_or_names[0] == '$':
         names = id_or_names[1:].split()
         member = Member.objects.create(given_names=''.join(names[0:-1]), surname=names[-1])
@@ -60,10 +69,10 @@ def getMemberIdFromMultiParmeter(id_or_names):
 @api_view(['POST'])
 def multiGroupMembershipSave(request):
     gid = request.data.get('group')
-    members = getMultiParameter(request, 'member')
+    members = getMultiSelectValues(request, 'member')
 
     for id_or_name in members:
-        mid = getMemberIdFromMultiParmeter(id_or_name)
+        mid = getOrCreateMemeberIdFromMultiSelectValue(id_or_name)
         # get_or_create is used to ignore duplicates
         GroupMembership.objects.get_or_create(member_id=mid, group_id=int(gid))
 
@@ -72,12 +81,12 @@ def multiGroupMembershipSave(request):
 @api_view(['POST'])
 def multiFunctionarySave(request):
     fid = request.data.get('functionarytype')
-    members = getMultiParameter(request, 'member')
+    members = getMultiSelectValues(request, 'member')
     begin_date = request.data.get('begin_date')
     end_date = request.data.get('end_date')
 
     for id_or_name in members:
-        mid = getMemberIdFromMultiParmeter(id_or_name)
+        mid = getOrCreateMemeberIdFromMultiSelectValue(id_or_name)
         # get_or_create is used to ignore duplicates
         Functionary.objects.get_or_create(member_id=mid, functionarytype_id=int(fid), end_date=end_date, begin_date=begin_date)
 
@@ -86,11 +95,11 @@ def multiFunctionarySave(request):
 @api_view(['POST'])
 def multiDecorationOwnershipSave(request):
     did = request.data.get('decoration')
-    members = getMultiParameter(request, 'member')
+    members = getMultiSelectValues(request, 'member')
     acquired = request.data.get('acquired')
 
     for id_or_name in members:
-        mid = getMemberIdFromMultiParmeter(id_or_name)
+        mid = getOrCreateMemeberIdFromMultiSelectValue(id_or_name)
         # get_or_create is used to ignore duplicates
         DecorationOwnership.objects.get_or_create(member_id=mid, decoration_id=int(did), acquired=acquired)
 
@@ -319,7 +328,7 @@ class ApplicantMembershipView(APIView):
 
 @api_view(['POST'])
 def multiApplicantSubmission(request):
-    applicants = getMultiParameter(request, 'applicant')
+    applicants = getMultiSelectValues(request, 'applicant')
 
     # Simulate a POST request to ApplicantMembershipView
     am_view = ApplicantMembershipView()
