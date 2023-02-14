@@ -33,7 +33,5 @@ $(document).ready(function () {
 	add_ajax_multiselect_extension({
 		selector_button: "#doform-create-member",
 		selector_input: "#doform_member_text",
-		selector_hidden_input: "#doform_member",
-		selector_deck: "#doform_member_on_deck",
 	});
 });

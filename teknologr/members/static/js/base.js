@@ -66,8 +66,10 @@ const add_request_listener = ({ selector, method, url, data, confirmMessage, new
  * 3. The name is appended to the hidden input and appended to the list
  * 4. A button for removing the name is also created
  * 5. When the form is submitted, the api endpoint handles splitting the hidden input and creating new members
+ *
+ * Note that a certain layout of the elements is assumed.
  */
-const add_ajax_multiselect_extension = ({ selector_button, selector_input, selector_hidden_input, selector_deck }) => {
+const add_ajax_multiselect_extension = ({ selector_button, selector_input }) => {
 	$(selector_button).click(e => {
 		e.preventDefault();
 
@@ -76,7 +78,7 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input, selec
 		if (!name || !name.includes(" ") || name.includes("|") || name.includes("$")) return;
 		input.val("");
 
-		const hidden_input = $(selector_hidden_input);
+		const hidden_input = input.next();
 
 		// Add name to hidden (real) input
 		const substring = `$${name}|`;
@@ -89,7 +91,7 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input, selec
 		// Add name to list
 		const div = $("<div>", {
 			html: `<b>Ny:</b> ${name}`,
-		}).appendTo(selector_deck);
+		}).appendTo(hidden_input.next());
 
 		// Create button for removing the name from the list
 		$("<span>", {
