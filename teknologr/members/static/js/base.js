@@ -22,6 +22,7 @@ const call_if_function = (fn, ...params) => {
  * Some of the options also allow a function (e: Element) => T to be passed, if the option value depends on for example data on the specific element. These options are:
  * @param {String | (e: Element) => String} option.url
  * @param {Object | (e: Element) => Object} dption.data
+ * @param {String | (e: Element) => String} option.confirmMessage
  * @param {String | (e: Element) => String} option.newLocation
  */
 const add_request_listener = ({ selector, method, url, data, confirmMessage, newLocation }) => {
@@ -35,7 +36,8 @@ const add_request_listener = ({ selector, method, url, data, confirmMessage, new
 		e.on(type, event => {
 			event.preventDefault();
 
-			if (confirmMessage && !confirm(confirmMessage)) return;
+			const msg = call_if_function(confirmMessage, e);
+			if (msg && !confirm(msg)) return;
 
 			// Do the request
 			const request = $.ajax({
@@ -80,8 +82,8 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input, selec
 		const substring = `$${name}|`;
 		hidden_input.val(hidden_input.val() + substring);
 
-		// Keep track of the amount of names added
-		const data = hidden_input.data();
+		// Keep track of the amount of names added by storing the counter on the form
+		const data = input.closest("form").data();
 		data.counter = (data.counter || 0) + 1;
 
 		// Add name to list
@@ -97,11 +99,16 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input, selec
 				const value = hidden_input.val();
 				const i = value.indexOf(substring);
 				hidden_input.val(value.slice(0, i) + value.slice(i + substring.length));
-				hidden_input.data().counter--;
+				data.counter--;
 				div.remove();
 			},
 		}).prependTo(div);
 	});
+}
+
+const confirmMessageCreateMembers = e => {
+	const newMembers = e.data("counter");
+	return newMembers && `Du håller på att skapa ${newMembers === 1 ? "1 ny medlem" : `${newMembers} nya medlemmar`}. Fortsätt?`;
 }
 
 $(document).ready(function () {

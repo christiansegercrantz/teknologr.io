@@ -19,10 +19,7 @@ $(document).ready(function () {
 		selector: "#addfunctionaryform",
 		method: "POST",
 		url: `/api/multiFunctionary/`,
-		confirmationMessage: () => {
-			const newMembers = $("#doform_member").data("counter");
-			return newMembers && `Du håller på att skapa ${newMembers === 1 ? "1 ny medlem" : `${newMembers} nya medlemmar`}. Fortsätt?`;
-		},
+		confirmMessage: confirmMessageCreateMembers,
 	});
 	// Remove a person from the list
 	add_request_listener({
