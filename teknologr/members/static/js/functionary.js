@@ -39,6 +39,9 @@ $(document).ready(function() {
 	});
 
 	$("#addfunctionaryform").submit(function(event){
+		const newMembers = $("#doform_member").data("counter");
+		if (newMembers && !confirm(`Du håller på att skapa ${newMembers === 1 ? "1 ny medlem" : `${newMembers} nya medlemmar`}. Fortsätt?`)) return;
+
 		var request = $.ajax({
 			url: "/api/multiFunctionary/",
 			method: 'POST',

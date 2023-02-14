@@ -24,6 +24,10 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input, selec
 		const substring = `$${name}|`;
 		hidden_input.val(hidden_input.val() + substring);
 
+		// Keep track of the amount of names added
+		const data = hidden_input.data();
+		data.counter = (data.counter || 0) + 1;
+
 		// Add name to list
 		const div = $("<div>", {
 			html: `<b>Ny:</b> ${name}`,
@@ -37,6 +41,7 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input, selec
 				const value = hidden_input.val();
 				const i = value.indexOf(substring);
 				hidden_input.val(value.slice(0, i) + value.slice(i + substring.length));
+				hidden_input.data().counter--;
 				div.remove();
 			},
 		}).prependTo(div);
