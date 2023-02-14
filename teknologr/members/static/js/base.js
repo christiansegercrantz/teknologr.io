@@ -67,6 +67,25 @@ $(document).ready(function() {
 		}
 	});
 
+	/**
+	 * Populate "create new xyz" modal form with the current search box value.
+	 */
+	$("#side-new").click(() => {
+		const search = $("#side-search");
+		const value = search.val();
+		switch (search.data("active")) {
+			case "members": {
+				const names = value.split(" ").filter(s => s);
+				const last = names.splice(names.length - 1, 1);
+				$("#mmodal_given_names").val(names.join(" "));
+				$("#mmodal_surname").val(last);
+			} break;
+			case "decorations": $("#dform_name").val(value); break;
+			case "groups": $("#gtform_name").val(value); break;
+			case "functionaries": $("#ftform_name").val(value); break;
+		}
+	});
+
     $('#choose-multiple-applicants').submit(function(event) {
         const data = $(this).serialize();
         const request = $.ajax({

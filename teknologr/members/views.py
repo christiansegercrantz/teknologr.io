@@ -35,7 +35,7 @@ def set_side_context(context, category, active_obj=None):
     side['new_button'] = True
     if category == 'members':
         side['sname'] = 'medlem'
-        side['modalForm'] = MemberForm(initial={'given_names': '', 'surname': ''})
+        side['modalForm'] = MemberForm(initial={'given_names': '', 'surname': ''}, auto_id="mmodal_%s")
         objects = Member.objects.order_by('-modified')[:50]
         if active_obj:
             active = Member.objects.get(pk=active_obj)
