@@ -173,9 +173,9 @@ $(document).ready(function () {
 				$("#mmodal_given_names").val(names.join(" "));
 				$("#mmodal_surname").val(last);
 			} break;
-			case "decorations": $("#dform_name").val(value); break;
-			case "groups": $("#gtform_name").val(value); break;
-			case "functionaries": $("#ftform_name").val(value); break;
+			case "decorations": $("#dmodal_name").val(value); break;
+			case "groups": $("#gtmodal_name").val(value); break;
+			case "functionaries": $("#ftmodal_name").val(value); break;
 		}
 	});
 

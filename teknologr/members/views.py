@@ -45,15 +45,15 @@ def set_side_context(context, category, active_obj=None):
         side['objects'] = objects
     elif category == 'groups':
         side['sname'] = 'grupp'
-        side['modalForm'] = GroupTypeForm()
+        side['modalForm'] = GroupTypeForm(auto_id="gtmodal_%s")
         side['objects'] = GroupType.objects.all()
     elif category == 'functionaries':
         side['sname'] = 'post'
-        side['modalForm'] = FunctionaryTypeForm()
+        side['modalForm'] = FunctionaryTypeForm(auto_id="ftmodal_%s")
         side['objects'] = FunctionaryType.objects.all()
     elif category == 'decorations':
         side['sname'] = 'betygelse'
-        side['modalForm'] = DecorationForm()
+        side['modalForm'] = DecorationForm(auto_id="dmodal_%s")
         side['objects'] = Decoration.objects.all()
     elif category == 'applicants':
         side['sname'] = 'ansökning'
