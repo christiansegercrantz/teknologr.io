@@ -19,12 +19,24 @@ $(document).ready(function () {
 		selector: "#adddecorationform",
 		method: "POST",
 		url: "/api/multiDecorationOwnership/",
+		confirmationMessage: () => {
+			const newMembers = $("#doform_member").data("counter");
+			return newMembers && `Du håller på att skapa ${newMembers === 1 ? "1 ny medlem" : `${newMembers} nya medlemmar`}. Fortsätt?`;
+		},
 	});
+
 	// Delete a person from the list
 	add_request_listener({
 		selector: ".removeDecoration",
 		method: "DELETE",
 		url: element => `/api/decorationOwnership/${element.data("id")}/`,
 		confirmMessage: "Vill du radera detta hedersbetygelseinnehav?",
+	});
+
+	add_ajax_multiselect_extension({
+		selector_button: "#doform-create-member",
+		selector_input: "#doform_member_text",
+		selector_hidden_input: "#doform_member",
+		selector_deck: "#doform_member_on_deck",
 	});
 });

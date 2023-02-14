@@ -40,6 +40,10 @@ $(document).ready(function () {
 		selector: "#addgroupmemberform",
 		method: "POST",
 		url: "/api/multiGroupMembership/",
+		confirmationMessage: () => {
+			const newMembers = $("#doform_member").data("counter");
+			return newMembers && `Du håller på att skapa ${newMembers === 1 ? "1 ny medlem" : `${newMembers} nya medlemmar`}. Fortsätt?`;
+		},
 	});
 	// Remove a member from the selected subgroup
 	add_request_listener({
@@ -53,5 +57,12 @@ $(document).ready(function () {
 	$('#copy2clipboard').click(function(){
 		$("#members_email_list").select();
 		document.execCommand('copy');
+	});
+
+	add_ajax_multiselect_extension({
+		selector_button: "#gmform-create-member",
+		selector_input: "#gmform_member_text",
+		selector_hidden_input: "#gmform_member",
+		selector_deck: "#gmform_member_on_deck",
 	});
 });
