@@ -169,6 +169,9 @@ $(document).ready(function () {
 		switch (search.data("active")) {
 			case "members": {
 				const names = value.split(" ").filter(s => s);
+				if (names.length === 1) {
+					return $("#mmodal_given_names").val(names.join(" "));
+				}
 				const last = names.splice(names.length - 1, 1);
 				$("#mmodal_given_names").val(names.join(" "));
 				$("#mmodal_surname").val(last);
