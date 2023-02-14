@@ -39,6 +39,9 @@ $(document).ready(function() {
 	});
 
 	$("#addfunctionaryform").submit(function(event){
+		const newMembers = $("#doform_member").data("counter");
+		if (newMembers && !confirm(`Du håller på att skapa ${newMembers === 1 ? "1 ny medlem" : `${newMembers} nya medlemmar`}. Fortsätt?`)) return;
+
 		var request = $.ajax({
 			url: "/api/multiFunctionary/",
 			method: 'POST',
@@ -73,5 +76,12 @@ $(document).ready(function() {
 				alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
 			});
 		}
+	});
+
+	add_ajax_multiselect_extension({
+		selector_button: "#fform-create-member",
+		selector_input: "#fform_member_text",
+		selector_hidden_input: "#fform_member",
+		selector_deck: "#fform_member_on_deck",
 	});
 });

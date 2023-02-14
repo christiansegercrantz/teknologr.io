@@ -39,6 +39,9 @@ $(document).ready(function() {
 	});
 
 	$("#adddecorationform").submit(function(event){
+		const newMembers = $("#doform_member").data("counter");
+		if (newMembers && !confirm(`Du håller på att skapa ${newMembers === 1 ? "1 ny medlem" : `${newMembers} nya medlemmar`}. Fortsätt?`)) return;
+
 		var request = $.ajax({
 			url: "/api/multiDecorationOwnership/",
 			method: 'POST',
@@ -73,5 +76,12 @@ $(document).ready(function() {
 				alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
 			});
 		}
+	});
+
+	add_ajax_multiselect_extension({
+		selector_button: "#doform-create-member",
+		selector_input: "#doform_member_text",
+		selector_hidden_input: "#doform_member",
+		selector_deck: "#doform_member_on_deck",
 	});
 });

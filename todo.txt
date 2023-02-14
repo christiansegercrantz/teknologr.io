@@ -1,0 +1,2 @@
+- Radera medlem -> cancel = reload page?
+- Remove decoration ownershot on member not working?
