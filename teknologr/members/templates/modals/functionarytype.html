@@ -1,11 +1,11 @@
 {% extends "modals/modal.html" %}
 
 {% block modalcontent %}
-<form id="functionaryTypeForm" autocomplete="off" data-id="{{ functionaryType.id }}" class="form-inline">
+<form id="edit-ft-form" autocomplete="off" data-id="{{ functionaryType.id }}" class="form-inline">
   {% csrf_token %}
   <div class="row form-group w-100">
-    <div class="col-3"><label for="{{addgroupform.name.id_for_label}}">Namn</label></div>
-    <div class="col-6">{{ functionaryTypeForm.name }}</div>
+    <div class="col-3"><label for="{{ form.name.id_for_label }}">Namn</label></div>
+    <div class="col-6">{{ form.name }}</div>
     <div class="col-3"><button type="submit" class="btn btn-success float-right">Spara</button></div>
   </div>
 </form>

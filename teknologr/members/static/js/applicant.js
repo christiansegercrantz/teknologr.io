@@ -41,7 +41,7 @@ $(document).ready(function() {
     });
 
     add_request_listener({
-        selector: "#deleteapplicant",
+        selector: "#delete-a-button",
         method: "DELETE",
         url: element => `/api/applicants/${element.data("id")}/`,
         data: element => ({ "applicant_id": element.data("id") }),
@@ -50,14 +50,14 @@ $(document).ready(function() {
     });
 
     add_request_listener({
-        selector: "#makemember",
+        selector: "#make-memeber-form",
         method: "POST",
         url: element => `/api/applicants/makeMember/${element.data("id")}/`,
         newLocation: "/admin/applicants/",
     });
 
     add_request_listener({
-        selector: "#choose-multiple-applicants",
+        selector: "#choose-multiple-applicants-form",
         method: "POST",
         url: "/api/multiApplicantSubmission/",
         newLocation: "/admin/applicants/",

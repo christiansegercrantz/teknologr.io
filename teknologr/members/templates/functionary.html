@@ -8,13 +8,13 @@
       <h1>{{ functionaryType.name }}</h1>
     </li>
     <li class="list-inline-item">
-      <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#functionaryTypeModal"></i>
+      <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#edit-ft-modal"></i>
     </li>
     <li class="list-inline-item">
-      <i id="deleteFunctionaryType" class="fas fa-times text-danger icon-20" role="button" data-id="{{ functionaryType.id }}"></i>
+      <i id="delete-ft-button" class="fas fa-times text-danger icon-20" role="button" data-id="{{ functionaryType.id }}"></i>
     </li>
   </ul>
-  {% include "modals/functionarytype.html" with modalname="functionaryTypeModal" title="Editera Funktionär" functionaryTypeForm=functionaryTypeForm functionaryType=functionaryType only %}
+  {% include "modals/functionarytype.html" with modalname="edit-ft-modal" title="Editera funktionärstyp" form=edit_ft_form functionaryType=functionaryType only %}
 </div>
 
 <div class="container-fluid">
@@ -23,10 +23,10 @@
       <h3>Innehavare av posten</h3>
     </li>
     <li class="list-inline-item">
-      <i class="fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#addFunctionaryModal"></i>
+      <i class="fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#add-f-modal"></i>
     </li>
   </ul>
-  {% include "modals/functionary.html" with modalname="addFunctionaryModal" title="Lägg till ny "|add:functionaryType.name addfunctionaryform=addfunctionaryform only %}
+  {% include "modals/functionary.html" with modalname="add-f-modal" title="Lägg till ny "|add:functionaryType.name form=add_f_form only %}
   <table class="table table-sm table-striped table-borderless">
     <thead class="no-border">
       <tr>
@@ -39,7 +39,7 @@
     <tbody>
     {% for functionary in functionaries %}
       <tr>
-        <td><i class="fas fa-times removeFunctionary text-danger" role="button" data-id="{{ functionary.id }}" data-functionarytype_id="{{functionaryType.id}}"></i></td>
+        <td><i class="fas fa-times delete-f-button text-danger" role="button" data-id="{{ functionary.id }}" data-functionarytype_id="{{functionaryType.id}}"></i></td>
         <td><a href="/admin/members/{{functionary.member.id}}/">{{functionary.member.full_name}}</a></td>
         <td>{{functionary.begin_date}}</td>
         <td>{{functionary.end_date}}</td>

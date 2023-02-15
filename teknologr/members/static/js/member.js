@@ -5,22 +5,22 @@ $(document).ready(function() {
 	// Buttons for adding items to the selected member
 	// XXX: Could probably be combined
 	add_request_listener({
-		selector: "#adddecorationform",
+		selector: "#add-do-form",
 		method: "POST",
 		url: "/api/decorationOwnership/",
 	});
 	add_request_listener({
-		selector: "#addfunctionaryform",
+		selector: "#add-f-form",
 		method: "POST",
 		url: "/api/functionaries/",
 	});
 	add_request_listener({
-		selector: "#addgroupform",
+		selector: "#add-gm-form",
 		method: "POST",
 		url: "/api/groupMembership/",
 	});
 	add_request_listener({
-		selector: "#addmembertypeform",
+		selector: "#add-mt-form",
 		method: "POST",
 		url: "/api/memberTypes/",
 	});
@@ -28,25 +28,25 @@ $(document).ready(function() {
 	// Buttons for deleting individual items from the selected member
 	// XXX: Could probably be combined
 	add_request_listener({
-		selector: ".removeDecoration",
+		selector: ".delete-do-button",
 		method: "DELETE",
 		url: element => `/api/decorationOwnership/${element.data("id")}/`,
 		confirmMessage: "Vill du radera detta hedersbetygelseinnehav?",
 	});
 	add_request_listener({
-		selector: ".removeFunctionary",
+		selector: ".delete-f-button",
 		url: element => `/api/functionaries/${element.data("id")}/`,
 		method: "DELETE",
 		confirmMessage: "Vill du radera denna post?",
 	});
 	add_request_listener({
-		selector: ".removeGroup",
+		selector: ".delete-gm-button",
 		method: "DELETE",
 		url: element => `/api/groupMembership/${element.data("id")}/`,
 		confirmMessage: "Vill du radera detta gruppmedlemskap?",
 	});
 	add_request_listener({
-		selector: ".removeMemberType",
+		selector: ".delete-mt-button",
 		method: "DELETE",
 		url: element => `/api/memberTypes/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna medlemstyp?",
@@ -54,23 +54,23 @@ $(document).ready(function() {
 
 	// Delete the selected member
 	add_request_listener({
-		selector: "#deletemember",
+		selector: "#delete-m-button",
 		method: "DELETE",
 		url: element => `/api/members/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna medlem?",
 		newLocation: "/admin/members/",
 	});
 
-	$('.editMemberType').click(function(){
+	$('.edit-mt-button').click(function(){
 		const id = $(this).data("id");
-		$("#editMemberTypeModal .modal-body").load("/admin/membertype/" + id + "/form/", function () {
+		$("#edit-mt-modal .modal-body").load("/admin/membertype/" + id + "/form/", function () {
 			add_request_listener({
-				selector: "#editmembertypeform",
+				selector: "#edit-mt-form",
 				method: "PUT",
 				url: `/api/memberTypes/${id}/`,
 			});
 
-			$('#editMemberTypeModal').modal();
+			$('#edit-mt-modal').modal();
 		});
 	});
 

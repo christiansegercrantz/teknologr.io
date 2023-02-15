@@ -124,7 +124,7 @@ $(document).ready(function () {
 	}
 
 	add_request_listener({
-		selector: "#newform",
+		selector: "#new-mgtftd-form",
 		method: "POST",
 		url: element => `/api/${element_to_api_path(element)}/`,
 		newLocation: (element, msg) => `/admin/${element.data("active")}/${msg.id}/`,

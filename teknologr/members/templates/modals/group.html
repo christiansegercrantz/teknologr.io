@@ -1,11 +1,11 @@
 {% extends "modals/modal.html" %}
 
 {% block modalcontent %}
-<form id="editgroupform" autocomplete="off" data-id="{{groupid}}">
+<form id="edit-g-form" autocomplete="off" data-id="{{groupid}}">
   {% csrf_token %}
   <div class="row form-group">
     <div class="col-3">
-      <label for={{form.begin_date.id_for_label}}>Från</label>
+      <label for="{{ form.begin_date.id_for_label }}">Från</label>
     </div>
     <div class="col-9">
       {{ form.begin_date }}
@@ -13,7 +13,7 @@
   </div>
   <div class="row form-group">
     <div class="col-3">
-      <label for={{form.end_date.id_for_label}}>Till</label>
+      <label for="{{ form.end_date.id_for_label }}">Till</label>
     </div>
     <div class="col-9">
       {{ form.end_date }}

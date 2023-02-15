@@ -35,7 +35,7 @@ def set_side_context(context, category, active_obj=None):
     side['new_button'] = True
     if category == 'members':
         side['sname'] = 'medlem'
-        side['modalForm'] = MemberForm(initial={'given_names': '', 'surname': ''}, auto_id="mmodal_%s")
+        side['form'] = MemberForm(initial={'given_names': '', 'surname': ''}, auto_id="mmodal_%s")
         objects = Member.objects.order_by('-modified')[:50]
         if active_obj:
             active = Member.objects.get(pk=active_obj)
@@ -45,22 +45,22 @@ def set_side_context(context, category, active_obj=None):
         side['objects'] = objects
     elif category == 'groups':
         side['sname'] = 'grupp'
-        side['modalForm'] = GroupTypeForm(auto_id="gtmodal_%s")
+        side['form'] = GroupTypeForm(auto_id="gtmodal_%s")
         side['objects'] = GroupType.objects.all()
     elif category == 'functionaries':
         side['sname'] = 'post'
-        side['modalForm'] = FunctionaryTypeForm(auto_id="ftmodal_%s")
+        side['form'] = FunctionaryTypeForm(auto_id="ftmodal_%s")
         side['objects'] = FunctionaryType.objects.all()
     elif category == 'decorations':
         side['sname'] = 'betygelse'
-        side['modalForm'] = DecorationForm(auto_id="dmodal_%s")
+        side['form'] = DecorationForm(auto_id="dmodal_%s")
         side['objects'] = Decoration.objects.all()
     elif category == 'applicants':
         side['sname'] = 'ansökning'
         side['objects'] = Applicant.objects.all()
         side['new_button'] = False
         side['applicant_tool_icons'] = True
-        side['applicantmultipleform'] = MultipleApplicantAdditionForm()
+        side['multiple_applicants_form'] = MultipleApplicantAdditionForm()
 
     context['side'] = side
 
@@ -105,19 +105,19 @@ def member(request, member_id):
 
     # Get decorations
     context['decorations'] = DecorationOwnership.objects.filter(member__id=member_id).order_by('-acquired')
-    context['adddecorationform'] = DecorationOwnershipForm(initial={'member': member_id})
+    context['add_do_form'] = DecorationOwnershipForm(initial={'member': member_id})
 
     # Get functionary positions
     context['functionaries'] = Functionary.objects.filter(member__id=member_id).order_by('-begin_date')
-    context['addfunctionaryform'] = FunctionaryForm(initial={'member': member_id})
+    context['add_f_form'] = FunctionaryForm(initial={'member': member_id})
 
     # Get groups
     context['groups'] = GroupMembership.objects.filter(member__id=member_id).order_by('-group__begin_date')
-    context['addgroupform'] = GroupMembershipForm(initial={'member': member_id})
+    context['add_gt_form'] = GroupMembershipForm(initial={'member': member_id})
 
     # Get membertypes
     context['membertypes'] = MemberType.objects.filter(member__id=member_id)
-    context['addmembertypeform'] = MemberTypeForm(initial={'member': member_id})
+    context['add_mt_form'] = MemberTypeForm(initial={'member': member_id})
 
     # Get user account info
     from api.ldap import LDAPAccountManager
@@ -145,7 +145,7 @@ def member(request, member_id):
 def membertype_form(request, membertype_id):
     membertype = get_object_or_404(MemberType, id=membertype_id)
     form = MemberTypeForm(instance=membertype)
-    context = {'form': form, 'formid': 'editmembertypeform'}
+    context = {'form': form, 'formid': 'edit-mt-form'}
     return render(request, 'membertypeform.html', context)
 
 
@@ -160,9 +160,9 @@ def group(request, grouptype_id, group_id=None):
 
     # Get groups of group type
     context['groups'] = Group.objects.filter(grouptype__id=grouptype_id).order_by('-begin_date')
-    context['groupTypeForm'] = form
+    context['edit_gt_form'] = form
 
-    context['addgroupform'] = GroupForm(initial={
+    context['add_g_form'] = GroupForm(initial={
         "grouptype": grouptype_id,
         "begin_date": getFirstDayOfCurrentYear(),
         "end_date": getLastDayOfCurrentYear()
@@ -171,8 +171,8 @@ def group(request, grouptype_id, group_id=None):
     if group_id is not None:
         group = get_object_or_404(Group, id=group_id)
         context['group'] = group
-        context['groupform'] = GroupForm(instance=group)
-        context['groupmembershipform'] = GroupMembershipForm(initial={"group": group_id})
+        context['edit_g_form'] = GroupForm(instance=group)
+        context['add_gt_form'] = GroupMembershipForm(initial={"group": group_id})
         context['groupmembers'] = GroupMembership.objects.filter(group=group)
         context['emails'] = "\n".join(
             [membership.member.email for membership in context['groupmembers']]
@@ -193,8 +193,8 @@ def functionary(request, functionarytype_id):
     # Get functionaries of functionary type
     context['functionaries'] = Functionary.objects.filter(
         functionarytype__id=functionarytype_id).order_by('-begin_date')
-    context['functionaryTypeForm'] = form
-    context['addfunctionaryform'] = FunctionaryForm(initial={
+    context['edit_ft_form'] = form
+    context['add_f_form'] = FunctionaryForm(initial={
         "functionarytype": functionarytype_id,
         "begin_date": getFirstDayOfCurrentYear(),
         "end_date": getLastDayOfCurrentYear()
@@ -210,11 +210,11 @@ def decoration(request, decoration_id):
 
     decoration = get_object_or_404(Decoration, id=decoration_id)
     context['decoration'] = decoration
-    context['decorationform'] = DecorationForm(instance=decoration)
+    context['edit_d_form'] = DecorationForm(instance=decoration)
 
     # Get groups of group type
     context['decorations'] = DecorationOwnership.objects.filter(decoration__id=decoration_id).order_by('-acquired')
-    context['adddecorationform'] = DecorationOwnershipForm(
+    context['add_do_form'] = DecorationOwnershipForm(
         initial={"decoration": decoration_id, 'acquired': getCurrentDate()})
 
     set_side_context(context, 'decorations', decoration.id)
@@ -236,7 +236,7 @@ def applicant(request, applicant_id):
 
     context['applicant'] = applicant
     context['form'] = form
-    context['modalForm'] = ApplicantAdditionForm()
+    context['make_member_form'] = ApplicantAdditionForm()
 
     set_side_context(context, 'applicants', applicant.id)
     return render(request, 'applicant.html', context)

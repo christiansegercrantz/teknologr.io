@@ -1,32 +1,32 @@
 {% extends "modals/modal.html" %}
 
 {% block modalcontent %}
-<form id="newform" autocomplete="off" data-active="{{ active }}">
+<form id="new-mgtftd-form" autocomplete="off" data-active="{{ active }}">
   {% csrf_token %}
   {% if active == "members" %}
     <div class="row form-group">
       <div class="col-3">
-        <label for="{{ modalForm.given_names.id_for_label}}">Förnamn</label>
+        <label for="{{ form.given_names.id_for_label}}">Förnamn</label>
       </div>
       <div class="col-9">
-        {{ modalForm.given_names }}
+        {{ form.given_names }}
       </div>
     </div>
     <div class="row form-group">
       <div class="col-3">
-        <label for="{{ modalForm.surname.id_for_label}}">Efternamn</label>
+        <label for="{{ form.surname.id_for_label}}">Efternamn</label>
       </div>
       <div class="col-9">
-        {{ modalForm.surname }}
+        {{ form.surname }}
       </div>
     </div>
   {% else %}
     <div class="row form-group">
       <div class="col-3">
-        <label for="{{ modalForm.name.id_for_label}}">Namn</label>
+        <label for="{{ form.name.id_for_label}}">Namn</label>
       </div>
       <div class="col-9">
-        {{ modalForm.name }}
+        {{ form.name }}
       </div>
     </div>
   {% endif %}

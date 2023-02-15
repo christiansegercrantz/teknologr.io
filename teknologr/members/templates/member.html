@@ -146,7 +146,7 @@
           </div>
           <div class="row">
             <div class ="col-md-12">
-              <label for="{{  form.comment.id_for_label }}">Kommentar</label>
+              <label for="{{ form.comment.id_for_label }}">Kommentar</label>
               {% if form.comment.errors %}<div class="alert alert-danger">{{ form.comment.errors }}</div>{%endif%}
               {{ form.comment }}
             </div>
@@ -154,7 +154,7 @@
           <div class="row mt-4">
             <div class="col-md-12">
               <button type="submit" class="btn btn-success">Spara</button>
-              <button id="deletemember" class="btn btn-danger" data-id={{member.id}}>Radera</button>
+              <button id="delete-m-button" class="btn btn-danger" data-id={{member.id}}>Radera</button>
             </div>
           </div>
         </form>
@@ -177,12 +177,12 @@
               {% endfor %}
             </ul>
             <br/>
-            <button id="changepw" class="btn btn-primary" data-toggle="modal" data-target="#changepw_modal">Ändra lösenord</button>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#changepw_modal">Ändra lösenord</button>
             {% include "modals/changeldappw.html" with modalname="changepw_modal" title="Ändra LDAP lösenord" member_id=member.id only %}
-            <button id="delldap" class="btn btn-danger" data-id="{{ member.id }}">Ta bort LDAP konto</button>
+            <button id="delete-ldap-button" class="btn btn-danger" data-id="{{ member.id }}">Ta bort LDAP konto</button>
             {% endif %}
             {% else %}
-            <button id="addldap" class="btn btn-primary" data-toggle="modal" data-target="#addldap_modal">Skapa LDAP konto</button>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#addldap_modal">Skapa LDAP konto</button>
             {% include "modals/addldap.html" with modalname="addldap_modal" title="Skapa LDAP konto" member_id=member.id only %}
             {% endif %}
           </div>
@@ -197,11 +197,11 @@
             <b>BILL saldo:</b> {{ BILL.balance }}€
             <br>
             <br>
-            <button id="delbill" class="btn btn-danger" data-id="{{ member.id }}">Ta bort BILL konto</button>
+            <button id="delete-bill-button" class="btn btn-danger" data-id="{{ member.id }}">Ta bort BILL konto</button>
             {% endif %}
             {% else %}
 
-            <button id="addbill" class="btn btn-primary" {% if not LDAP %} disabled title="Skapa LDAP konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL konto</button>
+            <button id="add-bill-button" class="btn btn-primary" {% if not LDAP %} disabled title="Skapa LDAP konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL konto</button>
             {% endif %}
           </div>
         </div>
@@ -213,8 +213,8 @@
         <ul class="list-inline mt-4 mb-0">
           <li class="list-inline-item"><h3>Hedersbetygelser</h3></li>
           <li class="list-inline-item float-right">
-            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addDecoration">Lägg till ny</button>
-            {% include "modals/memberdecoration.html" with modalname="addDecoration" title="Lägg till hedersbetygelse" form=adddecorationform only %}
+            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-do-modal">Lägg till ny</button>
+            {% include "modals/memberdecoration.html" with modalname="add-do-modal" title="Lägg till hedersbetygelse" form=add_do_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">
@@ -225,7 +225,7 @@
             </tr></thead>
             {% for ownership in decorations %}
             <tr>
-              <td><i class="fas fa-times removeDecoration text-danger" role="button" data-id="{{ ownership.id }}"></i></td>
+              <td><i class="fas fa-times delete-do-button text-danger" role="button" data-id="{{ ownership.id }}"></i></td>
               <td><a href="/admin/decorations/{{ownership.decoration.id}}/">{{ownership.decoration.name}}</a></td>
               <td>{{ownership.acquired}}</td>
             </tr>
@@ -236,7 +236,7 @@
           <li class="list-inline-item"><h3>Poster</h3></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addFunctionary">Lägg till ny</button>
-            {% include "modals/memberfunctionary.html" with modalname="addFunctionary" title="Lägg till funktionärspost" form=addfunctionaryform only %}
+            {% include "modals/memberfunctionary.html" with modalname="addFunctionary" title="Lägg till funktionärspost" form=add_f_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">
@@ -248,7 +248,7 @@
             </tr></thead>
             {% for functionary in functionaries %}
               <tr>
-                <td><i class="fas fa-times removeFunctionary text-danger" role="button" data-id="{{ functionary.id }}"></i></td>
+                <td><i class="fas fa-times delete-f-button text-danger" role="button" data-id="{{ functionary.id }}"></i></td>
                 <td><a href="/admin/functionaries/{{functionary.functionary_type_id}}/">{{functionary.functionarytype.name}}</a></td>
                 <td>{{functionary.begin_date}}</td>
                 <td>{{functionary.end_date}}</td>
@@ -260,7 +260,7 @@
           <li class="list-inline-item"><h3>Grupper</h3></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addGroup">Lägg till ny</button>
-            {% include "modals/membergroup.html" with modalname="addGroup" title="Lägg till grupp" form=addgroupform only %}
+            {% include "modals/membergroup.html" with modalname="addGroup" title="Lägg till grupp" form=add_g_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">
@@ -272,7 +272,7 @@
             </tr></thead>
             {% for membership in groups %}
             <tr>
-              <td><i class="fas fa-times removeGroup text-danger" role="button" data-id="{{ membership.id }}"></i></td>
+              <td><i class="fas fa-times delete-g-button text-danger" role="button" data-id="{{ membership.id }}"></i></td>
               <td><a href="/admin/groups/{{membership.group.grouptype.id}}/{{membership.group.id}}/">{{membership.group.grouptype.name}}</a></td>
               <td>{{membership.group.begin_date}}</td>
               <td>{{membership.group.end_date}}</td>
@@ -284,7 +284,7 @@
           <li class="list-inline-item"><h3>Medlemstyper</h3></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addMemberType">Lägg till ny</button>
-            {% include "modals/membertype.html" with modalname="addMemberType" title="Lägg till medlemstyp" form=addmembertypeform only %}
+            {% include "modals/membertype.html" with modalname="addMemberType" title="Lägg till medlemstyp" form=add_mt_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">
@@ -297,8 +297,8 @@
             {% for type in membertypes %}
             <tr>
               <td>
-                <i class="far fa-edit text-info editMemberType" role="button" data-id="{{ type.id }}"></i>
-                <i class="fas fa-times removeMemberType text-danger" role="button" data-id="{{ type.id }}"></i>
+                <i class="far fa-edit text-info edit-mt-button" role="button" data-id="{{ type.id }}"></i>
+                <i class="fas fa-times delete-mt-button text-danger" role="button" data-id="{{ type.id }}"></i>
               </td>
               <td>
                 {{type.get_type_display}}
@@ -311,7 +311,7 @@
               </td></tr>
               {% endfor %}
         </table>
-        {% include "modals/modal.html" with modalname="editMemberTypeModal" title="Editera medlemstyp" only %}
+        {% include "modals/modal.html" with modalname="edit-mt-modal" title="Editera medlemstyp" only %}
       </div>
     </div>
   </div>
