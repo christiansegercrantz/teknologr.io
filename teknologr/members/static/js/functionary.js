@@ -1,87 +1,36 @@
-$(document).ready(function() {
-	
-	$("#functionaryTypeForm").submit(function(event){
-		var id = $(this).data('id');	
-		var request = $.ajax({
-			url: "/api/functionaryTypes/" + id + "/",
-			method: 'PUT',
-			data: $(this).serialize()
-		});
-
-		request.done(function() {
-			location.reload();
-		});
-
-		request.fail(function( jqHXR, textStatus ){
-			alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-		});
-
-		event.preventDefault();
+$(document).ready(function () {
+	// Update the selected functionary type
+	add_request_listener({
+		selector: "#functionaryTypeForm",
+		method: "PUT",
+		url: element => `/api/functionaryTypes/${element.data("id")}/`,
+	});
+	// Remove the selected functionary type
+	add_request_listener({
+		selector: "#deleteFunctionaryType",
+		method: "DELETE",
+		url: element => `/api/functionaryTypes/${element.data("id")}/`,
+		confirmMessage: "Vill du radera denna funktionärstyp?",
+		newLocation: "/admin/functionaries/",
 	});
 
-
-	$("#deleteFunctionaryType").click(function(){
-		if(confirm("Vill du radera denna funktionärstyp?")) {
-			var id = $(this).data('id');
-			var request = $.ajax({
-				url: "/api/functionaryTypes/" + id + "/",
-				method: "DELETE",
-			});
- 
-			request.done(function() { 
-				window.location = "/admin/functionaries/"; 
-			});
-
-			request.fail(function( jqHXR, textStatus ){
-				alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-			});
-		}
+	// Add a person to the list
+	add_request_listener({
+		selector: "#addfunctionaryform",
+		method: "POST",
+		url: `/api/multiFunctionary/`,
+		confirmMessage: confirmMessageCreateMembers,
 	});
-
-	$("#addfunctionaryform").submit(function(event){
-		const newMembers = $("#doform_member").data("counter");
-		if (newMembers && !confirm(`Du håller på att skapa ${newMembers === 1 ? "1 ny medlem" : `${newMembers} nya medlemmar`}. Fortsätt?`)) return;
-
-		var request = $.ajax({
-			url: "/api/multiFunctionary/",
-			method: 'POST',
-			data: $(this).serialize()
-		});
-
-		request.done(function() {
-			location.reload();
-		});
-
-		request.fail(function( jqHXR, textStatus ){
-			alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-		});
-
-		event.preventDefault();
-	});
-
-	$(".removeFunctionary").click(function(){
-		if(confirm("Vill du radera denna funktionär?")) {
-			var id = $(this).data('id');
-			var functionaryTypeID = $(this).data("functionarytype_id");
-			var request = $.ajax({
-				url: "/api/functionaries/" + id + "/",
-				method: "DELETE",
-			});
-
-			request.done(function() { 
-				window.location = "/admin/functionaries/" + functionaryTypeID + "/"; 
-			});
-
-			request.fail(function( jqHXR, textStatus ){
-				alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-			});
-		}
+	// Remove a person from the list
+	add_request_listener({
+		selector: ".removeFunctionary",
+		method: "DELETE",
+		url: element => `/api/functionaries/${element.data("id")}/`,
+		confirmMessage: "Vill du radera denna funktionär?",
 	});
 
 	add_ajax_multiselect_extension({
 		selector_button: "#fform-create-member",
 		selector_input: "#fform_member_text",
-		selector_hidden_input: "#fform_member",
-		selector_deck: "#fform_member_on_deck",
 	});
 });

@@ -2,14 +2,74 @@
 var timer;
 
 /**
+ * Helper method for calling a function, if it is a function.
+ */
+const call_if_function = (fn, ...params) => {
+	return typeof fn === "function" ? fn(...params) : fn;
+}
+
+/**
+ * Helper function for adding a listener to an element that does a request.
+ *
+ * @param {Object} options
+ * @param {String} option.element          The element(s) to add the listener to
+ * @param {String} option.method           The request method
+ * @param {String} option.url              The request url
+ * @param {Object} [option.data]           The request data (default: Element.serialize())
+ * @param {String} [option.confirmMessage] An optional confirm message
+ * @param {String} [option.newLocation]    The url to redirect to after the request is done (default: reload current page)
+ *
+ * Some of the options also allow a function (e: Element) => T to be passed, if the option value depends on for example data on the specific element. These options are:
+ * @param {String | (e: Element) => String} option.url
+ * @param {Object | (e: Element) => Object} dption.data
+ * @param {String | (e: Element) => String} option.confirmMessage
+ * @param {String | (e: Element) => String} option.newLocation
+ */
+const add_request_listener = ({ selector, method, url, data, confirmMessage, newLocation }) => {
+	// Get the element(s) to attach the listener to
+	$(selector).each((_, domElement) => {
+		// Deduce what to listen for based on the element tag
+		const type = domElement.tagName.toLowerCase() === "form" ? "submit" : "click";
+
+		const e = $(domElement);
+		// Add a listener to the element
+		e.on(type, event => {
+			event.preventDefault();
+
+			const msg = call_if_function(confirmMessage, e);
+			if (msg && !confirm(msg)) return;
+
+			// Do the request
+			const request = $.ajax({
+				method,
+				url: call_if_function(url, e),
+				data: data ? call_if_function(data, e) : e.serialize(),
+			});
+
+			// Add listeners to the request
+			request.done(msg => {
+				if (newLocation) window.location = call_if_function(newLocation, e, msg);
+				else location.reload();
+			});
+			// XXX: The error message is not very helpful for the user, so should probably change this to something else
+			request.fail((jqHXR, textStatus) => {
+				alert(`Request failed (${textStatus}): ${jqHXR.responseText}`);
+			});
+		});
+	});
+}
+
+/**
  * Extend the functionality of the AutoCompleteSelectMultipleField from django-ajax-selects by also allowing new members to be created simultaneously. This is how it's done:
  * 1. Add click-listener to a button
  * 2. When clicked, the name is taken from the member search box
  * 3. The name is appended to the hidden input and appended to the list
  * 4. A button for removing the name is also created
  * 5. When the form is submitted, the api endpoint handles splitting the hidden input and creating new members
+ *
+ * Note that a certain layout of the elements is assumed.
  */
-const add_ajax_multiselect_extension = ({ selector_button, selector_input, selector_hidden_input, selector_deck }) => {
+const add_ajax_multiselect_extension = ({ selector_button, selector_input }) => {
 	$(selector_button).click(e => {
 		e.preventDefault();
 
@@ -18,20 +78,20 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input, selec
 		if (!name || !name.includes(" ") || name.includes("|") || name.includes("$")) return;
 		input.val("");
 
-		const hidden_input = $(selector_hidden_input);
+		const hidden_input = input.next();
 
 		// Add name to hidden (real) input
 		const substring = `$${name}|`;
 		hidden_input.val(hidden_input.val() + substring);
 
-		// Keep track of the amount of names added
-		const data = hidden_input.data();
+		// Keep track of the amount of names added by storing the counter on the form
+		const data = input.closest("form").data();
 		data.counter = (data.counter || 0) + 1;
 
 		// Add name to list
 		const div = $("<div>", {
 			html: `<b>Ny:</b> ${name}`,
-		}).appendTo(selector_deck);
+		}).appendTo(hidden_input.next());
 
 		// Create button for removing the name from the list
 		$("<span>", {
@@ -41,47 +101,33 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input, selec
 				const value = hidden_input.val();
 				const i = value.indexOf(substring);
 				hidden_input.val(value.slice(0, i) + value.slice(i + substring.length));
-				hidden_input.data().counter--;
+				data.counter--;
 				div.remove();
 			},
 		}).prependTo(div);
 	});
 }
 
-$(document).ready(function() {
-	$("#newform").submit(function(event){
-		var active = $(this).data('active');
-		switch(active) {
-			case 'members':
-				var apipath = 'members'
-				break;
-			case 'groups':
-				var apipath = 'groupTypes'
-				break;
-			case 'functionaries':
-				var apipath = 'functionaryTypes'
-				break;
-			case 'decorations':
-				var apipath = 'decorations'
-				break;
+const confirmMessageCreateMembers = e => {
+	const newMembers = e.data("counter");
+	return newMembers && `Du håller på att skapa ${newMembers === 1 ? "1 ny medlem" : `${newMembers} nya medlemmar`}. Fortsätt?`;
+}
+
+$(document).ready(function () {
+	const element_to_api_path = element => {
+		switch(element.data("active")) {
+			case "members": return "members";
+			case "groups": return "groupTypes";
+			case "functionaries": return "functionaryTypes";
+			case "decorations": return "decorations";
 		}
+	}
 
-
-		var request = $.ajax({
-			url: "/api/" + apipath + "/",
-			method: 'POST',
-			data: $(this).serialize()
-		});
-
-		request.done(function(msg) {
-			window.location = "/admin/"+ active +"/" + msg.id + "/";
-		});
-
-		request.fail(function( jqHXR, textStatus ){
-			alert( "Request failed: " + textStatus + ": " + jqHXR.responseText );
-		});
-
-		event.preventDefault();
+	add_request_listener({
+		selector: "#newform",
+		method: "POST",
+		url: element => `/api/${element_to_api_path(element)}/`,
+		newLocation: (element, msg) => `/admin/${element.data("active")}/${msg.id}/`,
 	});
 
 	$('#side-search').keyup(function(event) {
@@ -123,33 +169,17 @@ $(document).ready(function() {
 		switch (search.data("active")) {
 			case "members": {
 				const names = value.split(" ").filter(s => s);
+				if (names.length === 1) {
+					return $("#mmodal_given_names").val(names.join(" "));
+				}
 				const last = names.splice(names.length - 1, 1);
 				$("#mmodal_given_names").val(names.join(" "));
 				$("#mmodal_surname").val(last);
 			} break;
-			case "decorations": $("#dform_name").val(value); break;
-			case "groups": $("#gtform_name").val(value); break;
-			case "functionaries": $("#ftform_name").val(value); break;
+			case "decorations": $("#dmodal_name").val(value); break;
+			case "groups": $("#gtmodal_name").val(value); break;
+			case "functionaries": $("#ftmodal_name").val(value); break;
 		}
 	});
-
-    $('#choose-multiple-applicants').submit(function(event) {
-        const data = $(this).serialize();
-        const request = $.ajax({
-            url: '/api/multiApplicantSubmission/',
-            method: 'POST',
-            data: data,
-        });
-
-        request.done(function() {
-            window.location = '/admin/applicants/';
-        });
-
-        request.fail(function(jqHXR, textStatus) {
-            alert('Request failed: ' + textStatus + ': ' + jqHXR.responseText);
-        });
-
-        event.preventDefault();
-    });
 
 });

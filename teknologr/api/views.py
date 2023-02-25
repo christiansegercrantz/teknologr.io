@@ -46,25 +46,28 @@ class GroupMembershipViewSet(viewsets.ModelViewSet):
     queryset = GroupMembership.objects.all()
     serializer_class = GroupMembershipSerializer
 
-"""
-In multi-select fields the values are divided by '|'.
-Example: '|<value1>|<value2>|<value3>|'
-"""
+
 def getMultiSelectValues(request, key):
+    """
+    In multi-select fields the values are divided by '|'.
+    Example: '|<value1>|<value2>|<value3>|'
+    """
     members = request.data.get(key).strip("|").split("|")
     return [m for m in members if m]
 
-"""
-In multi-select Member fields each value can be:
- - the ID of an existing Member, or
- - the name of a new Member that should be created, prefixed with '$'
-"""
+
 def getOrCreateMemeberIdFromMultiSelectValue(id_or_names):
+    """
+    In multi-select Member fields each value can be:
+    - the ID of an existing Member, or
+    - the name of a new Member that should be created, prefixed with '$'
+    """
     if id_or_names[0] == '$':
         names = id_or_names[1:].split()
         member = Member.objects.create(given_names=''.join(names[0:-1]), surname=names[-1])
         return member.id
     return int(id_or_names)
+
 
 @api_view(['POST'])
 def multiGroupMembershipSave(request):
@@ -78,6 +81,7 @@ def multiGroupMembershipSave(request):
 
     return Response(status=200)
 
+
 @api_view(['POST'])
 def multiFunctionarySave(request):
     fid = request.data.get('functionarytype')
@@ -88,9 +92,15 @@ def multiFunctionarySave(request):
     for id_or_name in members:
         mid = getOrCreateMemeberIdFromMultiSelectValue(id_or_name)
         # get_or_create is used to ignore duplicates
-        Functionary.objects.get_or_create(member_id=mid, functionarytype_id=int(fid), end_date=end_date, begin_date=begin_date)
+        Functionary.objects.get_or_create(
+            member_id=mid,
+            functionarytype_id=int(fid),
+            end_date=end_date,
+            begin_date=begin_date
+        )
 
     return Response(status=200)
+
 
 @api_view(['POST'])
 def multiDecorationOwnershipSave(request):

@@ -26,7 +26,8 @@ class MemberForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
-        if "auto_id" not in kwargs: kwargs["auto_id"] = "mform_%s"
+        if "auto_id" not in kwargs:
+            kwargs["auto_id"] = "mform_%s"
         super(MemberForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             if type(field.widget) is CheckboxInput:
@@ -42,7 +43,8 @@ class GroupTypeForm(BSModelForm):
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
-        if "auto_id" not in kwargs: kwargs["auto_id"] = "gtform_%s"
+        if "auto_id" not in kwargs:
+            kwargs["auto_id"] = "gtform_%s"
         super(GroupTypeForm, self).__init__(*args, **kwargs)
 
 
@@ -53,7 +55,8 @@ class FunctionaryTypeForm(BSModelForm):
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
-        if "auto_id" not in kwargs: kwargs["auto_id"] = "ftform_%s"
+        if "auto_id" not in kwargs:
+            kwargs["auto_id"] = "ftform_%s"
         super(FunctionaryTypeForm, self).__init__(*args, **kwargs)
 
 
@@ -68,7 +71,8 @@ class FunctionaryForm(BSModelForm):
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
-        if "auto_id" not in kwargs: kwargs["auto_id"] = "fform_%s"
+        if "auto_id" not in kwargs:
+            kwargs["auto_id"] = "fform_%s"
         super(FunctionaryForm, self).__init__(*args, **kwargs)
 
 
@@ -79,7 +83,8 @@ class DecorationForm(BSModelForm):
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
-        if "auto_id" not in kwargs: kwargs["auto_id"] = "dform_%s"
+        if "auto_id" not in kwargs:
+            kwargs["auto_id"] = "dform_%s"
         super(DecorationForm, self).__init__(*args, **kwargs)
 
 
@@ -93,7 +98,8 @@ class DecorationOwnershipForm(BSModelForm):
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
-        if "auto_id" not in kwargs: kwargs["auto_id"] = "doform_%s"
+        if "auto_id" not in kwargs:
+            kwargs["auto_id"] = "doform_%s"
         super(DecorationOwnershipForm, self).__init__(*args, **kwargs)
 
 
@@ -107,7 +113,8 @@ class GroupForm(BSModelForm):
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
-        if "auto_id" not in kwargs: kwargs["auto_id"] = "gform_%s"
+        if "auto_id" not in kwargs:
+            kwargs["auto_id"] = "gform_%s"
         super(GroupForm, self).__init__(*args, **kwargs)
 
 
@@ -120,7 +127,8 @@ class GroupMembershipForm(BSModelForm):
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
-        if "auto_id" not in kwargs: kwargs["auto_id"] = "gmform_%s"
+        if "auto_id" not in kwargs:
+            kwargs["auto_id"] = "gmform_%s"
         super(GroupMembershipForm, self).__init__(*args, **kwargs)
 
 
@@ -134,7 +142,8 @@ class MemberTypeForm(BSModelForm):
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
-        if "auto_id" not in kwargs: kwargs["auto_id"] = "mtform_%s"
+        if "auto_id" not in kwargs:
+            kwargs["auto_id"] = "mtform_%s"
         super(MemberTypeForm, self).__init__(*args, **kwargs)
 
 
@@ -155,7 +164,8 @@ class ApplicantAdditionForm(BSModelForm):
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
-        if "auto_id" not in kwargs: kwargs["auto_id"] = "aaform_%s"
+        if "auto_id" not in kwargs:
+            kwargs["auto_id"] = "aaform_%s"
         super(ApplicantAdditionForm, self).__init__(*args, **kwargs)
 
 

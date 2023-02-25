@@ -90,9 +90,5 @@
 
 {% block scripts %}
   {{ block.super }}
-  <script src="{% static "js/group/grouptype.js" %}"></script>
-  <script src="{% static "js/group/subgroup.js" %}"></script>
-  {% if group %}
-    <script src="{% static "js/group/groupmember.js" %}"></script>
-  {% endif %}
+  <script src="{% static "js/group.js" %}"></script>
 {% endblock %}
