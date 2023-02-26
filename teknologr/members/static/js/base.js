@@ -168,7 +168,7 @@ $(document).ready(function () {
 		const value = search.val();
 		switch (search.data("active")) {
 			case "members": {
-				const names = value.split(" ").filter(s => s);
+				const names = value.split(" ").filter(s => s).map(s => s[0].toUpperCase() + s.slice(1));
 				if (names.length === 1) {
 					return $("#mmodal_given_names").val(names.join(" "));
 				}
