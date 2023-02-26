@@ -20,7 +20,7 @@
           {% for gm in g.memberships.all %}
             <tr>
               <td></td>
-              <td><a href="{% url 'katalogen.views.profile' gm.member.id %}">{{ gm.member.name }}</a></td>
+              <td><a href="{% url 'katalogen:profile' gm.member.id %}">{{ gm.member.name }}</a></td>
             </tr>
           {% endfor %}
         {% endfor %}

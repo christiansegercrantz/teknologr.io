@@ -84,7 +84,7 @@
         {% for do in decoration_ownerships %}
           <tr>
             <th>
-              <a href="{% url 'katalogen.views.decoration_ownerships' do.decoration.id %}">{{ do.decoration.name }}</a>
+              <a href="{% url 'katalogen:decoration_ownerships' do.decoration.id %}">{{ do.decoration.name }}</a>
             </th>
             <td align="right">
               {{ do.acquired }}
@@ -98,7 +98,7 @@
         {% for f in functionaries %}
           <tr>
             <th>
-              <a href="{% url 'katalogen.views.functionaries' f.functionarytype.id %}">{{ f.functionarytype.name }}</a>
+              <a href="{% url 'katalogen:functionaries' f.functionarytype.id %}">{{ f.functionarytype.name }}</a>
             </td>
             <td align="right">
               {{ f.begin_date }} - {{ f.end_date }}
@@ -116,7 +116,7 @@
         {% for gm in group_memberships %}
           <tr>
             <th>
-              <a href="{% url 'katalogen.views.groups' gm.group.grouptype.id %}">{{ gm.group.grouptype.name }}</a>
+              <a href="{% url 'katalogen:groups' gm.group.grouptype.id %}">{{ gm.group.grouptype.name }}</a>
             </th>
             <td align="right">
               {{ gm.group.begin_date }} - {{ gm.group.end_date }}

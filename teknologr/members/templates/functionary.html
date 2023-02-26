@@ -40,9 +40,9 @@
     {% for functionary in functionaries %}
       <tr>
         <td><i class="fas fa-times removeFunctionary text-danger" role="button" data-id="{{ functionary.id }}" data-functionarytype_id="{{functionaryType.id}}"></i></td>
-        <td><a href="/admin/members/{{functionary.member.id}}/">{{functionary.member.full_name}}</a></td>
-        <td>{{functionary.begin_date}}</td>
-        <td>{{functionary.end_date}}</td>
+        <td><a href="{% url 'admin:member' functionary.member.id %}">{{ functionary.member.full_name }}</a></td>
+        <td>{{ functionary.begin_date }}</td>
+        <td>{{ functionary.end_date }}</td>
       </tr>
     {% endfor %}
     </tbody>

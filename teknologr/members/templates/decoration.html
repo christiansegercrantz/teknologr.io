@@ -40,8 +40,8 @@
       {% for ownership in decorations %}
         <tr>
           <td><i class="fas fa-times removeDecoration text-danger" role="button" data-id="{{ ownership.id }}" data-decoration_id="{{decoration.id}}"></i></td>
-          <td><a href="/admin/members/{{ownership.member.id}}/">{{ownership.member.full_name}}</a></td>
-          <td>{{ownership.acquired}}</td>
+          <td><a href="{% url 'admin:member' ownership.member.id %}">{{ ownership.member.full_name }}</a></td>
+          <td>{{ ownership.acquired }}</td>
         </tr>
       {% endfor %}
     </tbody>

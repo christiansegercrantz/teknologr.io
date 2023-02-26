@@ -14,7 +14,7 @@
         <tbody>
           {% for d in decorations %}
             <tr>
-              <td><a href="{% url 'katalogen.views.decoration_ownerships' d.id %}">{{ d.name }}</a></td>
+              <td><a href="{% url 'katalogen:decoration_ownerships' d.id %}">{{ d.name }}</a></td>
               <td>{{ d.num_owners }}</td>
             </tr>
           {% endfor %}

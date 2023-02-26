@@ -5,8 +5,8 @@
   <div class="container-fluid">
     <h1 class="page-header">
       {{member.full_name}}
-      <a href="/api/members/{{member.id}}/" class="btn btn-outline-dark float-right">API länk</a>
-      <a href="/api/htkdump/{{member.id}}" class="btn btn-outline-dark float-right">HTK dump</a>
+      <a href="{% url 'api:member-detail' member.id %}" class="btn btn-outline-dark float-right">API länk</a>
+      <a href="{% url 'api:htkDump' member.id %}" class="btn btn-outline-dark float-right">HTK dump</a>
     </h1>
 
     {% if result %}
@@ -24,7 +24,7 @@
       <!-- Form -->
 
       <div class="col-lg-8">
-        <form id="memberform" autocomplete="off" role ="form" action="/admin/members/{{member.id}}/" method="post">
+        <form id="memberform" autocomplete="off" role ="form" action="{% url 'admin:member' member.id %}" method="post">
           {% csrf_token %}
           <div class="row form-group">
             <div class="col-md-5">
@@ -226,8 +226,8 @@
             {% for ownership in decorations %}
             <tr>
               <td><i class="fas fa-times removeDecoration text-danger" role="button" data-id="{{ ownership.id }}"></i></td>
-              <td><a href="/admin/decorations/{{ownership.decoration.id}}/">{{ownership.decoration.name}}</a></td>
-              <td>{{ownership.acquired}}</td>
+              <td><a href="{% url 'admin:decoration' ownership.decoration.id %}">{{ ownership.decoration.name }}</a></td>
+              <td>{{ ownership.acquired }}</td>
             </tr>
             {% endfor %}
         </table>
@@ -249,9 +249,9 @@
             {% for functionary in functionaries %}
               <tr>
                 <td><i class="fas fa-times removeFunctionary text-danger" role="button" data-id="{{ functionary.id }}"></i></td>
-                <td><a href="/admin/functionaries/{{functionary.functionary_type_id}}/">{{functionary.functionarytype.name}}</a></td>
-                <td>{{functionary.begin_date}}</td>
-                <td>{{functionary.end_date}}</td>
+                <td><a href="{% url 'admin:functionary' functionary.functionary_type_id %}">{{ functionary.functionarytype.name }}</a></td>
+                <td>{{ functionary.begin_date }}</td>
+                <td>{{ functionary.end_date }}</td>
               </tr>
             {% endfor %}
         </table>
@@ -273,9 +273,9 @@
             {% for membership in groups %}
             <tr>
               <td><i class="fas fa-times removeGroup text-danger" role="button" data-id="{{ membership.id }}"></i></td>
-              <td><a href="/admin/groups/{{membership.group.grouptype.id}}/{{membership.group.id}}/">{{membership.group.grouptype.name}}</a></td>
-              <td>{{membership.group.begin_date}}</td>
-              <td>{{membership.group.end_date}}</td>
+              <td><a href="{% url 'admin:group' membership.group.grouptype.id membership.group.id %}">{{ membership.group.grouptype.name }}</a></td>
+              <td>{{ membership.group.begin_date }}</td>
+              <td>{{ membership.group.end_date }}</td>
             </tr>
             {% endfor %}
         </table>

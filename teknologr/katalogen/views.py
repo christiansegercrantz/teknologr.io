@@ -74,7 +74,7 @@ def startswith(request, letter):
 @login_required
 def myprofile(request):
     person = get_object_or_404(Member,  username=request.user.username)
-    return redirect('katalogen.views.profile', person.id)
+    return redirect('katalogen:profile', person.id)
 
 @login_required
 def decorations(request):

@@ -14,7 +14,7 @@
         <tbody>
           {% for gt in group_types %}
             <tr>
-              <td><a href="{% url 'katalogen.views.groups' gt.id %}">{{ gt.name }}</a></td>
+              <td><a href="{% url 'katalogen:groups' gt.id %}">{{ gt.name }}</a></td>
               <td>{{ gt.num_groups }}</td>
             </tr>
           {% endfor %}

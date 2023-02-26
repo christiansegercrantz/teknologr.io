@@ -40,7 +40,7 @@
         {% for subgroup in groups %}
           <tr {% if group.id == subgroup.id %} class="bg-light" {% endif %}>
             <td>
-              <a href="/admin/groups/{{grouptype.id}}/{{subgroup.id}}/"><i class="far fa-edit text-info"></i></a>
+              <a href="{% url 'admin:group' grouptype.id subgroup.id %}"><i class="far fa-edit text-info"></i></a>
               <i class="fas fa-times removeGroup text-danger" role="button" data-id="{{ subgroup.id }}" data-grouptype_id="{{ grouptype.id }}"></i>
             </td>
             <td>{{subgroup.begin_date}}</td>
@@ -73,7 +73,7 @@
               <tr>
                 <td>
                   <i class="col-2 fas fa-times removeMembership text-danger" role="button" data-id="{{ membership.id }}"></i>
-                  <a class="col-10" href="/admin/members/{{membership.member.id}}">{{membership.member.full_name}}</a>
+                  <a class="col-10" href="{% url 'admin:member' membership.member.id %}">{{membership.member.full_name}}</a>
                 </td>
               </tr>
             {% endfor %}

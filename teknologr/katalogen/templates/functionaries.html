@@ -15,7 +15,7 @@
       <tbody>
         {% for f in functionaries %}
           <tr>
-            <td><a href="{% url 'katalogen.views.profile' f.member.id %}">{{ f.member.name }}</a></td>
+            <td><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.name }}</a></td>
             <td>{{ f.begin_date }}</td>
             <td>{{ f.end_date }}</td>
           </tr>
