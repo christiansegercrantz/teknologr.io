@@ -104,7 +104,7 @@ def member(request, member_id):
     context['full_name'] = member
 
     # Get decorations
-    context['decorations'] = DecorationOwnership.objects.filter(member__id=member_id).order_by('-acquired')
+    context['decoration_ownerships'] = DecorationOwnership.objects.filter(member__id=member_id).order_by('-acquired')
     context['adddecorationform'] = DecorationOwnershipForm(initial={'member': member_id})
 
     # Get functionary positions
@@ -112,7 +112,7 @@ def member(request, member_id):
     context['addfunctionaryform'] = FunctionaryForm(initial={'member': member_id})
 
     # Get groups
-    context['groups'] = GroupMembership.objects.filter(member__id=member_id).order_by('-group__begin_date')
+    context['group_memberships'] = GroupMembership.objects.filter(member__id=member_id).order_by('-group__begin_date')
     context['addgroupform'] = GroupMembershipForm(initial={'member': member_id})
 
     # Get membertypes

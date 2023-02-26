@@ -223,11 +223,11 @@
               <th>Betygelse</th>
               <th>Datum</th>
             </tr></thead>
-            {% for ownership in decorations %}
+            {% for do in decoration_ownerships %}
             <tr>
-              <td><i class="fas fa-times removeDecoration text-danger" role="button" data-id="{{ ownership.id }}"></i></td>
-              <td><a href="{% url 'admin:decoration' ownership.decoration.id %}">{{ ownership.decoration.name }}</a></td>
-              <td>{{ ownership.acquired }}</td>
+              <td><i class="fas fa-times removeDecoration text-danger" role="button" data-id="{{ do.id }}"></i></td>
+              <td><a href="{% url 'admin:decoration' do.decoration.id %}">{{ do.decoration.name }}</a></td>
+              <td>{{ do.acquired }}</td>
             </tr>
             {% endfor %}
         </table>
@@ -246,12 +246,12 @@
               <th>Från</th>
               <th>Till</th>
             </tr></thead>
-            {% for functionary in functionaries %}
+            {% for f in functionaries %}
               <tr>
-                <td><i class="fas fa-times removeFunctionary text-danger" role="button" data-id="{{ functionary.id }}"></i></td>
-                <td><a href="{% url 'admin:functionary' functionary.functionary_type_id %}">{{ functionary.functionarytype.name }}</a></td>
-                <td>{{ functionary.begin_date }}</td>
-                <td>{{ functionary.end_date }}</td>
+                <td><i class="fas fa-times removeFunctionary text-danger" role="button" data-id="{{ f.id }}"></i></td>
+                <td><a href="{% url 'admin:functionary' f.functionary_type_id %}">{{ f.functionarytype.name }}</a></td>
+                <td>{{ f.begin_date }}</td>
+                <td>{{ f.end_date }}</td>
               </tr>
             {% endfor %}
         </table>
@@ -270,12 +270,12 @@
               <th>Från</th>
               <th>Till</th>
             </tr></thead>
-            {% for membership in groups %}
+            {% for gm in group_memberships %}
             <tr>
-              <td><i class="fas fa-times removeGroup text-danger" role="button" data-id="{{ membership.id }}"></i></td>
-              <td><a href="{% url 'admin:group' membership.group.grouptype.id membership.group.id %}">{{ membership.group.grouptype.name }}</a></td>
-              <td>{{ membership.group.begin_date }}</td>
-              <td>{{ membership.group.end_date }}</td>
+              <td><i class="fas fa-times removeGroup text-danger" role="button" data-id="{{ gm.id }}"></i></td>
+              <td><a href="{% url 'admin:group' gm.group.grouptype.id gm.group.id %}">{{ gm.group.grouptype.name }}</a></td>
+              <td>{{ gm.group.begin_date }}</td>
+              <td>{{ gm.group.end_date }}</td>
             </tr>
             {% endfor %}
         </table>
