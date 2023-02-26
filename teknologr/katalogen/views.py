@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from members.models import *
-from django.db.models import Q
+from django.db.models import Q, Count
 from functools import reduce
 from operator import and_
 
@@ -75,3 +75,55 @@ def startswith(request, letter):
 def myprofile(request):
     person = get_object_or_404(Member,  username=request.user.username)
     return redirect('katalogen.views.profile', person.id)
+
+@login_required
+def decorations(request):
+    # XXX: More info:
+    #  - Date of first/latest?
+    return render(request, 'decorations.html', {
+        'decorations': Decoration.objects.order_by('name').annotate(num_owners=Count('ownerships'))
+    })
+
+@login_required
+def decoration_ownerships(request, decoration_id):
+    decoration = get_object_or_404(Decoration,  id=decoration_id)
+
+    return render(request, 'decoration_ownerships.html', {
+        'decoration': decoration,
+        'decoration_ownerships': DecorationOwnership.objects.filter(decoration_id=decoration_id).order_by('acquired'),
+    })
+
+@login_required
+def functionary_types(request):
+    # XXX: More info:
+    #  - Date of first/latest?
+    return render(request, 'functionary_types.html', {
+        'functionary_types': FunctionaryType.objects.order_by('name').annotate(num_functionaries=Count('functionaries')),
+    })
+
+@login_required
+def functionaries(request, functionary_type_id):
+    functionary_type = get_object_or_404(FunctionaryType, id=functionary_type_id)
+
+    return render(request, 'functionaries.html', {
+        'functionary_type': functionary_type,
+        'functionaries': Functionary.objects.filter(functionarytype=functionary_type_id).order_by('-end_date'),
+    })
+
+@login_required
+def group_types(request):
+    # XXX: More info:
+    #  - Date of first/latest?
+    return render(request, 'group_types.html', {
+        'group_types': GroupType.objects.order_by('name').annotate(num_groups=Count('groups')),
+    })
+
+@login_required
+def groups(request, group_type_id):
+    group_type = get_object_or_404(GroupType, id=group_type_id)
+    groups = group_type.groups.annotate(num_members=Count('memberships'))
+
+    return render(request, 'groups.html', {
+        'group_type': group_type,
+        'groups': groups,
+    })

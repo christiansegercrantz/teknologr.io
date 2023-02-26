@@ -1,0 +1,28 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+    <h2 class="page-header">{{ functionary_type.name }}</h2>
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th>Namn</th>
+          <th>Från</th>
+          <th>Till</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in functionaries %}
+          <tr>
+            <td><a href="{% url 'katalogen.views.profile' f.member.id %}">{{ f.member.name }}</a></td>
+            <td>{{ f.begin_date }}</td>
+            <td>{{ f.end_date }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
