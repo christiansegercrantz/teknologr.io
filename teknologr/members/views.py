@@ -113,7 +113,7 @@ def member(request, member_id):
 
     # Get groups
     context['group_memberships'] = GroupMembership.objects.filter(member__id=member_id).order_by('-group__begin_date')
-    context['add_gt_form'] = GroupMembershipForm(initial={'member': member_id})
+    context['add_gm_form'] = GroupMembershipForm(initial={'member': member_id})
 
     # Get membertypes
     context['membertypes'] = MemberType.objects.filter(member__id=member_id)
@@ -172,7 +172,7 @@ def group(request, grouptype_id, group_id=None):
         group = get_object_or_404(Group, id=group_id)
         context['group'] = group
         context['edit_g_form'] = GroupForm(instance=group)
-        context['add_gt_form'] = GroupMembershipForm(initial={"group": group_id})
+        context['add_gm_form'] = GroupMembershipForm(initial={"group": group_id})
         context['groupmembers'] = GroupMembership.objects.filter(group=group)
         context['emails'] = "\n".join(
             [membership.member.email for membership in context['groupmembers']]

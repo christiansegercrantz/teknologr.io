@@ -235,8 +235,8 @@
         <ul class="list-inline mt-4 mb-0">
           <li class="list-inline-item"><h3>Poster</h3></li>
           <li class="list-inline-item float-right">
-            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addFunctionary">Lägg till ny</button>
-            {% include "modals/memberfunctionary.html" with modalname="addFunctionary" title="Lägg till funktionärspost" form=add_f_form only %}
+            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-f-modal">Lägg till ny</button>
+            {% include "modals/memberfunctionary.html" with modalname="add-f-modal" title="Lägg till funktionärspost" form=add_f_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">
@@ -259,8 +259,8 @@
         <ul class="list-inline mt-4 mb-0">
           <li class="list-inline-item"><h3>Grupper</h3></li>
           <li class="list-inline-item float-right">
-            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addGroup">Lägg till ny</button>
-            {% include "modals/membergroup.html" with modalname="addGroup" title="Lägg till grupp" form=add_g_form only %}
+            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-gm-modal">Lägg till ny</button>
+            {% include "modals/membergroup.html" with modalname="add-gm-modal" title="Lägg till gruppmedlemskap" form=add_gm_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">
@@ -272,7 +272,7 @@
             </tr></thead>
             {% for gm in group_memberships %}
             <tr>
-              <td><i class="fas fa-times delete-g-button text-danger" role="button" data-id="{{ gm.id }}"></i></td>
+              <td><i class="fas fa-times delete-gm-button text-danger" role="button" data-id="{{ gm.id }}"></i></td>
               <td><a href="{% url 'admin:group' gm.group.grouptype.id gm.group.id %}">{{ gm.group.grouptype.name }}</a></td>
               <td>{{ gm.group.begin_date }}</td>
               <td>{{ gm.group.end_date }}</td>

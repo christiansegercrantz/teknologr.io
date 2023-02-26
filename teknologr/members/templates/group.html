@@ -61,7 +61,7 @@
                   <span class="col-10">{{ group.begin_date }} - {{ group.end_date }}</span>
                   <span class="float-right">
                     <i class="far fa-edit text-info icon-20" role="button" data-toggle="modal" data-target="#edit-g-modal"></i>
-                    <i class="fas fa-plus text-success icon-20 align-middle" role="button" data-toggle="modal" data-target="#add-gt-modal"></i>
+                    <i class="fas fa-plus text-success icon-20 align-middle" role="button" data-toggle="modal" data-target="#add-gm-modal"></i>
                     <i id="copy2clipboard" class="far fa-copy icon-20" role="button" title="Kopiera medlemmarnas epostadresser"></i>
                   </span>
                 </h3>
@@ -81,7 +81,7 @@
         </table>
         <textarea id="members_email_list" style="opacity: 0;width: 0; height:0;">{{ emails }}</textarea>
         {% include "modals/group.html" with modalname="edit-g-modal" title="Editera grupp" form=edit_g_form groupid=group.id only %}
-        {% include "modals/groupmembership.html" with modalname="add-gt-modal" title="Lägg till medlem i grupp" form=add_gt_form only %}
+        {% include "modals/groupmembership.html" with modalname="add-gm-modal" title="Lägg till medlem i grupp" form=add_gm_form only %}
       {% endif %}
     </div>
   </div>
