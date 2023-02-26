@@ -1,4 +1,5 @@
 from members.models import *
+from members.utils import *
 from registration.models import Applicant
 from django.forms import ModelForm, DateField, CharField
 from django.forms.widgets import CheckboxInput, DateInput, TextInput, PasswordInput
@@ -73,6 +74,11 @@ class FunctionaryForm(BSModelForm):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs:
             kwargs["auto_id"] = "fform_%s"
+        kwargs["initial"] = {
+            "begin_date": getFirstDayOfCurrentYear(),
+            "end_date": getLastDayOfCurrentYear(),
+            **(kwargs["initial"] if "initial" in kwargs else {}),
+        }
         super(FunctionaryForm, self).__init__(*args, **kwargs)
 
 
@@ -100,6 +106,10 @@ class DecorationOwnershipForm(BSModelForm):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs:
             kwargs["auto_id"] = "doform_%s"
+        kwargs["initial"] = {
+            "acquired": getCurrentDate(),
+            **(kwargs["initial"] if "initial" in kwargs else {}),
+        }
         super(DecorationOwnershipForm, self).__init__(*args, **kwargs)
 
 
@@ -115,6 +125,11 @@ class GroupForm(BSModelForm):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs:
             kwargs["auto_id"] = "gform_%s"
+        kwargs["initial"] = {
+            "begin_date": getFirstDayOfCurrentYear(),
+            "end_date": getLastDayOfCurrentYear(),
+            **(kwargs["initial"] if "initial" in kwargs else {}),
+        }
         super(GroupForm, self).__init__(*args, **kwargs)
 
 
@@ -144,6 +159,10 @@ class MemberTypeForm(BSModelForm):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs:
             kwargs["auto_id"] = "mtform_%s"
+        kwargs["initial"] = {
+            "begin_date": getCurrentDate(),
+            **(kwargs["initial"] if "initial" in kwargs else {}),
+        }
         super(MemberTypeForm, self).__init__(*args, **kwargs)
 
 

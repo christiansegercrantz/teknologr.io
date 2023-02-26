@@ -7,24 +7,6 @@ from members.forms import *
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
 from registration.forms import RegistrationForm
-import datetime
-
-
-def getCurrentYear():
-    return datetime.date.today().year
-
-
-def getFirstDayOfCurrentYear():
-    return datetime.date(getCurrentYear(), 1, 1)
-
-
-def getLastDayOfCurrentYear():
-    return datetime.date(getCurrentYear(), 12, 31)
-
-
-def getCurrentDate():
-    return datetime.datetime.now()
-
 
 # Create your views here
 
@@ -162,11 +144,7 @@ def group(request, grouptype_id, group_id=None):
     context['groups'] = Group.objects.filter(grouptype__id=grouptype_id).order_by('-begin_date')
     context['edit_gt_form'] = form
 
-    context['add_g_form'] = GroupForm(initial={
-        "grouptype": grouptype_id,
-        "begin_date": getFirstDayOfCurrentYear(),
-        "end_date": getLastDayOfCurrentYear()
-    })
+    context['add_g_form'] = GroupForm(initial={"grouptype": grouptype_id})
 
     if group_id is not None:
         group = get_object_or_404(Group, id=group_id)
@@ -194,11 +172,7 @@ def functionary(request, functionarytype_id):
     context['functionaries'] = Functionary.objects.filter(
         functionarytype__id=functionarytype_id).order_by('-begin_date')
     context['edit_ft_form'] = form
-    context['add_f_form'] = FunctionaryForm(initial={
-        "functionarytype": functionarytype_id,
-        "begin_date": getFirstDayOfCurrentYear(),
-        "end_date": getLastDayOfCurrentYear()
-    })
+    context['add_f_form'] = FunctionaryForm(initial={"functionarytype": functionarytype_id})
 
     set_side_context(context, 'functionaries', functionarytype.id)
     return render(request, 'functionary.html', context)
@@ -214,8 +188,7 @@ def decoration(request, decoration_id):
 
     # Get groups of group type
     context['decorations'] = DecorationOwnership.objects.filter(decoration__id=decoration_id).order_by('-acquired')
-    context['add_do_form'] = DecorationOwnershipForm(
-        initial={"decoration": decoration_id, 'acquired': getCurrentDate()})
+    context['add_do_form'] = DecorationOwnershipForm(initial={"decoration": decoration_id})
 
     set_side_context(context, 'decorations', decoration.id)
     return render(request, 'decoration.html', context)
