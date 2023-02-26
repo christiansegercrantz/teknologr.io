@@ -25,7 +25,7 @@ $(document).ready(function () {
 		selector: ".delete-g-button",
 		method: "DELETE",
 		url: element => `/api/groups/${element.data("id")}/`,
-		confirmMessage: "Vill du ta bort denna undergrupp?",
+		confirmMessage: "Vill du ta bort denna undergrupp och alla dess medlemskap?",
 		newLocation: element => `/admin/groups/${element.data("grouptype_id")}`,
 	});
 

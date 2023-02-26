@@ -10,7 +10,7 @@ $(document).ready(function () {
 		selector: "#delete-d-button",
 		method: "DELETE",
 		url: element => `/api/decorations/${element.data("id")}/`,
-		confirmMessage: "Vill du radera denna hedersbetygelse?",
+		confirmMessage: "Vill du radera denna hedersbetygelse och alla des ägarskap?",
 		newLocation: "/admin/decorations/",
 	});
 

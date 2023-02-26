@@ -10,7 +10,7 @@ $(document).ready(function () {
 		selector: "#delete-ft-button",
 		method: "DELETE",
 		url: element => `/api/functionaryTypes/${element.data("id")}/`,
-		confirmMessage: "Vill du radera denna funktionärstyp?",
+		confirmMessage: "Vill du radera denna funktionärstyp och alla dess funktionärer?",
 		newLocation: "/admin/functionaries/",
 	});
 
