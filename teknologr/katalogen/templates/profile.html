@@ -78,16 +78,16 @@
       </table>
     </div>
     <div class="col-12 col-lg-5">
-      {% if decorations %}
+      {% if decoration_ownerships %}
       <h3>Hedersbetygelser</h3>
       <table class="table table-striped table-borderless table-sm">
-        {% for decoration in decorations %}
+        {% for do in decoration_ownerships %}
           <tr>
             <th>
-              {{ decoration.decoration.name }}
+              <a href="{% url 'katalogen.views.decoration_ownerships' do.decoration.id %}">{{ do.decoration.name }}</a>
             </th>
             <td align="right">
-              {{ decoration.acquired }}
+              {{ do.acquired }}
             </td>
           </tr>
         {% endfor %}
@@ -95,13 +95,13 @@
       {% endif %}
       <h3>Poster</h3>
       <table class="table table-striped table-borderless table-sm">
-        {% for functionary in functionaries %}
+        {% for f in functionaries %}
           <tr>
             <th>
-              {{ functionary.functionarytype.name }}
+              <a href="{% url 'katalogen.views.functionaries' f.functionarytype.id %}">{{ f.functionarytype.name }}</a>
             </td>
             <td align="right">
-              {{ functionary.begin_date }} - {{ functionary.end_date }}
+              {{ f.begin_date }} - {{ f.end_date }}
             </td>
           </tr>
         {% empty %}
@@ -113,13 +113,13 @@
       </table>
       <h3>Grupper</h3>
       <table class="table table-striped table-borderless table-sm">
-        {% for group in groups %}
+        {% for gm in group_memberships %}
           <tr>
             <th>
-              {{ group.group.grouptype.name }}
+              <a href="{% url 'katalogen.views.groups' gm.group.grouptype.id %}">{{ gm.group.grouptype.name }}</a>
             </th>
             <td align="right">
-              {{ group.group.begin_date }} - {{ group.group.end_date }}
+              {{ gm.group.begin_date }} - {{ gm.group.end_date }}
             </td>
           </tr>
         {% empty %}

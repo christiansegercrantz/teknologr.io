@@ -54,8 +54,8 @@ def profile(request, member_id):
             person.username == request.user.username):
         context['person'] = person
         context['functionaries'] = Functionary.objects.filter(member__id=person.id).order_by('-end_date')
-        context['groups'] = GroupMembership.objects.filter(member__id=person.id).order_by('-group__end_date')
-        context['decorations'] = DecorationOwnership.objects.filter(member__id=person.id).order_by('acquired')
+        context['group_memberships'] = GroupMembership.objects.filter(member__id=person.id).order_by('-group__end_date')
+        context['decoration_ownerships'] = DecorationOwnership.objects.filter(member__id=person.id).order_by('acquired')
         context['phux_year'] = person.getPhuxYear()
         return render(request, 'profile.html', context)
     else:
