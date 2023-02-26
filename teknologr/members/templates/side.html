@@ -9,13 +9,13 @@
 <ul class="list-inline side-item">
   {% if side.new_button %}
     <li class="list-inline-item">
-      <button id="side-new" class="btn btn-success" data-toggle="modal" data-target="#newModal">Ny {{ side.sname }}</button>
+      <button id="side-new" class="btn btn-success" data-toggle="modal" data-target="#new-mgtftd-modal">Ny {{ side.sname }}</button>
     </li>
   {% endif %}
 
   {% if side.applicant_tool_icons %}
     <li class="list-inline-item">
-      <button class="btn" data-toggle="modal" data-target="#addMultipleApplicants" data-toggle="tooltip" title="Acceptera flera ansökningar">
+      <button class="btn" data-toggle="modal" data-target="#add-multiple-applicants-modal" data-toggle="tooltip" title="Acceptera flera ansökningar">
         <i class="fas fa-users text-info icon-20"></i>
       </button>
     </li>

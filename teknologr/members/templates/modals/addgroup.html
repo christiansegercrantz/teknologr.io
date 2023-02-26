@@ -1,25 +1,25 @@
 {% extends "modals/modal.html" %}
 
 {% block modalcontent %}
-<form id="addgroupform" autocomplete="off">
+<form id="add-g-form" autocomplete="off">
   {% csrf_token %}
   <div class="row form-group">
     <div class="col-4">
-      <label for="{{addgroupform.begin_date.id_for_label}}">Från</label>
+      <label for="{{ form.begin_date.id_for_label }}">Från</label>
     </div>
     <div class="col-8">
-      {{ addgroupform.begin_date }}
+      {{ form.begin_date }}
     </div>
   </div>
   <div class="row form-group">
     <div class="col-4">
-      <label for="{{addgroupform.end_date.id_for_label}}">Till</label>
+      <label for="{{ form.end_date.id_for_label }}">Till</label>
     </div>
     <div class="col-8">
-      {{ addgroupform.end_date }}
+      {{ form.end_date }}
     </div>
   </div>
-  {{ addgroupform.grouptype.as_hidden }}
+  {{ form.grouptype.as_hidden }}
   <div class="row">
     <div class="col-12">
       <button type="submit" class="btn btn-success float-right">Spara</button>

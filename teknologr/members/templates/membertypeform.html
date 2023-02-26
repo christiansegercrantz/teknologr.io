@@ -2,13 +2,13 @@
   {% csrf_token %}
   <div class="row form-group">
     <div class="col-4">
-      <label for="{{form.type.id_for_label}}">Medlemstyp</label>
+      <label for="{{ form.type.id_for_label }}">Medlemstyp</label>
     </div>
     <div class="col-8">{{ form.type }}</div>
   </div>
   <div class="row form-group">
     <div class="col-4">
-      <label for="{{form.begin_date.id_for_label}}">Från</label>
+      <label for="{{ form.begin_date.id_for_label }}">Från</label>
     </div>
     <div class="col-8">
       {{ form.begin_date }}
@@ -16,7 +16,7 @@
   </div>
   <div class="row form-group">
     <div class="col-4">
-      <label for="{{form.end_date.id_for_label}}">Till</label>
+      <label for="{{ form.end_date.id_for_label }}">Till</label>
     </div>
     <div class="col-8">
       {{ form.end_date }}

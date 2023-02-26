@@ -1,13 +1,13 @@
 $(document).ready(function () {
 	// Update the decoration type
 	add_request_listener({
-		selector: "#decorationform",
+		selector: "#edit-d-form",
 		method: "PUT",
 		url: element => `/api/decorations/${element.data("id")}/`,
 	});
 	// Delete the decoration type
 	add_request_listener({
-		selector: "#deleteDecoration",
+		selector: "#delete-d-button",
 		method: "DELETE",
 		url: element => `/api/decorations/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna hedersbetygelse?",
@@ -16,7 +16,7 @@ $(document).ready(function () {
 
 	// Add a person to the list
 	add_request_listener({
-		selector: "#adddecorationform",
+		selector: "#add-do-form",
 		method: "POST",
 		url: "/api/multiDecorationOwnership/",
 		confirmMessage: confirmMessageCreateMembers,
@@ -24,7 +24,7 @@ $(document).ready(function () {
 
 	// Delete a person from the list
 	add_request_listener({
-		selector: ".removeDecoration",
+		selector: ".delete-do-button",
 		method: "DELETE",
 		url: element => `/api/decorationOwnership/${element.data("id")}/`,
 		confirmMessage: "Vill du radera detta hedersbetygelseinnehav?",
