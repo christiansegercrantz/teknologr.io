@@ -58,11 +58,9 @@ def profile(request, member_id):
 
     functionaries = Functionary.objects.filter(member__id=person.id).order_by('functionarytype__name', 'begin_date')
     functionary_duration_strings = create_functionary_duration_strings(functionaries)
-    print(functionary_duration_strings)
 
     group_memberships = GroupMembership.objects.filter(member__id=person.id).order_by('group__grouptype__name', 'group__begin_date')
     group_type_duration_strings = create_group_type_duration_strings(group_memberships)
-    print(group_type_duration_strings)
 
     return render(request, 'profile.html', {
         **_get_base_context(request),

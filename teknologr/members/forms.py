@@ -1,11 +1,10 @@
 from members.models import *
 from members.utils import *
 from registration.models import Applicant
-from django.forms import ModelForm, DateField, CharField, ModelChoiceField
+from django.forms import ModelForm, DateField, CharField, ModelChoiceField, Textarea
 from django.forms.widgets import CheckboxInput, DateInput, TextInput, PasswordInput
 from ajax_select.fields import AutoCompleteSelectMultipleField
 from django.contrib.auth.forms import AuthenticationForm
-from django import forms
 
 
 class BSModelForm(ModelForm):
@@ -20,7 +19,7 @@ class MemberForm(ModelForm):
         model = Member
         fields = '__all__'
         widgets = {
-            'comment': forms.Textarea(attrs={'rows': 3, 'cols': 15}),
+            'comment': Textarea(attrs={'rows': 3, 'cols': 15}),
         }
 
     birth_date = DateField(widget=DateInput(attrs={'type': 'date'}), required=False)
