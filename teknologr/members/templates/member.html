@@ -4,7 +4,7 @@
 {% block main %}
   <div class="container-fluid">
     <h1 class="page-header">
-      {{member.full_name}}
+      <a class="katalogen-link" href="{% url 'katalogen:profile' member.id %}">{{ member.full_name }}</a>
       <a href="{% url 'api:member-detail' member.id %}" class="btn btn-outline-dark float-right">API länk</a>
       <a href="{% url 'api:htkDump' member.id %}" class="btn btn-outline-dark float-right">HTK dump</a>
     </h1>

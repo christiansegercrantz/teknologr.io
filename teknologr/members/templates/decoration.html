@@ -5,7 +5,7 @@
 <div class="container-fluid">
   <ul class="list-inline page-header">
     <li class="list-inline-item">
-      <h1>{{ decoration.name }}</h1>
+      <h1><a class="katalogen-link" href="{% url 'katalogen:decoration_ownerships' decoration.id %}">{{ decoration.name }}</a></h1>
     </li>
     <li class="list-inline-item">
       <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#edit-d-modal"></i>
