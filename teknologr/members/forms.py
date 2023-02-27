@@ -1,7 +1,7 @@
 from members.models import *
 from members.utils import *
 from registration.models import Applicant
-from django.forms import ModelForm, DateField, CharField
+from django.forms import ModelForm, DateField, CharField, ModelChoiceField
 from django.forms.widgets import CheckboxInput, DateInput, TextInput, PasswordInput
 from ajax_select.fields import AutoCompleteSelectMultipleField
 from django.contrib.auth.forms import AuthenticationForm
@@ -69,6 +69,7 @@ class FunctionaryForm(BSModelForm):
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
+    functionarytype = ModelChoiceField(queryset=FunctionaryType.objects.order_by('name'))
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
@@ -101,6 +102,7 @@ class DecorationOwnershipForm(BSModelForm):
 
     acquired = DateField(widget=DateInput(attrs={'type': 'date'}))
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
+    decoration = ModelChoiceField(queryset=Decoration.objects.order_by('name'))
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
@@ -139,6 +141,7 @@ class GroupMembershipForm(BSModelForm):
         fields = '__all__'
 
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
+    group = ModelChoiceField(queryset=Group.objects.order_by('grouptype__name', '-end_date'))
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
