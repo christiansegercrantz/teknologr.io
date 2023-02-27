@@ -2,10 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from members.models import *
+from katalogen.utils import *
 from django.db.models import Q, Count
 from functools import reduce
 from operator import and_
-
 
 def _get_base_context():
     return {'abc': "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ"}
@@ -45,21 +45,31 @@ def search(request):
 
 @login_required
 def profile(request, member_id):
-    context = _get_base_context()
     person = get_object_or_404(Member, id=member_id)
 
     # User may view consenting profiles or their own
     # NOTE: there is a small security risk here if the members database is not in sync with the LDAP database
-    if ((person.allow_publish_info and person.isValidMember() and not person.dead) or
-            person.username == request.user.username):
-        context['person'] = person
-        context['functionaries'] = Functionary.objects.filter(member__id=person.id).order_by('-end_date')
-        context['group_memberships'] = GroupMembership.objects.filter(member__id=person.id).order_by('-group__end_date')
-        context['decoration_ownerships'] = DecorationOwnership.objects.filter(member__id=person.id).order_by('acquired')
-        context['phux_year'] = person.getPhuxYear()
-        return render(request, 'profile.html', context)
-    else:
-        raise PermissionDenied
+    if not person.allow_publish_info or not person.isValidMember() or person.dead:
+        if person.username != request.user.username:
+            raise PermissionDenied
+
+    functionaries = Functionary.objects.filter(member__id=person.id).order_by('functionarytype__name', 'begin_date')
+    functionary_duration_strings = create_functionary_duration_strings(functionaries)
+    print(functionary_duration_strings)
+
+    group_memberships = GroupMembership.objects.filter(member__id=person.id).order_by('group__grouptype__name', 'group__begin_date')
+    group_type_duration_strings = create_group_type_duration_strings(group_memberships)
+    print(group_type_duration_strings)
+
+    return render(request, 'profile.html', {
+        'person': person,
+        'functionaries': functionaries,
+        'functionary_duration_strings': functionary_duration_strings,
+        'group_type_duration_strings': group_type_duration_strings,
+        'decoration_ownerships': DecorationOwnership.objects.filter(member__id=person.id).order_by('acquired'),
+        'phux_year': person.getPhuxYear(),
+        **_get_base_context(),
+    })
 
 
 @login_required
