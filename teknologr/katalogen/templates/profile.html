@@ -89,49 +89,39 @@
       <table class="table table-striped table-borderless table-sm">
         {% for do in decoration_ownerships %}
           <tr>
-            <th>
-              <a href="{% url 'katalogen:decoration_ownerships' do.decoration.id %}">{{ do.decoration.name }}</a>
-            </th>
-            <td align="right">
-              {{ do.acquired }}
-            </td>
+            <th><a href="{% url 'katalogen:decoration_ownerships' do.decoration.id %}">{{ do.decoration.name }}</a></th>
+            <td align="right">{{ do.acquired }}</td>
           </tr>
         {% endfor %}
       </table>
       {% endif %}
+
       <h3>Poster</h3>
       <table class="table table-striped table-borderless table-sm">
         {% for ft, duration in functionary_duration_strings.items %}
           <tr>
-            <th>
-              <a href="{% url 'katalogen:functionaries' ft.id %}">{{ ft.name }}</a>
-            </td>
-            <td align="right">
-              {{ duration }}
-            </td>
+            <th><a href="{% url 'katalogen:functionaries' ft.id %}">{{ ft.name }}</a></td>
+            <td align="right">{{ duration }}</td>
           </tr>
         {% empty %}
           <tr>
             <th>Inga poster.</th>
-            <td align="right"></td>
+            <td></td>
           </tr>
         {% endfor %}
       </table>
+
       <h3>Grupper</h3>
       <table class="table table-striped table-borderless table-sm">
         {% for gt, duration in group_type_duration_strings.items %}
           <tr>
-            <th>
-              <a href="{% url 'katalogen:groups' gt.id %}">{{ gt.name }}</a>
-            </th>
-            <td align="right">
-              {{ duration }}
-            </td>
+            <th><a href="{% url 'katalogen:groups' gt.id %}">{{ gt.name }}</a></th>
+            <td align="right">{{ duration }}</td>
           </tr>
         {% empty %}
           <tr>
             <th>Inga grupper. </th>
-            <td align="right"></td>
+            <td></td>
           </tr>
         {% endfor %}
       </table>
