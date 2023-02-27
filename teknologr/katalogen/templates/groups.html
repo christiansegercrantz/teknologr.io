@@ -14,7 +14,7 @@
       <tbody>
         {% for g in groups %}
           <tr>
-            <td><b>{{ g.begin_date }} - {{ g.end_date }}</b></td>
+            <td><b>{{ g.duration_string }}</b></td>
             <td><i>{{ g.num_members }} {% if g.num_members == 1 %}medlem{% else %}medlemmar{% endif %}</i></td>
           </tr>
           {% for gm in g.memberships.all %}

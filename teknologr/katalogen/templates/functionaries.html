@@ -8,16 +8,14 @@
       <thead>
         <tr>
           <th>Namn</th>
-          <th>Från</th>
-          <th>Till</th>
+          <th>Datum</th>
         </tr>
       </thead>
       <tbody>
         {% for f in functionaries %}
           <tr>
             <td><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.name }}</a></td>
-            <td>{{ f.begin_date }}</td>
-            <td>{{ f.end_date }}</td>
+            <td>{{ f.duration_string }}</td>
           </tr>
         {% endfor %}
       </tbody>

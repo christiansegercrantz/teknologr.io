@@ -115,9 +115,13 @@ def functionary_types(request):
 def functionaries(request, functionary_type_id):
     functionary_type = get_object_or_404(FunctionaryType, id=functionary_type_id)
 
+    functionaries = functionary_type.functionaries.order_by('-end_date', 'member__surname')
+    for f in functionaries:
+        f.duration_string = create_duration_string(f.begin_date, f.end_date)
+
     return render(request, 'functionaries.html', {
         'functionary_type': functionary_type,
-        'functionaries': Functionary.objects.filter(functionarytype=functionary_type_id).order_by('-end_date'),
+        'functionaries': functionaries,
     })
 
 @login_required
@@ -131,7 +135,10 @@ def group_types(request):
 @login_required
 def groups(request, group_type_id):
     group_type = get_object_or_404(GroupType, id=group_type_id)
-    groups = group_type.groups.annotate(num_members=Count('memberships'))
+
+    groups = group_type.groups.annotate(num_members=Count('memberships')).order_by('-end_date')
+    for g in groups:
+        g.duration_string = create_duration_string(g.begin_date, g.end_date)
 
     return render(request, 'groups.html', {
         'group_type': group_type,
