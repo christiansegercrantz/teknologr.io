@@ -147,7 +147,14 @@ class GroupMembershipForm(BSModelForm):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs:
             kwargs["auto_id"] = "gmform_%s"
+
+        member_id = kwargs.get('initial', {}).get('member', None)
         super(GroupMembershipForm, self).__init__(*args, **kwargs)
+
+        # Do not list groups that the member already is part of
+        if member_id:
+            groups = Group.objects.exclude(id__in=GroupMembership.objects.filter(member=member_id).values('group'))
+            self.fields['group'].queryset = groups
 
 
 class MemberTypeForm(BSModelForm):
