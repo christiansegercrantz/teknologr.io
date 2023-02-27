@@ -7,8 +7,11 @@ from django.db.models import Q, Count
 from functools import reduce
 from operator import and_
 
-def _get_base_context():
-    return {'abc': "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ"}
+def _get_base_context(request = None):
+    return {
+        'abc': "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ",
+        'is_staff': request.user.is_staff if request else False,
+    }
 
 
 def _get_consenting_persons():
@@ -62,13 +65,13 @@ def profile(request, member_id):
     print(group_type_duration_strings)
 
     return render(request, 'profile.html', {
+        **_get_base_context(request),
         'person': person,
         'functionaries': functionaries,
         'functionary_duration_strings': functionary_duration_strings,
         'group_type_duration_strings': group_type_duration_strings,
         'decoration_ownerships': DecorationOwnership.objects.filter(member__id=person.id).order_by('acquired'),
         'phux_year': person.getPhuxYear(),
-        **_get_base_context(),
     })
 
 
@@ -91,6 +94,7 @@ def decorations(request):
     # XXX: More info:
     #  - Date of first/latest?
     return render(request, 'decorations.html', {
+        **_get_base_context(request),
         'decorations': Decoration.objects.order_by('name').annotate(num_owners=Count('ownerships'))
     })
 
@@ -99,6 +103,7 @@ def decoration_ownerships(request, decoration_id):
     decoration = get_object_or_404(Decoration,  id=decoration_id)
 
     return render(request, 'decoration_ownerships.html', {
+        **_get_base_context(request),
         'decoration': decoration,
         'decoration_ownerships': DecorationOwnership.objects.filter(decoration_id=decoration_id).order_by('acquired'),
     })
@@ -108,6 +113,7 @@ def functionary_types(request):
     # XXX: More info:
     #  - Date of first/latest?
     return render(request, 'functionary_types.html', {
+        **_get_base_context(request),
         'functionary_types': FunctionaryType.objects.order_by('name').annotate(num_functionaries=Count('functionaries')),
     })
 
@@ -120,6 +126,7 @@ def functionaries(request, functionary_type_id):
         f.duration_string = create_duration_string(f.begin_date, f.end_date)
 
     return render(request, 'functionaries.html', {
+        **_get_base_context(request),
         'functionary_type': functionary_type,
         'functionaries': functionaries,
     })
@@ -129,6 +136,7 @@ def group_types(request):
     # XXX: More info:
     #  - Date of first/latest?
     return render(request, 'group_types.html', {
+        **_get_base_context(request),
         'group_types': GroupType.objects.order_by('name').annotate(num_groups=Count('groups')),
     })
 
@@ -141,6 +149,7 @@ def groups(request, group_type_id):
         g.duration_string = create_duration_string(g.begin_date, g.end_date)
 
     return render(request, 'groups.html', {
+        **_get_base_context(request),
         'group_type': group_type,
         'groups': groups,
     })

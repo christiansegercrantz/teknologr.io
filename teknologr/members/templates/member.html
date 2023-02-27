@@ -249,7 +249,7 @@
             {% for f in functionaries %}
               <tr>
                 <td><i class="fas fa-times delete-f-button text-danger" role="button" data-id="{{ f.id }}"></i></td>
-                <td><a href="{% url 'admin:functionary' f.functionary_type_id %}">{{ f.functionarytype.name }}</a></td>
+                <td><a href="{% url 'admin:functionary_type' f.functionary_type_id %}">{{ f.functionarytype.name }}</a></td>
                 <td>{{ f.begin_date }}</td>
                 <td>{{ f.end_date }}</td>
               </tr>

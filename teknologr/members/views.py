@@ -161,7 +161,7 @@ def group(request, grouptype_id, group_id=None):
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
-def functionary(request, functionarytype_id):
+def functionary_type(request, functionarytype_id):
     context = {}
 
     functionarytype = get_object_or_404(FunctionaryType, id=functionarytype_id)

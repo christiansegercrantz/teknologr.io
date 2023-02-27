@@ -3,7 +3,14 @@
 {% block content %}
 <div class="row">
   <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
-    <h2 class="page-header">{{ group_type.name }}</h2>
+    <h2 class="page-header">
+      Medlemmar av
+      {% if is_staff %}
+        <a class="admin-link" href="{% url 'admin:group_type' group_type.id %}">{{ group_type.name }}</a>
+      {% else %}
+        {{ group_type.name }}
+      {% endif %}
+    </h2>
     <table class="table table-sm table-striped">
       <thead>
         <tr>
@@ -14,7 +21,13 @@
       <tbody>
         {% for g in groups %}
           <tr>
-            <td><b>{{ g.duration_string }}</b></td>
+            <td><b>
+              {% if is_staff %}
+                <a class="admin-link" href="{% url 'admin:group' group_type.id g.id %}">{{ g.duration_string }}</a>
+              {% else %}
+                {{ g.duration_string }}
+              {% endif %}
+            </b></td>
             <td><i>{{ g.num_members }} {% if g.num_members == 1 %}medlem{% else %}medlemmar{% endif %}</i></td>
           </tr>
           {% for gm in g.memberships.all %}

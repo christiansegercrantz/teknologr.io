@@ -8,9 +8,9 @@ urlpatterns = [
     url(r'^(members|groups|functionaries|decorations|applicants)/$', views.empty, name='empty'),
     url(r'^members/(\d+)/$', views.member, name='member'),
     url(r'^membertype/(\d+)/form/$', views.membertype_form),
-    url(r'^groups/(\d+)/$', views.group),
+    url(r'^groups/(\d+)/$', views.group, name='group_type'),
     url(r'^groups/(\d+)/(\d+)/$', views.group, name='group'),
-    url(r'^functionaries/(\d+)/$', views.functionary, name='functionary'),
+    url(r'^functionaries/(\d+)/$', views.functionary_type, name='functionary_type'),
     url(r'^decorations/(\d+)/$', views.decoration, name='decoration'),
     url(r'^applicants/(\d+)/$', views.applicant, name='applicant'),
 ]
