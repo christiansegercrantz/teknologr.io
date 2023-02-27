@@ -4,7 +4,7 @@ from . import views
 
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url='/admin/members/')),
+    url(r'^$', RedirectView.as_view(url='/admin/members/'), name='home'),
     url(r'^(members|groups|functionaries|decorations|applicants)/$', views.empty, name='empty'),
     url(r'^members/(\d+)/$', views.member, name='member'),
     url(r'^membertype/(\d+)/form/$', views.membertype_form),

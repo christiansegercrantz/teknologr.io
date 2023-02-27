@@ -7,7 +7,7 @@ from django.db.models import Q, Count
 from functools import reduce
 from operator import and_
 
-def _get_base_context(request = None):
+def _get_base_context(request):
     return {
         'abc': "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ",
         'is_staff': request.user.is_staff if request else False,
@@ -24,14 +24,14 @@ def _filter_valid_members(member_query):
 
 @login_required
 def home(request):
-    context = _get_base_context()
+    context = _get_base_context(request)
     context['home'] = True
     return render(request, 'browse.html', context)
 
 
 @login_required
 def search(request):
-    context = _get_base_context()
+    context = _get_base_context(request)
     query = request.GET.get('q')
     query_list = query.split()
     result = _get_consenting_persons()
@@ -77,7 +77,7 @@ def profile(request, member_id):
 
 @login_required
 def startswith(request, letter):
-    context = _get_base_context()
+    context = _get_base_context(request)
     persons = _get_consenting_persons().filter(surname__istartswith=letter).order_by('surname')
     context['persons'] = _filter_valid_members(persons)
 

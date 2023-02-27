@@ -30,6 +30,22 @@
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
+            <a class="nav-link" href="{% url 'katalogen:decorations' %}">Hedersbetygelser</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'katalogen:functionary_types' %}">Funktionärer</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'katalogen:group_types' %}">Grupper</a>
+          </li>
+          {% if is_staff %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'api:api-root' %}">API</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'admin:home' %}">Admin</a>
+            </li>
+          {% endif %}
             <a class="nav-link" href="{% url 'katalogen:myprofile' %}">Min Profil</a>
           </li>
           <li class="nav-item">
@@ -61,18 +77,8 @@
           {% endfor %}
         </div>
       </div>
+
       {% block content %}
-      <div class="row">
-        <div class="home-info text-center col-sm-12 col-md-8 offset-md-2">
-          <h1>Katalogen på nätet</h1>
-          <p class="lead">
-            Bläddra i Teknologföreningens medlemsregister.<br/>
-            Du kan söka efter personer med sökfältet ovan, eller se din egen profil via menyn.<br/>
-            Endast personer som tillåtit utgivning av sina personuppgifter kan ses på denna sida.<br/>
-            Man kan dock alltid se sin egen profil.
-          </p>
-        </div>
-      </div>
       {% endblock %}
 
     </div><!-- /.container -->
