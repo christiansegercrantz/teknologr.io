@@ -67,18 +67,38 @@ const add_request_listener = ({ selector, method, url, data, confirmMessage, new
  * 4. A button for removing the name is also created
  * 5. When the form is submitted, the api endpoint handles splitting the hidden input and creating new members
  *
+ * Additional listeners are created to enable/disable the create and submit buttons.
+ *
  * Note that a certain layout of the elements is assumed.
  */
-const add_ajax_multiselect_extension = ({ selector_button, selector_input }) => {
-	$(selector_button).click(e => {
+const add_ajax_multiselect_extension = ({ selector_button, selector_input, selector_submit }) => {
+	const create_member_button = $(selector_button);
+	const submit_button = $(selector_submit);
+
+	const input = $(selector_input);
+	const hidden_input = input.next();
+	const deck = hidden_input.next();
+
+	// Listen on input to enable/disable create button
+	input.on("input", e => {
+		const value = e.target.value;
+		create_member_button.prop("disabled", !value || !value.trim().includes(" "));
+	});
+
+	// Listen for changes in the list of members to enable/disable submit button
+	const observer = new MutationObserver(() => {
+		input.trigger("input");
+		submit_button.prop("disabled", deck.children().length == 0);
+	});
+	observer.observe(deck.get(0), { childList: true });
+
+	// Handle creating new members
+	create_member_button.click(e => {
 		e.preventDefault();
 
-		const input = $(selector_input);
 		const name = input.val().trim();
 		if (!name || !name.includes(" ") || name.includes("|") || name.includes("$")) return;
 		input.val("");
-
-		const hidden_input = input.next();
 
 		// Add name to hidden (real) input
 		const substring = `$${name}|`;
@@ -91,7 +111,7 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input }) => 
 		// Add name to list
 		const div = $("<div>", {
 			html: `<b>Ny:</b> ${name}`,
-		}).appendTo(hidden_input.next());
+		}).appendTo(deck);
 
 		// Create button for removing the name from the list
 		$("<span>", {

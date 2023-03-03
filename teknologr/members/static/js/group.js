@@ -59,5 +59,6 @@ $(document).ready(function () {
 	add_ajax_multiselect_extension({
 		selector_button: "#gmform-create-member",
 		selector_input: "#gmform_member_text",
+		selector_submit: "#gmform-submit-memberships",
 	});
 });

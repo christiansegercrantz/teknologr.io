@@ -12,7 +12,7 @@
       {{ form.member }}
     </div>
     <div class="col-3">
-      <button id="doform-create-member" class="btn btn-warning float-right">Skapa ny</button>
+      <button disabled id="doform-create-member" class="btn btn-warning float-right">Skapa ny</button>
     </div>
   </div>
   <div class="row form-group">
@@ -25,7 +25,7 @@
   </div>
   <div class="row">
     <div class="col-12">
-      <button type="submit" class="btn btn-success float-right">Spara</button>
+      <button disabled id="doform-submit-ownerships" type="submit" class="btn btn-success float-right">Spara</button>
     </div>
   </div>
   {{ form.decoration.as_hidden }}
