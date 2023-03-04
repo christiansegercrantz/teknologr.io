@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from members.models import *
 from katalogen.utils import *
 from django.db.models import Q, Count
@@ -50,12 +49,6 @@ def search(request):
 def profile(request, member_id):
     person = get_object_or_404(Member, id=member_id)
 
-    # User may view consenting profiles or their own
-    # NOTE: there is a small security risk here if the members database is not in sync with the LDAP database
-    if not person.allow_publish_info or not person.isValidMember() or person.dead:
-        if person.username != request.user.username:
-            raise PermissionDenied
-
     functionaries = Functionary.objects.filter(member__id=person.id).order_by('functionarytype__name', 'begin_date')
     functionary_duration_strings = create_functionary_duration_strings(functionaries)
 
@@ -64,6 +57,7 @@ def profile(request, member_id):
 
     return render(request, 'profile.html', {
         **_get_base_context(request),
+        'show_all': person.username == request.user.username or person.showContactInformation(),
         'person': person,
         'functionaries': functionaries,
         'functionary_duration_strings': functionary_duration_strings,

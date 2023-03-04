@@ -140,6 +140,9 @@ class Member(SuperClass):
         phux_year_begin_date = len(phuxYear) and phuxYear[0].begin_date
         return phux_year_begin_date.year if phux_year_begin_date else None
 
+    def showContactInformation(self):
+        return self.allow_publish_info and self.isValidMember() and not self.dead
+
 
 class DecorationOwnership(SuperClass):
     member = models.ForeignKey("Member", on_delete=models.CASCADE)
