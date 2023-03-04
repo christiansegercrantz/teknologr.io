@@ -134,7 +134,8 @@ class Member(SuperClass):
         memberType = self.getMostRecentMemberType()
         return memberType is not None and (memberType.type == "OM" or memberType.type == "ST")
 
-    def getPhuxYear(self):
+    @property
+    def phux_year(self):
         phuxYear = MemberType.objects.filter(member=self).filter(type='PH').order_by('begin_date')
         phux_year_begin_date = len(phuxYear) and phuxYear[0].begin_date
         return phux_year_begin_date.year if phux_year_begin_date else None

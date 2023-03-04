@@ -69,7 +69,6 @@ def profile(request, member_id):
         'functionary_duration_strings': functionary_duration_strings,
         'group_type_duration_strings': group_type_duration_strings,
         'decoration_ownerships': DecorationOwnership.objects.filter(member__id=person.id).order_by('acquired'),
-        'phux_year': person.getPhuxYear(),
     })
 
 
