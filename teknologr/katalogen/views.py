@@ -13,14 +13,6 @@ def _get_base_context(request):
     }
 
 
-def _get_consenting_persons():
-    return Member.objects.filter(allow_publish_info=True).filter(dead=False)
-
-
-def _filter_valid_members(member_query):
-    return [x for x in member_query if x.isValidMember()]
-
-
 @login_required
 def home(request):
     context = _get_base_context(request)
@@ -30,19 +22,18 @@ def home(request):
 
 @login_required
 def search(request):
-    context = _get_base_context(request)
-    query = request.GET.get('q')
-    query_list = query.split()
-    result = _get_consenting_persons()
-    if not query_list:
-        context['persons'] = []
-    else:
-        query = result.filter(
+    query_list = request.GET.get('q').split()
+    result = []
+
+    if query_list:
+        result = Member.objects.filter(
            reduce(and_, (Q(given_names__icontains=q) | Q(surname__icontains=q) for q in query_list))
         ).order_by('surname')
-        context['persons'] = _filter_valid_members(query)
 
-    return render(request, 'browse.html', context)
+    return render(request, 'browse.html', {
+        **_get_base_context(request),
+        'persons': result,
+    })
 
 
 @login_required
@@ -68,11 +59,10 @@ def profile(request, member_id):
 
 @login_required
 def startswith(request, letter):
-    context = _get_base_context(request)
-    persons = _get_consenting_persons().filter(surname__istartswith=letter).order_by('surname')
-    context['persons'] = _filter_valid_members(persons)
-
-    return render(request, 'browse.html', context)
+    return render(request, 'browse.html', {
+        **_get_base_context(request),
+        'persons': Member.objects.filter(surname__istartswith=letter).order_by('surname'),
+    })
 
 
 @login_required
