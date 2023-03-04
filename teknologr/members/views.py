@@ -8,7 +8,6 @@ from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
 from registration.forms import RegistrationForm
 
-# Create your views here
 
 def set_side_context(context, category, active_obj=None):
     side = {}

@@ -6,6 +6,7 @@ from django.db.models import Q, Count
 from functools import reduce
 from operator import and_
 
+
 def _get_base_context(request):
     return {
         'abc': "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ",
@@ -50,7 +51,6 @@ def profile(request, member_id):
         **_get_base_context(request),
         'show_all': person.username == request.user.username or person.showContactInformation(),
         'person': person,
-        'functionaries': functionaries,
         'functionary_duration_strings': functionary_duration_strings,
         'group_type_duration_strings': group_type_duration_strings,
         'decoration_ownerships': DecorationOwnership.objects.filter(member__id=person.id).order_by('acquired'),
@@ -70,6 +70,7 @@ def myprofile(request):
     person = get_object_or_404(Member,  username=request.user.username)
     return redirect('katalogen:profile', person.id)
 
+
 @login_required
 def decorations(request):
     # XXX: More info:
@@ -78,6 +79,7 @@ def decorations(request):
         **_get_base_context(request),
         'decorations': Decoration.objects.order_by('name').annotate(num_owners=Count('ownerships'))
     })
+
 
 @login_required
 def decoration_ownerships(request, decoration_id):
@@ -89,6 +91,7 @@ def decoration_ownerships(request, decoration_id):
         'decoration_ownerships': DecorationOwnership.objects.filter(decoration_id=decoration_id).order_by('acquired'),
     })
 
+
 @login_required
 def functionary_types(request):
     # XXX: More info:
@@ -97,6 +100,7 @@ def functionary_types(request):
         **_get_base_context(request),
         'functionary_types': FunctionaryType.objects.order_by('name').annotate(num_functionaries=Count('functionaries')),
     })
+
 
 @login_required
 def functionaries(request, functionary_type_id):
@@ -112,6 +116,7 @@ def functionaries(request, functionary_type_id):
         'functionaries': functionaries,
     })
 
+
 @login_required
 def group_types(request):
     # XXX: More info:
@@ -120,6 +125,7 @@ def group_types(request):
         **_get_base_context(request),
         'group_types': GroupType.objects.order_by('name').annotate(num_groups=Count('groups')),
     })
+
 
 @login_required
 def groups(request, group_type_id):
