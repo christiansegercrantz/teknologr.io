@@ -1,11 +1,11 @@
 import datetime
+from django.utils.formats import date_format 
 
 
 def create_duration_string(begin, end):
     if begin.month == 1 and begin.day == 1 and end.month == 12 and end.day == 31:
         return f'{begin.year}' if begin.year == end.year else f'{begin.year}-{end.year}'
-    # XXX: Wrong date format...
-    return f'{begin.strftime("%d %B %Y")} - {end.strftime("%d %B %Y")}'
+    return f'{date_format(begin)} - {date_format(end)}'
 
 
 def date_pairs_to_duration_strings(dict_of_pairs):
