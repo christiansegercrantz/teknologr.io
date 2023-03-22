@@ -36,14 +36,14 @@ $(document).ready(function() {
     url: element => `/api/accounts/ldap/change_pw/${element.data('id')}/`,
   });
 
-  // Create a BILL account for the selected memeber
+  // Create a BILL account for the selected member
   add_request_listener({
     selector: "#add-bill-button",
     method: "POST",
     url: element => `/api/accounts/bill/${element.data('id')}/`,
     data: element => ({ "member_id": element.data('id') }),
   });
-  // Delete the BILL account for the selected memeber
+  // Delete the BILL account for the selected member
   add_request_listener({
     selector: "#delete-bill-button",
     method: "DELETE",

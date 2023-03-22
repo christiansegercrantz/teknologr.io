@@ -50,7 +50,7 @@ $(document).ready(function() {
     });
 
     add_request_listener({
-        selector: "#make-memeber-form",
+        selector: "#make-member-form",
         method: "POST",
         url: element => `/api/applicants/makeMember/${element.data("id")}/`,
         newLocation: "/admin/applicants/",

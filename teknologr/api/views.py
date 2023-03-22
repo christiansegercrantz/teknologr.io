@@ -56,7 +56,7 @@ def getMultiSelectValues(request, key):
     return [m for m in members if m]
 
 
-def getOrCreateMemeberIdFromMultiSelectValue(id_or_names):
+def getOrCreateMemberIdFromMultiSelectValue(id_or_names):
     """
     In multi-select Member fields each value can be:
     - the ID of an existing Member, or
@@ -75,7 +75,7 @@ def multiGroupMembershipSave(request):
     members = getMultiSelectValues(request, 'member')
 
     for id_or_name in members:
-        mid = getOrCreateMemeberIdFromMultiSelectValue(id_or_name)
+        mid = getOrCreateMemberIdFromMultiSelectValue(id_or_name)
         # get_or_create is used to ignore duplicates
         GroupMembership.objects.get_or_create(member_id=mid, group_id=int(gid))
 
@@ -90,7 +90,7 @@ def multiFunctionarySave(request):
     end_date = request.data.get('end_date')
 
     for id_or_name in members:
-        mid = getOrCreateMemeberIdFromMultiSelectValue(id_or_name)
+        mid = getOrCreateMemberIdFromMultiSelectValue(id_or_name)
         # get_or_create is used to ignore duplicates
         Functionary.objects.get_or_create(
             member_id=mid,
@@ -109,7 +109,7 @@ def multiDecorationOwnershipSave(request):
     acquired = request.data.get('acquired')
 
     for id_or_name in members:
-        mid = getOrCreateMemeberIdFromMultiSelectValue(id_or_name)
+        mid = getOrCreateMemberIdFromMultiSelectValue(id_or_name)
         # get_or_create is used to ignore duplicates
         DecorationOwnership.objects.get_or_create(member_id=mid, decoration_id=int(did), acquired=acquired)
 
