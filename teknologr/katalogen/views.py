@@ -88,7 +88,7 @@ def decoration_ownerships(request, decoration_id):
     return render(request, 'decoration_ownerships.html', {
         **_get_base_context(request),
         'decoration': decoration,
-        'decoration_ownerships': DecorationOwnership.objects.filter(decoration_id=decoration_id).order_by('acquired'),
+        'decoration_ownerships': DecorationOwnership.objects.filter(decoration_id=decoration_id).order_by('-acquired'),
     })
 
 
