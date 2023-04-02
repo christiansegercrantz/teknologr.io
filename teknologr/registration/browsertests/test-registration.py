@@ -19,7 +19,7 @@ class RegistrationTest(LiveServerTestCase):
         super(RegistrationTest, self).tearDown()
 
     def test_register(self):
-        self.driver.get(self.live_server_url + reverse('registration.views.home'))
+        self.driver.get(self.live_server_url + reverse('registration:home'))
 
         def by_id(form_id):
             return self.driver.find_element_by_id(form_id)

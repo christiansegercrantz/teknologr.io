@@ -1,0 +1,33 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+    <h2 class="page-header">
+      Innehavare av
+      {% if is_staff %}
+        <a class="admin-link" href="{% url 'admin:decoration' decoration.id %}">{{ decoration.name }}</a>
+      {% else %}
+        {{ decoration.name }}
+      {% endif %}
+    </h2>
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th>Namn</th>
+          <th>Datum</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for do in decoration_ownerships %}
+          <tr>
+            <td><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.name }}</a></td>
+            <td>{{ do.acquired }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

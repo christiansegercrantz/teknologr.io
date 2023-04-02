@@ -17,7 +17,7 @@
   </div>
 
   <div class="col-md-8">
-    <form autocomplete="off" role="form" action="/admin/applicants/{{ applicant.id }}/" method="post">
+    <form autocomplete="off" role="form" action="{% url 'admin:applicant' applicant.id %}" method="post">
       {% csrf_token %}
 
       <!-- Applicant name information -->
@@ -142,18 +142,18 @@
     <!-- Extra buttons -->
     <div class="row mt-2">
       <div class="col-md-8">
-        <button id="deleteapplicant" class="btn btn-danger" data-id={{ applicant.id }}>Radera</button>
-        <button class="btn btn-warning" data-toggle="modal" data-target="#makeMemberModal">Deltagit i Namö</button>
+        <button id="delete-a-button" class="btn btn-danger" data-id={{ applicant.id }}>Radera</button>
+        <button class="btn btn-warning" data-toggle="modal" data-target="#make-member-modal">Deltagit i Namö</button>
       </div>
     </div>
   </div>
 </div>
 
-{% include "modals/makeapplicantmember.html" with modalname="makeMemberModal" title="Gör medlem av "|add:applicant.name modalForm=modalForm applicantId=applicant.id only %}
+{% include "modals/makeapplicantmember.html" with modalname="make-member-modal" title="Gör medlem av "|add:applicant.name form=make_member_form applicantId=applicant.id only %}
 
 {% endblock %}
 
 {% block scripts %}
   {{ block.super }}
-  <script src="{% static "js/applicant.js" %}"></script>
+  <script src="{% static 'js/applicant.js' %}"></script>
 {% endblock %}

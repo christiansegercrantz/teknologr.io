@@ -1,0 +1,31 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+    {% if functionary_types %}
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>Funktionär</th>
+            <th>Antal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ft in functionary_types %}
+            <tr>
+              <td><a href="{% url 'katalogen:functionaries' ft.id %}">{{ ft.name }}</a></td>
+              <td>{{ ft.num_functionaries }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+    <div class="text-center lead">
+        Inga Funktionärer hittades.
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -25,7 +25,7 @@ class SubmitView(BaseView):
     def get(self, request, **kwargs):
         previous_context = request.session.pop('context', None)
         if not previous_context:
-            return redirect('registration.views.home')
+            return redirect('registration:home')
 
         return render(request, self.template, previous_context)
 
@@ -45,7 +45,7 @@ class SubmitView(BaseView):
             registration.save()
 
             request.session['context'] = next_context
-            return redirect('registration.views.submit')
+            return redirect('registration:submit')
         else:
             self.context['form'] = form
             return render(request, HomeView.template, self.context, status=400)

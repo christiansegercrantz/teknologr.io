@@ -1,0 +1,31 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+    {% if decorations %}
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th>Hedersbetygelse</th>
+            <th>Innehavare</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in decorations %}
+            <tr>
+              <td><a href="{% url 'katalogen:decoration_ownerships' d.id %}">{{ d.name }}</a></td>
+              <td>{{ d.num_owners }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+    <div class="text-center lead">
+        Inga Hedersbetygelser hittades.
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

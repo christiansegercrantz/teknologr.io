@@ -7,15 +7,15 @@
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   <meta name="description" content="">
   <meta name="author" content="">
-  <link rel="icon" href="{% static "favicon.ico" %}">
+  <link rel="icon" href="{% static 'favicon.ico' %}">
 
   <title>TF Medlemsregistrer</title>
   <!-- Bootstrap core CSS -->
-  <link href="{% static "assets/css/bootstrap.css" %}" rel="stylesheet">
+  <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet">
   <!-- Icons -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
   <!-- Custom styles for this template -->
-  <link href="{% static "css/style.css" %}" rel="stylesheet">
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
 
 <body>
@@ -29,7 +29,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'katalogen.views.home' %}">Katalogen</a>
+          <a class="nav-link" href="{% url 'katalogen:home' %}">Katalogen</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/api/">API</a>
@@ -39,13 +39,13 @@
             Dumpar<span class="caret"></span>
           </a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="{% url 'api.views.fullDump' %}">Full dump</a>
-            <a class="dropdown-item" href="{% url 'api.views.modulenDump' %}">Modulen dump</a>
-            <a class="dropdown-item" href="{% url 'api.views.studentbladetDump' %}" data-toggle="tooltip" title="Lista av alla medlemmar som prenumererar på Studentbladet">Studentbladet dump</a>
-            <a class="dropdown-item" href="{% url 'api.views.activeDump' %}" data-toggle="tooltip" title="Lista av medlemmar som är funkkisar eller i kommittéer med aktiva mandat">Aktiva dump</a>
-            <a class="dropdown-item" href="{% url 'api.views.htkDump' %}?format=json">Full HTK dump</a>
-            <a class="dropdown-item" href="{% url 'api.views.arskDump' %}" data-toggle="tooltip" title="Lista av hedersmedlemmar, alla råd, alla styrelsen 5 år tillbaka, och styrelsen 10 år, och även alla funktionärer. Används för Årsfestlistor.">Arsk dump</a>
-            <a class="dropdown-item" href="{% url 'api.views.regEmailDump' %}" data-toggle="tooltip" title="Lista av alla nuvarande ansökningars emails.">Ansökandes email dump</a>
+            <a class="dropdown-item" href="{% url 'api:fullDump' %}">Full dump</a>
+            <a class="dropdown-item" href="{% url 'api:modulenDump' %}">Modulen dump</a>
+            <a class="dropdown-item" href="{% url 'api:studentbladetDump' %}" data-toggle="tooltip" title="Lista av alla medlemmar som prenumererar på Studentbladet">Studentbladet dump</a>
+            <a class="dropdown-item" href="{% url 'api:activeDump' %}" data-toggle="tooltip" title="Lista av medlemmar som är funkkisar eller i kommittéer med aktiva mandat">Aktiva dump</a>
+            <a class="dropdown-item" href="{% url 'api:htkDump' %}?format=json">Full HTK dump</a>
+            <a class="dropdown-item" href="{% url 'api:arskDump' %}" data-toggle="tooltip" title="Lista av hedersmedlemmar, alla råd, alla styrelsen 5 år tillbaka, och styrelsen 10 år, och även alla funktionärer. Används för Årsfestlistor.">Arsk dump</a>
+            <a class="dropdown-item" href="{% url 'api:regEmailDump' %}" data-toggle="tooltip" title="Lista av alla nuvarande ansökningars emails.">Ansökandes email dump</a>
           </div>
         </li>
         <li class="nav-item">
@@ -67,10 +67,10 @@
 
       <!-- Modal box must be outside of sidebar because of sidebar position:fixed style -->
       {% if side.new_button %}
-        {% include "modals/new.html" with modalname="newModal" title="Lägg till "|add:side.sname modalForm=side.modalForm active=side.active only %}
+        {% include "modals/new.html" with modalname="new-mgtftd-modal" title="Lägg till "|add:side.sname form=side.form active=side.active only %}
       {% endif %}
       {% if side.applicant_tool_icons %}
-        {% include "modals/multipleapplicants.html" with modalname="addMultipleApplicants" title="Acceptera flera ansökningar" modalForm=side.applicantmultipleform only %}
+        {% include "modals/multipleapplicants.html" with modalname="add-multiple-applicants-modal" title="Acceptera flera ansökningar" form=side.multiple_applicants_form only %}
       {% endif %}
 
       <div id='main' class="col-md-8 offset-md-4 col-lg-9 offset-lg-3 main">
@@ -86,12 +86,12 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{% static "assets/js/jquery-3.3.1.min.js" %}"></script>
+    <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="{% static "assets/js/bootstrap.min.js" %}"></script>
+    <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
 
-    <script src="{% static "js/ajax_api.js" %}"></script>
-    <script src="{% static "js/base.js" %}"></script>
+    <script src="{% static 'js/ajax_api.js' %}"></script>
+    <script src="{% static 'js/base.js' %}"></script>
     <!-- For tooltips -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
   {% endblock %}

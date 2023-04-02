@@ -6,10 +6,13 @@
     <div class="text-center col-12">
       <h1>Katalogen på nätet</h1>
       <p class="lead">
-        Bläddra i Teknologföreningens medlemsregister.<br/>
-        Du kan söka efter personer med sökfältet ovan, eller se din egen profil via menyn.<br/>
-        Endast personer som tillåtit utgivning av sina personuppgifter kan ses på denna sida.<br/>
-        Man kan dock alltid se sin egen profil.
+        Bläddra i Teknologföreningens medlemsregister.
+      </p>
+      <p class="lead">
+        Du kan söka efter personer med sökfältet ovan, eller se din egen profil via menyn. Endast personer som tillåtit utgivning av sina personuppgifter kan ses på denna sida. Man kan dock alltid se sin egen profil.
+      </p>
+      <p class="lead">
+        Via menyn kan du även se alla hedersbetygelser, funktionärer och grupper.
       </p>
     </div>
   {% else %}
@@ -26,9 +29,14 @@
           <tbody>
             {% for person in persons %}
               <tr>
-                <td><a href="{% url 'katalogen.views.profile' person.id %}">{{person.full_name}}</a></td>
-                <td>{{person.phone}}</td>
-                <td><a href="mailto:{{person.email}}">{{person.email}}</a>
+                <td><a href="{% url 'katalogen:profile' person.id %}">{{person.full_name}}</a></td>
+                {% if person.showContactInformation %}
+                  <td><a href="tel:{{ person.phone }}">{{ person.phone }}</a></td>
+                  <td><a href="mailto:{{ person.email }}">{{ person.email }}</a></td>
+                {% else %}
+                  <td></td>
+                  <td></td>
+                {% endif %}
               </tr>
             {% endfor %}
           </tbody>

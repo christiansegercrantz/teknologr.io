@@ -1,10 +1,10 @@
 from members.models import *
+from members.utils import *
 from registration.models import Applicant
-from django.forms import ModelForm, DateField, CharField
+from django.forms import ModelForm, DateField, CharField, ModelChoiceField, Textarea
 from django.forms.widgets import CheckboxInput, DateInput, TextInput, PasswordInput
 from ajax_select.fields import AutoCompleteSelectMultipleField
 from django.contrib.auth.forms import AuthenticationForm
-from django import forms
 
 
 class BSModelForm(ModelForm):
@@ -19,7 +19,7 @@ class MemberForm(ModelForm):
         model = Member
         fields = '__all__'
         widgets = {
-            'comment': forms.Textarea(attrs={'rows': 3, 'cols': 15}),
+            'comment': Textarea(attrs={'rows': 3, 'cols': 15}),
         }
 
     birth_date = DateField(widget=DateInput(attrs={'type': 'date'}), required=False)
@@ -68,11 +68,17 @@ class FunctionaryForm(BSModelForm):
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
+    functionarytype = ModelChoiceField(queryset=FunctionaryType.objects.order_by('name'))
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs:
             kwargs["auto_id"] = "fform_%s"
+        kwargs["initial"] = {
+            "begin_date": getFirstDayOfCurrentYear(),
+            "end_date": getLastDayOfCurrentYear(),
+            **(kwargs["initial"] if "initial" in kwargs else {}),
+        }
         super(FunctionaryForm, self).__init__(*args, **kwargs)
 
 
@@ -95,11 +101,16 @@ class DecorationOwnershipForm(BSModelForm):
 
     acquired = DateField(widget=DateInput(attrs={'type': 'date'}))
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
+    decoration = ModelChoiceField(queryset=Decoration.objects.order_by('name'))
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs:
             kwargs["auto_id"] = "doform_%s"
+        kwargs["initial"] = {
+            "acquired": getCurrentDate(),
+            **(kwargs["initial"] if "initial" in kwargs else {}),
+        }
         super(DecorationOwnershipForm, self).__init__(*args, **kwargs)
 
 
@@ -115,6 +126,11 @@ class GroupForm(BSModelForm):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs:
             kwargs["auto_id"] = "gform_%s"
+        kwargs["initial"] = {
+            "begin_date": getFirstDayOfCurrentYear(),
+            "end_date": getLastDayOfCurrentYear(),
+            **(kwargs["initial"] if "initial" in kwargs else {}),
+        }
         super(GroupForm, self).__init__(*args, **kwargs)
 
 
@@ -124,12 +140,20 @@ class GroupMembershipForm(BSModelForm):
         fields = '__all__'
 
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
+    group = ModelChoiceField(queryset=Group.objects.order_by('grouptype__name', '-end_date'))
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs:
             kwargs["auto_id"] = "gmform_%s"
+
+        member_id = kwargs.get('initial', {}).get('member', None)
         super(GroupMembershipForm, self).__init__(*args, **kwargs)
+
+        # Do not list groups that the member already is part of
+        if member_id:
+            groups = Group.objects.exclude(id__in=GroupMembership.objects.filter(member=member_id).values('group'))
+            self.fields['group'].queryset = groups
 
 
 class MemberTypeForm(BSModelForm):
@@ -144,6 +168,10 @@ class MemberTypeForm(BSModelForm):
         # Make sure automatic dom element ids are different from other forms'
         if "auto_id" not in kwargs:
             kwargs["auto_id"] = "mtform_%s"
+        kwargs["initial"] = {
+            "begin_date": getCurrentDate(),
+            **(kwargs["initial"] if "initial" in kwargs else {}),
+        }
         super(MemberTypeForm, self).__init__(*args, **kwargs)
 
 

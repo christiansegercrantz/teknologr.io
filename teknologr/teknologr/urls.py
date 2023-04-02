@@ -16,12 +16,14 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 from members.forms import BSAuthForm
+from ajax_select import urls as ajax_select_urls
 
 urlpatterns = [
     url(r'^login/$', auth_views.LoginView.as_view(template_name='login.html', authentication_form=BSAuthForm)),
     url(r'^logout/$', auth_views.LogoutView.as_view(next_page='/login/'), name='logout'),
-    url(r'^', include('katalogen.urls')),
-    url(r'^admin/', include('members.urls')),
-    url(r'^api/', include('api.urls')),
-    url(r'^registration/', include('registration.urls')),
+    url(r'^', include(('katalogen.urls', 'katalogen'), namespace='katalogen')),
+    url(r'^admin/', include(('members.urls', 'admin'), namespace='admin')),
+    url(r'^api/', include(('api.urls', 'api'), namespace='api')),
+    url(r'^registration/', include(('registration.urls', 'registration'), namespace='registration')),
+    url(r'^ajax_select/', include(ajax_select_urls)),
 ]

@@ -1,10 +1,10 @@
 {% extends "modals/modal.html" %}
 
 {% block modalcontent %}
-<form id="addgroupform" autocomplete="off" class="form">
+<form id="add-gm-form" autocomplete="off" class="form">
   {% csrf_token %}
   <div class="row form-group">
-    <div class="col-3"><label for={{form.group.id_for_label}}>Grupp</label></div>
+    <div class="col-3"><label for="{{ form.group.id_for_label }}">Grupp</label></div>
     <div class="col-9">{{ form.group }}</div>
   </div>
   <div class="row">

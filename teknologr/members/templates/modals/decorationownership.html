@@ -1,33 +1,33 @@
 {% extends "modals/modal.html" %}
 
 {% block modalcontent %}
-<form id="adddecorationform" autocomplete="off">
+<form id="add-do-form" autocomplete="off">
   {% csrf_token %}
-  {{ adddecorationform.media }}
+  {{ form.media }}
   <div class="row form-group">
     <div class="col-3">
-      <label for={{adddecorationform.member.id_for_label}}>Medlem</label>
+      <label for="{{ form.member.id_for_label }}">Medlem</label>
     </div>
     <div class="col-6">
-      {{ adddecorationform.member }}
+      {{ form.member }}
     </div>
     <div class="col-3">
-      <button id="doform-create-member" class="btn btn-warning float-right">Skapa ny</button>
+      <button disabled id="doform-create-member" class="btn btn-warning float-right">Skapa ny</button>
     </div>
   </div>
   <div class="row form-group">
     <div class="col-3">
-      <label for={{adddecorationform.acquired.id_for_label}}>Utdelat</label>
+      <label for="{{ form.acquired.id_for_label }}">Utdelat</label>
     </div>
     <div class="col-9">
-      {{ adddecorationform.acquired }}
+      {{ form.acquired }}
     </div>
   </div>
   <div class="row">
     <div class="col-12">
-      <button type="submit" class="btn btn-success float-right">Spara</button>
+      <button disabled id="doform-submit-ownerships" type="submit" class="btn btn-success float-right">Spara</button>
     </div>
   </div>
-  {{ adddecorationform.decoration.as_hidden }}
+  {{ form.decoration.as_hidden }}
 </form>
 {% endblock %}

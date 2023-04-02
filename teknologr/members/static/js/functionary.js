@@ -1,29 +1,29 @@
 $(document).ready(function () {
 	// Update the selected functionary type
 	add_request_listener({
-		selector: "#functionaryTypeForm",
+		selector: "#edit-ft-form",
 		method: "PUT",
 		url: element => `/api/functionaryTypes/${element.data("id")}/`,
 	});
 	// Remove the selected functionary type
 	add_request_listener({
-		selector: "#deleteFunctionaryType",
+		selector: "#delete-ft-button",
 		method: "DELETE",
 		url: element => `/api/functionaryTypes/${element.data("id")}/`,
-		confirmMessage: "Vill du radera denna funktionärstyp?",
+		confirmMessage: "Vill du radera denna funktionärstyp och alla dess funktionärer?",
 		newLocation: "/admin/functionaries/",
 	});
 
 	// Add a person to the list
 	add_request_listener({
-		selector: "#addfunctionaryform",
+		selector: "#add-f-form",
 		method: "POST",
 		url: `/api/multiFunctionary/`,
 		confirmMessage: confirmMessageCreateMembers,
 	});
 	// Remove a person from the list
 	add_request_listener({
-		selector: ".removeFunctionary",
+		selector: ".delete-f-button",
 		method: "DELETE",
 		url: element => `/api/functionaries/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna funktionär?",
@@ -32,5 +32,6 @@ $(document).ready(function () {
 	add_ajax_multiselect_extension({
 		selector_button: "#fform-create-member",
 		selector_input: "#fform_member_text",
+		selector_submit: "#fform-submit-functionaries",
 	});
 });

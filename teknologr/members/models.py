@@ -134,15 +134,19 @@ class Member(SuperClass):
         memberType = self.getMostRecentMemberType()
         return memberType is not None and (memberType.type == "OM" or memberType.type == "ST")
 
-    def getPhuxYear(self):
+    @property
+    def phux_year(self):
         phuxYear = MemberType.objects.filter(member=self).filter(type='PH').order_by('begin_date')
         phux_year_begin_date = len(phuxYear) and phuxYear[0].begin_date
         return phux_year_begin_date.year if phux_year_begin_date else None
 
+    def showContactInformation(self):
+        return self.allow_publish_info and self.isValidMember() and not self.dead
+
 
 class DecorationOwnership(SuperClass):
     member = models.ForeignKey("Member", on_delete=models.CASCADE)
-    decoration = models.ForeignKey("Decoration", on_delete=models.CASCADE)
+    decoration = models.ForeignKey("Decoration", on_delete=models.CASCADE, related_name="ownerships")
     acquired = models.DateField()
 
     def __str__(self):
@@ -158,14 +162,14 @@ class Decoration(SuperClass):
 
 class GroupMembership(SuperClass):
     member = models.ForeignKey("Member", on_delete=models.CASCADE)
-    group = models.ForeignKey("Group", on_delete=models.CASCADE)
+    group = models.ForeignKey("Group", on_delete=models.CASCADE, related_name="memberships")
 
     class Meta:
         unique_together = (("member", "group"),)
 
 
 class Group(SuperClass):
-    grouptype = models.ForeignKey("GroupType", on_delete=models.CASCADE)
+    grouptype = models.ForeignKey("GroupType", on_delete=models.CASCADE, related_name="groups")
     begin_date = models.DateField()
     end_date = models.DateField()
 
@@ -182,7 +186,7 @@ class GroupType(SuperClass):
 
 class Functionary(SuperClass):
     member = models.ForeignKey("Member", on_delete=models.CASCADE)
-    functionarytype = models.ForeignKey("FunctionaryType", on_delete=models.CASCADE)
+    functionarytype = models.ForeignKey("FunctionaryType", on_delete=models.CASCADE, related_name="functionaries")
     begin_date = models.DateField()
     end_date = models.DateField()
 

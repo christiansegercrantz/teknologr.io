@@ -1,50 +1,50 @@
 $(document).ready(function () {
 	// Update the selected group type
 	add_request_listener({
-		selector: "#grouptypeform",
+		selector: "#edit-gt-form",
 		method: "PUT",
 		url: element => `/api/groupTypes/${element.data("id")}/`
 	});
 	// Remove the selected group type
 	add_request_listener({
-		selector: "#deleteGroupType",
+		selector: "#delete-gt-button",
 		method: "DELETE",
 		url: element => `/api/groupTypes/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna grupptyp och alla dess undergrupper?",
 		newLocation: "/admin/groups/",
 	});
 
-	// Add a subgroup to the list
+	// Add a group to the list
 	add_request_listener({
-		selector: "#addgroupform",
+		selector: "#add-g-form",
 		method: "POST",
 		url: "/api/groups/",
 	});
-	// Remove a subgroup from the list
+	// Remove a group from the list
 	add_request_listener({
-		selector: ".removeGroup",
+		selector: ".delete-g-button",
 		method: "DELETE",
 		url: element => `/api/groups/${element.data("id")}/`,
-		confirmMessage: "Vill du ta bort denna undergrupp?",
+		confirmMessage: "Vill du ta bort denna undergrupp och alla dess medlemskap?",
 		newLocation: element => `/admin/groups/${element.data("grouptype_id")}`,
 	});
 
-	// Edit the selected subgroup
+	// Edit the selected group
 	add_request_listener({
-		selector: "#editgroupform",
+		selector: "#edit-g-form",
 		method: "PUT",
 		url: element => `/api/groups/${element.data("id")}/`,
 	});
-	// Add members to the selected subgroup
+	// Add members to the selected group
 	add_request_listener({
-		selector: "#addgroupmemberform",
+		selector: "#add-gm-form",
 		method: "POST",
 		url: "/api/multiGroupMembership/",
 		confirmMessage: confirmMessageCreateMembers,
 	});
-	// Remove a member from the selected subgroup
+	// Remove a member from the selected group
 	add_request_listener({
-		selector: ".removeMembership",
+		selector: ".delete-gm-button",
 		method: "DELETE",
 		url: element => `/api/groupMembership/${element.data("id")}/`,
 		confirmMessage: "Vill du ta bort detta undergruppsmedlemskap?",
@@ -59,5 +59,6 @@ $(document).ready(function () {
 	add_ajax_multiselect_extension({
 		selector_button: "#gmform-create-member",
 		selector_input: "#gmform_member_text",
+		selector_submit: "#gmform-submit-memberships",
 	});
 });

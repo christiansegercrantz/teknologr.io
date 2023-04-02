@@ -1,0 +1,32 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+    <h2 class="page-header">
+      {% if is_staff %}
+        <a class="admin-link" href="{% url 'admin:functionary_type' functionary_type.id %}">{{ functionary_type.name }}</a>
+      {% else %}
+        {{ functionary_type.name }}
+      {% endif %}
+    </h2>
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th>Namn</th>
+          <th>Datum</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in functionaries %}
+          <tr>
+            <td><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.name }}</a></td>
+            <td>{{ f.duration_string }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

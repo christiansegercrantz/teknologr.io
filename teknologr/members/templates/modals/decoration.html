@@ -1,11 +1,11 @@
 {% extends "modals/modal.html" %}
 
 {% block modalcontent %}
-<form id="decorationform" autocomplete="off" data-id="{{ decoration.id }}" class="form-inline">
+<form id="edit-d-form" autocomplete="off" data-id="{{ decoration.id }}" class="form-inline">
   {% csrf_token %}
   <div class="row form-group w-100">
-    <div class="col-3"><label for="{{decorationform.name.id_for_label}}">Namn</label></div>
-    <div class="col-6">{{ decorationform.name }}</div>
+    <div class="col-3"><label for="{{ form.name.id_for_label }}">Namn</label></div>
+    <div class="col-6">{{ form.name }}</div>
     <div class="col-3"><button type="submit" class="btn btn-success float-right">Spara</button></div>
   </div>
 </form>
