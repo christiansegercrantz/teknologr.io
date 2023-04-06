@@ -1,0 +1,145 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+
+    <!-- Overview -->
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th>Årsöversikt för år {{ year }}</th>
+          <th>Antal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Utdelade hedersbetygelser</td>
+          <td>{{ decoration_ownerships|length }}</td>
+        </tr>
+        <tr>
+          <td>Funktionärsposter (totalt)</td>
+          <td>{{ functionaries|length }}</td>
+        </tr>
+        <tr>
+          <td>Funktionärer (unika)</td>
+          <td>{{ functionaries_unique_count }}</td>
+        </tr>
+        <tr>
+          <td>Grupper</td>
+          <td>{{ groups|length }}</td>
+        </tr>
+        <tr>
+          <td>Gruppmedlemmar (totalt)</td>
+          <td>{{ group_memberships_total }}</td>
+        </tr>
+        <tr>
+          <td>Gruppmedlemmar (unika)</td>
+          <td>{{ group_memberships_unique }}</td>
+        </tr>
+        <tr>
+          <td>Nya ordinarie medlemmar</td>
+          <td>{{ member_types_ordinary|length }}</td>
+        </tr>
+        <tr>
+          <td>Nya ständiga äldre medlemmar</td>
+          <td>{{ member_types_stalm|length }}</td>
+        </tr>
+        <tr><td></td><td></td></tr>
+      </tbody>
+
+      <!-- Decorations -->
+      <thead>
+        <tr>
+          <th>Hedersbetygelser år {{ year }}</th>
+          <th>Namn</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for do in decoration_ownerships %}
+          <tr>
+            <td><a href="{% url 'katalogen:decoration_ownerships' do.decoration.id %}">{{ do.decoration.name }}</a></td>
+            <td><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.full_preferred_name }}</a></td>
+          </tr>
+        {% endfor %}
+        <tr><td></td><td></td></tr>
+      </tbody>
+
+      <!-- Functionaries -->
+      <thead>
+        <tr>
+          <th>Funktionärsposter år {{ year }}</th>
+          <th>Namn</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in functionaries %}
+          <tr>
+            <td><a href="{% url 'katalogen:functionaries' f.functionarytype.id %}">{{ f.functionarytype.name }}</a></td>
+            <td><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.full_preferred_name }}</a></td>
+          </tr>
+        {% endfor %}
+        <tr><td></td><td></td></tr>
+      </tbody>
+
+      <!-- Groups -->
+      <thead>
+        <tr>
+          <th>Grupper år {{ year }}</th>
+          <th>Namn</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for g in groups %}
+          <tr>
+            <td><a href="{% url 'katalogen:groups' g.grouptype.id %}">{{ g.grouptype.name }}</a></td>
+            <td><i>{{ g.num_members }} {% if g.num_members == 1 %}medlem{% else %}medlemmar{% endif %}</i></td>
+          </tr>
+          {% for gm in g.memberships.all %}
+            <tr>
+              <td></td>
+              <td><a href="{% url 'katalogen:profile' gm.member.id %}">{{ gm.member.full_preferred_name }}</a></td>
+            </tr>
+          {% endfor %}
+        {% endfor %}
+        <tr><td></td><td></td></tr>
+      </tbody>
+
+      <!-- Ordinary members -->
+      <thead>
+        <tr>
+          <th>Nya ordinarie medlemmar år {{ year }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mt in member_types_ordinary %}
+          <tr>
+            <td><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
+            <td></td>
+          </tr>
+        {% endfor %}
+        <tr><td></td><td></td></tr>
+      </tbody>
+
+      <!-- StÄlMs -->
+      <thead>
+        <tr>
+          <th>Nya ständiga äldre medlemmar år {{ year }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mt in member_types_stalm %}
+          <tr>
+            <td><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
+            <td></td>
+          </tr>
+        {% endfor %}
+        <tr><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
