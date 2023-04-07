@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+from django.db.models import Q
 from django_countries.fields import CountryField
 
 
@@ -134,9 +135,8 @@ class Member(SuperClass):
 
     @property
     def phux_year(self):
-        phuxYear = MemberType.objects.filter(member=self).filter(type='PH').order_by('begin_date')
-        phux_year_begin_date = len(phuxYear) and phuxYear[0].begin_date
-        return phux_year_begin_date.year if phux_year_begin_date else None
+        member_type_phux = MemberType.objects.filter(Q(member=self) & Q(type='PH')).order_by('begin_date').first()
+        return member_type_phux.begin_date.year if member_type_phux else None
 
     def showContactInformation(self):
         return self.allow_publish_info and self.isValidMember() and not self.dead
