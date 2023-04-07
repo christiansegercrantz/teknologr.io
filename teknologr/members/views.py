@@ -140,7 +140,7 @@ def group(request, grouptype_id, group_id=None):
     form = GroupTypeForm(instance=grouptype)
 
     # Get groups of group type
-    context['groups'] = Group.objects.filter(grouptype__id=grouptype_id).order_by('-begin_date')
+    context['groups'] = Group.objects.filter(grouptype__id=grouptype_id).annotate(num_members=Count('memberships', distinct=True)).order_by('-begin_date')
     context['edit_gt_form'] = form
 
     context['add_g_form'] = GroupForm(initial={"grouptype": grouptype_id})
