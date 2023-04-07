@@ -89,8 +89,6 @@ class Member(SuperClass):
             self.username = None
         if not self.student_id:
             self.student_id = None
-        if not self.preferred_name:
-            self.preferred_name = self.given_names.split()[0]
 
         # Sync email to LDAP if changed
         error = None
