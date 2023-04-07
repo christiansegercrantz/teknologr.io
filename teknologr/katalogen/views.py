@@ -173,7 +173,6 @@ def years(request):
 
     # Get all StÄlMs and ordinary members and group them by the year they became members, and return a count for each type/year combination
     m_counts = MemberType.objects.filter(Q(type='OM') | Q(type='ST')).annotate(year=TruncYear('begin_date')).values('year', 'type').annotate(members=Count('member')).values('year', 'type', 'members')
-    print(m_counts)
     for obj in m_counts:
         add(obj, 'members_ordinary' if obj['type'] == 'OM' else 'members_stalm', 'members')
 
