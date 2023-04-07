@@ -184,13 +184,16 @@ def years(request):
 @login_required
 def year(request, year):
     # Get all decoration ownerships for the year
-    decoration_ownerships = DecorationOwnership.objects.annotate(year=TruncYear('acquired')).filter(year=f'{year}-01-01').order_by('decoration__name', 'member__surname')
+    decoration_ownerships = DecorationOwnership.objects.annotate(year=TruncYear('acquired')).filter(year=f'{year}-01-01').order_by('decoration__name', 'member__surname', 'member__given_names')
 
     # Get all functionaries for the year
-    functionaries = Functionary.objects.annotate(year=TruncYear('begin_date')).filter(year=f'{year}-01-01').order_by('functionarytype__name', 'member__surname')
+    functionaries = Functionary.objects.annotate(year=TruncYear('begin_date')).filter(year=f'{year}-01-01').order_by('functionarytype__name', 'member__surname', 'member__given_names')
 
     # Get all groups for the year
-    groups = Group.objects.annotate(year=TruncYear('begin_date')).filter(year=f'{year}-01-01').annotate(num_members=Count('memberships')).filter(num_members__gt=0).order_by('grouptype__name')
+    groups = Group.objects.annotate(year=TruncYear('begin_date')).filter(year=f'{year}-01-01').annotate(num_members=Count('memberships', distinct=True)).filter(num_members__gt=0).order_by('grouptype__name')
+    for g in groups:
+        # XXX: Is there a better way of sorting the memberships?
+        g.memberships_ordered = g.memberships.order_by('member__surname', 'member__given_names')
 
     # Count the number of total and unique group memebers
     gm_counts = groups.aggregate(total=Count('memberships__member__id'), unique=Count('memberships__member__id', distinct=True))
