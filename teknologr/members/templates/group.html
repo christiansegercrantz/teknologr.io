@@ -38,7 +38,7 @@
         </thead>
         <tbody>
         {% for g in groups %}
-          <tr {% if group.id == g.id %} class="bg-light" {% endif %}>
+          <tr {% if group.id == g.id %} class="active" {% endif %}>
             <td>
               <a href="{% url 'admin:group' grouptype.id g.id %}"><i class="far fa-edit text-info"></i></a>
               <i class="fas fa-times delete-g-button text-danger" role="button" data-id="{{ g.id }}" data-grouptype_id="{{ grouptype.id }}"></i>
