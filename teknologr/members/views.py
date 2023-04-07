@@ -7,6 +7,7 @@ from members.forms import *
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
 from registration.forms import RegistrationForm
+from getenv import env
 
 
 def set_side_context(context, category, active_obj=None):
@@ -44,6 +45,9 @@ def set_side_context(context, category, active_obj=None):
         side['multiple_applicants_form'] = MultipleApplicantAdditionForm()
 
     context['side'] = side
+
+    # XXX: Is not part of the side context, but this is a convenient place to define it. Could change the function name to something like set/get_default_context instead.
+    context['info_url'] = env('INFO_URL')
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
