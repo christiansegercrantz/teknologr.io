@@ -1,6 +1,6 @@
-from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
+from django.db.models import Count
 
 from members.models import *
 from members.forms import *
@@ -27,15 +27,15 @@ def set_side_context(context, category, active_obj=None):
     elif category == 'groups':
         side['sname'] = 'grupp'
         side['form'] = GroupTypeForm(auto_id="gtmodal_%s")
-        side['objects'] = GroupType.objects.all()
+        side['objects'] = GroupType.objects.annotate(count=Count('groups', distinct=True))
     elif category == 'functionaries':
         side['sname'] = 'post'
         side['form'] = FunctionaryTypeForm(auto_id="ftmodal_%s")
-        side['objects'] = FunctionaryType.objects.all()
+        side['objects'] = FunctionaryType.objects.annotate(count=Count('functionaries', distinct=True))
     elif category == 'decorations':
         side['sname'] = 'betygelse'
         side['form'] = DecorationForm(auto_id="dmodal_%s")
-        side['objects'] = Decoration.objects.all()
+        side['objects'] = Decoration.objects.annotate(count=Count('ownerships', distinct=True))
     elif category == 'applicants':
         side['sname'] = 'ansökning'
         side['objects'] = Applicant.objects.all()
