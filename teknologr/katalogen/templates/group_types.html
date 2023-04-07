@@ -8,14 +8,16 @@
         <thead>
           <tr>
             <th>Grupp</th>
-            <th>Undergrupper</th>
+            <th class="text-center">Undergrupper</th>
+            <th class="text-center">Gruppmedlemmar</th>
           </tr>
         </thead>
         <tbody>
           {% for gt in group_types %}
             <tr>
               <td><a href="{% url 'katalogen:groups' gt.id %}">{{ gt.name }}</a></td>
-              <td>{{ gt.num_groups }}</td>
+              <td class="text-center">{{ gt.num_groups }}</td>
+              <td class="text-center">{{ gt.num_members }}</td>
             </tr>
           {% endfor %}
         </tbody>

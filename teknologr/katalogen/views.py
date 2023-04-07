@@ -98,7 +98,7 @@ def functionary_types(request):
     #  - Date of first/latest?
     return render(request, 'functionary_types.html', {
         **_get_base_context(request),
-        'functionary_types': FunctionaryType.objects.order_by('name').annotate(num_functionaries=Count('functionaries')),
+        'functionary_types': FunctionaryType.objects.order_by('name').annotate(num_total=Count('functionaries'), num_unique=Count('functionaries__member__id', distinct=True)),
     })
 
 
@@ -123,7 +123,7 @@ def group_types(request):
     #  - Date of first/latest?
     return render(request, 'group_types.html', {
         **_get_base_context(request),
-        'group_types': GroupType.objects.order_by('name').annotate(num_groups=Count('groups')),
+        'group_types': GroupType.objects.order_by('name').annotate(num_groups=Count('groups'), num_members=Count('groups__memberships__member__id', distinct=True)),
     })
 
 

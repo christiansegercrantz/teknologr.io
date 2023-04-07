@@ -8,14 +8,14 @@
         <thead>
           <tr>
             <th>Hedersbetygelse</th>
-            <th>Innehavare</th>
+            <th class="text-center">Innehavare</th>
           </tr>
         </thead>
         <tbody>
           {% for d in decorations %}
             <tr>
               <td><a href="{% url 'katalogen:decoration_ownerships' d.id %}">{{ d.name }}</a></td>
-              <td>{{ d.num_owners }}</td>
+              <td class="text-center">{{ d.num_owners }}</td>
             </tr>
           {% endfor %}
         </tbody>
