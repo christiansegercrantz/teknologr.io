@@ -123,7 +123,7 @@ def group_types(request):
     #  - Date of first/latest?
     return render(request, 'group_types.html', {
         **_get_base_context(request),
-        'group_types': GroupType.objects.order_by('name').annotate(num_groups=Count('groups'), num_members=Count('groups__memberships__member__id', distinct=True)),
+        'group_types': GroupType.objects.annotate(num_groups=Count('groups', distinct=True, filter=Q(groups__memberships__gt=0)), num_members=Count('groups__memberships__member__id', distinct=True)).order_by('name'),
     })
 
 
@@ -131,7 +131,7 @@ def group_types(request):
 def groups(request, group_type_id):
     group_type = get_object_or_404(GroupType, id=group_type_id)
 
-    groups = group_type.groups.annotate(num_members=Count('memberships')).order_by('-end_date')
+    groups = group_type.groups.annotate(num_members=Count('memberships', distinct=True)).filter(num_members__gt=0).order_by('-end_date')
     for g in groups:
         g.duration_string = create_duration_string(g.begin_date, g.end_date)
         # XXX: Is there a better way to order the memberships in group?
