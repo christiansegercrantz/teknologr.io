@@ -150,7 +150,7 @@ def group(request, grouptype_id, group_id=None):
         context['group'] = group
         context['edit_g_form'] = GroupForm(instance=group)
         context['add_gm_form'] = GroupMembershipForm(initial={"group": group_id})
-        context['groupmembers'] = GroupMembership.objects.filter(group=group)
+        context['groupmembers'] = GroupMembership.objects.filter(group=group).order_by('member__surname', 'member__given_names')
         context['emails'] = "\n".join(
             [membership.member.email for membership in context['groupmembers']]
         )
@@ -169,7 +169,7 @@ def functionary_type(request, functionarytype_id):
 
     # Get functionaries of functionary type
     context['functionaries'] = Functionary.objects.filter(
-        functionarytype__id=functionarytype_id).order_by('-begin_date')
+        functionarytype__id=functionarytype_id).order_by('-begin_date', 'member__surname', 'member__given_names')
     context['edit_ft_form'] = form
     context['add_f_form'] = FunctionaryForm(initial={"functionarytype": functionarytype_id})
 
@@ -186,7 +186,7 @@ def decoration(request, decoration_id):
     context['edit_d_form'] = DecorationForm(instance=decoration)
 
     # Get groups of group type
-    context['decorations'] = DecorationOwnership.objects.filter(decoration__id=decoration_id).order_by('-acquired')
+    context['decorations'] = DecorationOwnership.objects.filter(decoration__id=decoration_id).order_by('-acquired', 'member__surname', 'member__given_names')
     context['add_do_form'] = DecorationOwnershipForm(initial={"decoration": decoration_id})
 
     set_side_context(context, 'decorations', decoration.id)
