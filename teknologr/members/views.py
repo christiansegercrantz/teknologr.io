@@ -148,7 +148,7 @@ def group(request, grouptype_id, group_id=None):
     if group_id is not None:
         group = get_object_or_404(Group, id=group_id)
         context['group'] = group
-        context['edit_g_form'] = GroupForm(instance=group)
+        context['edit_g_form'] = GroupForm(instance=group, initial={ 'begin_date': group.begin_date, 'end_date': group.end_date })
         context['add_gm_form'] = GroupMembershipForm(initial={"group": group_id})
         context['groupmembers'] = GroupMembership.objects.filter(group=group).order_by('member__surname', 'member__given_names')
         context['emails'] = "\n".join(
