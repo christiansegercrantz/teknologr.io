@@ -2,32 +2,19 @@
 {% load static %}
 
 {% block main %}
-<div class="container-fluid">
-  <ul class="list-inline page-header">
-    <li class="list-inline-item">
-      <h1><a class="katalogen-link" href="{% url 'katalogen:decoration_ownerships' decoration.id %}">{{ decoration.name }}</a></h1>
-    </li>
-    <li class="list-inline-item">
-      <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#edit-d-modal"></i>
-    </li>
-    <li class="list-inline-item">
-      <i id="delete-d-button" class="fas fa-times text-danger icon-20" role="button" data-id="{{ decoration.id }}"></i>
-    </li>
-  </ul>
+<div class="container-fluid page-header">
+  <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:decoration_ownerships' decoration.id %}">{{ decoration.name }}</a></h1>
+  <i class="list-inline-item far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#edit-d-modal"></i>
+  <i id="delete-d-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" data-id="{{ decoration.id }}"></i>
   {% include "modals/decoration.html" with modalname="edit-d-modal" title="Editera hedersbetygelse" form=edit_d_form decoration=decoration only %}
 </div>
 
 
 <div class="container-fluid">
-  <ul class="list-inline">
-    <li class="list-inline-item">
-      <h3>Innehavare av hedersbetygelse</h3>
-    </li>
-    <li class="list-inline-item">
-      <i class="fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#add-d-modal"></i>
-    </li>
-  </ul>
+  <h4 class="list-inline-item">Innehavare av hedersbetygelse</h4>
+  <i class="list-inline-item fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#add-d-modal"></i>
   {% include "modals/decorationownership.html" with modalname="add-d-modal" title="Lägg till innehavare av hedersbetygelse "|add:decoration.name form=add_do_form only %}
+
   <table class="table table-sm table-striped table-borderless">
     <thead class="no-border">
       <tr>

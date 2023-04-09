@@ -1,33 +1,21 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block main %}
-<div class="container-fluid">
-  <ul class="list-inline page-header">
-    <li class="list-inline-item">
-      <h1><a class="katalogen-link" href="{% url 'katalogen:groups' grouptype.id %}">{{ grouptype.name }}</a></h1>
-    </li>
-    <li class="list-inline-item">
-      <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#edit-gt-modal"></i>
-    </li>
-    <li class="list-inline-item">
-      <i id="delete-gt-button" class="fas fa-times text-danger icon-20" role="button" data-id="{{ grouptype.id }}"></i>
-    </li>
-  </ul>
+<div class="container-fluid page-header">
+  <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:groups' grouptype.id %}">{{ grouptype.name }}</a></h1>
+  <i class="list-inline-item far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#edit-gt-modal"></i>
+  <i id="delete-gt-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" data-id="{{ grouptype.id }}"></i>
   {% include "modals/grouptype.html" with modalname="edit-gt-modal" title="Editera grupptyp" form=edit_gt_form grouptype=grouptype only %}
 </div>
 
 <div class="container-fluid">
   <div class="row">
     <div class="col-sm-7">
-      <ul class="list-inline">
-        <li class="list-inline-item">
-          <h3>Undergrupper</h3>
-        </li>
-        <li class="list-inline-item">
-          <i class="fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#add-g-modal"></i>
-        </li>
-      </ul>
+      <h4 class="list-inline-item">Undergrupper</h4>
+      <i class="list-inline-item fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#add-g-modal"></i>
       {% include "modals/addgroup.html" with modalname="add-g-modal" title="Lägg till grupp" form=add_g_form grouptype=grouptype only %}
+
       <table class="table table-sm table-striped table-borderless">
         <thead class="no-border">
           <tr>
@@ -50,6 +38,7 @@
         </tbody>
       </table>
     </div>
+
     <!-- Right block, view single group -->
     <div class="col-sm-5">
       {% if group %}
@@ -57,14 +46,14 @@
           <thead class="no-border">
             <tr>
               <th>
-                <h3>
+                <h4>
                   <span class="col-10">{{ group.begin_date }} - {{ group.end_date }}</span>
                   <span class="float-right">
                     <i class="far fa-edit text-info icon-20" role="button" data-toggle="modal" data-target="#edit-g-modal"></i>
                     <i class="fas fa-plus text-success icon-20 align-middle" role="button" data-toggle="modal" data-target="#add-gm-modal"></i>
                     <i id="copy2clipboard" class="far fa-copy icon-20" role="button" title="Kopiera medlemmarnas epostadresser"></i>
                   </span>
-                </h3>
+                </h4>
               </th>
             </tr>
           </thead>
