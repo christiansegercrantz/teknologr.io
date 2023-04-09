@@ -10,6 +10,13 @@
 </div>
 
 <div class="container-fluid">
+  <h4>Kommentar</h4>
+  {% if functionaryType.comment %}
+    {{ functionaryType.comment|linebreaks }}
+  {% else %}
+    <p><i>Ingen kommentar hittades</i></p>
+  {% endif %}
+
   <h4 class="list-inline-item">Innehavare av posten</h4>
   <i class="list-inline-item fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#add-f-modal"></i>
   {% include "modals/functionary.html" with modalname="add-f-modal" title="Lägg till ny "|add:functionaryType.name form=add_f_form only %}

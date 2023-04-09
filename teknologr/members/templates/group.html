@@ -10,6 +10,13 @@
 </div>
 
 <div class="container-fluid">
+  <h4>Kommentar</h4>
+  {% if grouptype.comment %}
+    {{ grouptype.comment|linebreaks }}
+  {% else %}
+    <p><i>Ingen kommentar hittades</i></p>
+  {% endif %}
+
   <div class="row">
     <div class="col-sm-7">
       <h4 class="list-inline-item">Undergrupper</h4>

@@ -11,6 +11,13 @@
 
 
 <div class="container-fluid">
+  <h4>Kommentar</h4>
+  {% if decoration.comment %}
+    {{ decoration.comment|linebreaks }}
+  {% else %}
+    <p><i>Ingen kommentar hittades</i></p>
+  {% endif %}
+
   <h4 class="list-inline-item">Innehavare av hedersbetygelse</h4>
   <i class="list-inline-item fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#add-d-modal"></i>
   {% include "modals/decorationownership.html" with modalname="add-d-modal" title="Lägg till innehavare av hedersbetygelse "|add:decoration.name form=add_do_form only %}
