@@ -29,6 +29,14 @@
         {{ form.name }}
       </div>
     </div>
+    <div class="row form-group">
+      <div class="col-3">
+        <label for="{{ form.comment.id_for_label}}">Kommentar</label>
+      </div>
+      <div class="col-9">
+        {{ form.comment }}
+      </div>
+    </div>
   {% endif %}
   <div class="row">
     <div class="col-12">
