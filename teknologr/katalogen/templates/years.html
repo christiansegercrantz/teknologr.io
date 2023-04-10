@@ -1,0 +1,53 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+    {% if years %}
+      <table class="table table-sm table-striped text-center">
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th colspan="2">Funktionärer</th>
+            <th></th>
+            <th colspan="2">Gruppmedlemmar</th>
+            <th colspan="2">Nya medlemmar</th>
+          </tr>
+          <tr>
+            <th>År</th>
+            <th>Hedersbetygelser</th>
+            <th>Totalt</th>
+            <th>Unika</th>
+            <th>Grupper</th>
+            <th>Totalt</th>
+            <th>Unika</th>
+            <th>Ordinarie</th>
+            <th>StÄlM:ar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for y, counts in years.items %}
+            <tr>
+              <td><a href="{% url 'katalogen:year' y %}">{{ y }}</a></td>
+              <td>{{ counts.decoration_ownerships }}</td>
+              <td>{{ counts.functionaries_total }}</td>
+              <td>{{ counts.functionaries_unique }}</td>
+              <td>{{ counts.groups }}</td>
+              <td>{{ counts.group_memberships_total }}</td>
+              <td>{{ counts.group_memberships_unique }}</td>
+              <td>{{ counts.members_ordinary }}</td>
+              <td>{{ counts.members_stalm }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+    <div class="text-center lead">
+        Inga år hittades.
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
