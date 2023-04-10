@@ -74,8 +74,12 @@ const add_request_listener = ({ selector, method, url, data, confirmMessage, new
 const add_ajax_multiselect_extension = ({ selector_button, selector_input, selector_submit }) => {
 	const create_member_button = $(selector_button);
 	const submit_button = $(selector_submit);
-
 	const input = $(selector_input);
+
+	// Return if not all needed elements are found
+	if (!create_member_button.length || !submit_button.length || !input.length) return;
+
+	// Assume the hidden input and the deck comes directly after the normal input element
 	const hidden_input = input.next();
 	const deck = hidden_input.next();
 
