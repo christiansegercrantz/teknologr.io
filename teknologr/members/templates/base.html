@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,11 +12,13 @@
   <link rel="icon" href="{% static 'favicon.ico' %}">
 
   <!-- Bootstrap core CSS -->
-  <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+
   <!-- Icons -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-  <!-- Custom styles for this template -->
-  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+  <!-- Custom CSS for this template -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
   <!-- Load jQuery and jQuery UI, which are needed for ajax_select. Would be nice to be able to load them in the end like the rest of the JS files but ajax_select is automatically loaded before that, and if these modules have not been loaded by then ajax_select tries to fetch them from external sources instead. -->
   <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>

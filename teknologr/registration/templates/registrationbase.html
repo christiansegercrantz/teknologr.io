@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,20 +12,19 @@
     <link rel="icon" href="{% static 'tficon.ico' %}">
 
     <!-- Bootstrap core CSS -->
-    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
-    <link href="{% static 'css/registration.css' %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/registration.css' %}">
     {% if DEBUG %}
-      <link href="{% static 'css/debug.css' %}" rel="stylesheet" type="text/css">
+      <link rel="stylesheet" href="{% static 'css/debug.css' %}">
     {% endif %}
-
   </head>
 
   <body>
@@ -32,7 +32,7 @@
     {% endblock %}
 
     {% block scripts %}
-      <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}" type="application/javascript"></script>
+      <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
 
       <!-- For tooltips -->
       <script src="{% static 'assets/js/popper-1.14.7.min.js' %}"></script>
