@@ -3,14 +3,14 @@
 {% block content %}
 <div class="row">
   <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
-    <h2 class="page-header">
+    <h3 class="page-header">
       Medlemmar av
       {% if is_staff %}
         <a class="admin-link" href="{% url 'admin:group_type' group_type.id %}">{{ group_type.name }}</a>
       {% else %}
         {{ group_type.name }}
       {% endif %}
-    </h2>
+    </h3>
     {{ group_type.comment|linebreaks }}
     <table class="table table-sm table-striped">
       <thead>

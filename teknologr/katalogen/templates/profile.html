@@ -17,11 +17,11 @@
           {% if show_all %}
           <tr>
             <th>Tilltalsnamn</th>
-            <td align="right">{{person.preferred_name}}</td>
+            <td class="text-right">{{person.preferred_name}}</td>
           </tr>
           <tr>
             <th>Telefonnummer</th>
-            <td align="right">
+            <td class="text-right">
             {% if person.mobile_phone %}
               {{person.mobile_phone}}
             {% else %}
@@ -31,11 +31,11 @@
           </tr>
           <tr>
             <th>E-postadress</th>
-            <td align="right">{{person.email}}</td>
+            <td class="text-right">{{person.email}}</td>
           </tr>
           <tr>
             <th>Hemadress</th>
-            <td align="right">
+            <td class="text-right">
               {{person.street_address}}<br/>
               {{person.postal_code}} {{person.city}}<br/>
               {{person.country.name}}
@@ -43,17 +43,17 @@
           </tr>
           <tr>
             <th>Studieprogram</th>
-            <td align="right">{{person.degree_programme}}</td>
+            <td class="text-right">{{person.degree_programme}}</td>
           </tr>
           <tr>
             <th>Phuxår</th>
-            <td align="right">
+            <td class="text-right">
               {{ person.phux_year|default_if_none:'' }}
             </td>
           </tr>
           <tr>
             <th>Färdigbliven</th>
-            <td align="right">
+            <td class="text-right">
             {% if person.graduated %}
               {% if person.graduated_year %}
                   {{person.graduated_year}}
@@ -68,7 +68,7 @@
           {% endif %}
           <tr>
             <th>Medlemskapstyp</th>
-            <td align="right">
+            <td class="text-right">
             {% if person.current_member_type %}
               {{ person.current_member_type }}
             {% else %}
@@ -86,7 +86,7 @@
         {% for do in decoration_ownerships %}
           <tr>
             <th><a href="{% url 'katalogen:decoration_ownerships' do.decoration.id %}">{{ do.decoration.name }}</a></th>
-            <td align="right">{{ do.acquired }}</td>
+            <td class="text-right">{{ do.acquired }}</td>
           </tr>
         {% endfor %}
       </table>
@@ -97,11 +97,11 @@
         {% for ft, duration in functionary_duration_strings.items %}
           <tr>
             <th><a href="{% url 'katalogen:functionaries' ft.id %}">{{ ft.name }}</a></td>
-            <td align="right">{{ duration }}</td>
+            <td class="text-right">{{ duration }}</td>
           </tr>
         {% empty %}
           <tr>
-            <th>Inga poster.</th>
+            <td><i>Inga poster hittades</i></td>
             <td></td>
           </tr>
         {% endfor %}
@@ -112,11 +112,11 @@
         {% for gt, duration in group_type_duration_strings.items %}
           <tr>
             <th><a href="{% url 'katalogen:groups' gt.id %}">{{ gt.name }}</a></th>
-            <td align="right">{{ duration }}</td>
+            <td class="text-right">{{ duration }}</td>
           </tr>
         {% empty %}
           <tr>
-            <th>Inga grupper. </th>
+            <td><i>Inga grupper hittades</i></td>
             <td></td>
           </tr>
         {% endfor %}

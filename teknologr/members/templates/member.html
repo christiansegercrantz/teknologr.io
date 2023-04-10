@@ -3,11 +3,11 @@
 
 {% block main %}
   <div class="container-fluid">
-    <h1 class="page-header">
+    <h2 class="page-header">
       <a class="katalogen-link" href="{% url 'katalogen:profile' member.id %}">{{ member.full_name }}</a>
       <a href="{% url 'api:member-detail' member.id %}" class="btn btn-outline-dark float-right">API länk</a>
       <a href="{% url 'api:htkDump' member.id %}" class="btn btn-outline-dark float-right">HTK dump</a>
-    </h1>
+    </h2>
 
     {% if result %}
     <div class="row">
@@ -160,17 +160,18 @@
         </form>
 
         <div class="row mt-4">
-          <h2 class="col-12">Användarkonton</h2>
+          <h4 class="col-12">Användarkonton</h4>
         </div>
         <div class="row mb-4">
           <div class="col-sm-6">
-            <h3>LDAP</h3>
+            <h5>LDAP</h5>
             {% if LDAP %}
             {% if LDAP.error %}
             Kunde inte få svar av LDAP: {{ LDAP.error }}
             {% else %}
             <b>Användarnamn:</b> {{member.username}}
-            <h4>LDAP Grupper</h4>
+            <br>
+            <b>Grupper:</b>
             <ul>
               {% for group in LDAP.groups %}
               <li>{{group}}</li>
@@ -187,14 +188,14 @@
             {% endif %}
           </div>
           <div class="col-sm-6">
-            <h3>BILL</h3>
+            <h5>BILL</h5>
             {% if BILL %}
             {% if BILL.error %}
             <div class="alert alert-danger">Kunde inte få svar av BILL: {{ BILL.error }}</div>
             {% else %}
-            <b>BILL kod:</b> {{ BILL.acc }}
+            <b>Konto:</b> {{ BILL.acc }}
             <br>
-            <b>BILL saldo:</b> {{ BILL.balance }}€
+            <b>Saldo:</b> {{ BILL.balance }}€
             <br>
             <br>
             <button id="delete-bill-button" class="btn btn-danger" data-id="{{ member.id }}">Ta bort BILL konto</button>
@@ -211,7 +212,7 @@
 
       <div class="col-lg-4">
         <ul class="list-inline mt-4 mb-0">
-          <li class="list-inline-item"><h3>Hedersbetygelser</h3></li>
+          <li class="list-inline-item"><h4>Hedersbetygelser</h4></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-do-modal">Lägg till ny</button>
             {% include "modals/memberdecoration.html" with modalname="add-do-modal" title="Lägg till innehav av hedersbetygelse" form=add_do_form only %}
@@ -233,7 +234,7 @@
         </table>
 
         <ul class="list-inline mt-4 mb-0">
-          <li class="list-inline-item"><h3>Poster</h3></li>
+          <li class="list-inline-item"><h4>Poster</h4></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-f-modal">Lägg till ny</button>
             {% include "modals/memberfunctionary.html" with modalname="add-f-modal" title="Lägg till funktionärspost" form=add_f_form only %}
@@ -257,7 +258,7 @@
         </table>
 
         <ul class="list-inline mt-4 mb-0">
-          <li class="list-inline-item"><h3>Grupper</h3></li>
+          <li class="list-inline-item"><h4>Grupper</h4></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-gm-modal">Lägg till ny</button>
             {% include "modals/membergroup.html" with modalname="add-gm-modal" title="Lägg till gruppmedlemskap" form=add_gm_form only %}
@@ -281,7 +282,7 @@
         </table>
 
         <ul class="list-inline mt-4 mb-0">
-          <li class="list-inline-item"><h3>Medlemstyper</h3></li>
+          <li class="list-inline-item"><h4>Medlemstyper</h4></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addMemberType">Lägg till ny</button>
             {% include "modals/membertype.html" with modalname="addMemberType" title="Lägg till medlemstyp" form=add_mt_form only %}

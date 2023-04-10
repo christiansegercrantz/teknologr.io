@@ -18,24 +18,16 @@
           <td>{{ decoration_ownerships|length }}</td>
         </tr>
         <tr>
-          <td>Funktionärsposter (totalt)</td>
-          <td>{{ functionaries|length }}</td>
-        </tr>
-        <tr>
-          <td>Funktionärer (unika)</td>
-          <td>{{ functionaries_unique_count }}</td>
+          <td>Funktionärer</td>
+          <td>{{ functionaries|length }} ({{ functionaries_unique_count }})</td>
         </tr>
         <tr>
           <td>Grupper</td>
           <td>{{ groups|length }}</td>
         </tr>
         <tr>
-          <td>Gruppmedlemmar (totalt)</td>
-          <td>{{ group_memberships_total }}</td>
-        </tr>
-        <tr>
-          <td>Gruppmedlemmar (unika)</td>
-          <td>{{ group_memberships_unique }}</td>
+          <td>Gruppmedlemmar</td>
+          <td>{{ group_memberships_total }} ({{ group_memberships_unique }})</td>
         </tr>
         <tr>
           <td>Nya ordinarie medlemmar</td>
@@ -68,7 +60,7 @@
       <!-- Functionaries -->
       <thead>
         <tr>
-          <th>Funktionärsposter år {{ year }}</th>
+          <th>Funktionärer år {{ year }}</th>
           <th>Namn</th>
         </tr>
       </thead>
