@@ -10,7 +10,7 @@ $(document).ready(function () {
 		selector: "#delete-d-button",
 		method: "DELETE",
 		url: element => `/api/decorations/${element.data("id")}/`,
-		confirmMessage: "Vill du radera denna hedersbetygelse och alla dess ägarskap?",
+		confirmMessage: "Vill du radera denna betygelse och alla dess betygelseinnehav?",
 		newLocation: "/admin/decorations/",
 	});
 
@@ -27,7 +27,7 @@ $(document).ready(function () {
 		selector: ".delete-do-button",
 		method: "DELETE",
 		url: element => `/api/decorationOwnership/${element.data("id")}/`,
-		confirmMessage: "Vill du radera detta hedersbetygelseinnehav?",
+		confirmMessage: "Vill du radera detta betygelseinnehav?",
 	});
 
 	add_ajax_multiselect_extension({

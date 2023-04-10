@@ -4,9 +4,9 @@
 {% block main %}
 <div class="container-fluid page-header">
   <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:decoration_ownerships' decoration.id %}">{{ decoration.name }}</a></h1>
-  <i class="list-inline-item far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#edit-d-modal"></i>
-  <i id="delete-d-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" data-id="{{ decoration.id }}"></i>
-  {% include "modals/decoration.html" with modalname="edit-d-modal" title="Editera hedersbetygelse" form=edit_d_form decoration=decoration only %}
+  <i class="list-inline-item far fa-edit text-info align-self-center icon-20" role="button" title="Editera betygelse" data-toggle="modal" data-target="#edit-d-modal"></i>
+  <i id="delete-d-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" title="Radera betygelse" data-id="{{ decoration.id }}"></i>
+  {% include "modals/decoration.html" with modalname="edit-d-modal" title="Editera betygelse" form=edit_d_form decoration=decoration only %}
 </div>
 
 
@@ -19,8 +19,8 @@
   {% endif %}
 
   <h4 class="list-inline-item">Innehavare av betygelsen</h4>
-  <i class="list-inline-item fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#add-d-modal"></i>
-  {% include "modals/decorationownership.html" with modalname="add-d-modal" title="Lägg till innehavare av hedersbetygelse "|add:decoration.name form=add_do_form only %}
+  <i class="list-inline-item fas fa-plus text-success icon-20" role="button" title="Lägg till betygelseinnehav" data-toggle="modal" data-target="#add-d-modal"></i>
+  {% include "modals/decorationownership.html" with modalname="add-d-modal" title="Lägg till betygelseinnehav ("|add:decoration.name|add:")" form=add_do_form only %}
 
   <table class="table table-sm table-striped table-borderless">
     <thead class="no-border">
@@ -33,7 +33,7 @@
     <tbody>
       {% for ownership in decorations %}
         <tr>
-          <td><i class="fas fa-times delete-do-button text-danger" role="button" data-id="{{ ownership.id }}" data-decoration_id="{{ decoration.id }}"></i></td>
+          <td><i class="fas fa-times delete-do-button text-danger" role="button" title="Radera betygelseinnehav" data-id="{{ ownership.id }}" data-decoration_id="{{ decoration.id }}"></i></td>
           <td><a href="{% url 'admin:member' ownership.member.id %}">{{ ownership.member.full_name }}</a></td>
           <td>{{ ownership.acquired }}</td>
         </tr>

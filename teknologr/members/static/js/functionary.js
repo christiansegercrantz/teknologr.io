@@ -10,7 +10,7 @@ $(document).ready(function () {
 		selector: "#delete-ft-button",
 		method: "DELETE",
 		url: element => `/api/functionaryTypes/${element.data("id")}/`,
-		confirmMessage: "Vill du radera denna funktionärstyp och alla dess funktionärer?",
+		confirmMessage: "Vill du radera denna post och alla dess postinnehav?",
 		newLocation: "/admin/functionaries/",
 	});
 
@@ -26,7 +26,7 @@ $(document).ready(function () {
 		selector: ".delete-f-button",
 		method: "DELETE",
 		url: element => `/api/functionaries/${element.data("id")}/`,
-		confirmMessage: "Vill du radera denna funktionär?",
+		confirmMessage: "Vill du radera detta postinnehav?",
 	});
 
 	add_ajax_multiselect_extension({

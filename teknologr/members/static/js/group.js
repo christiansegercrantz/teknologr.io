@@ -10,7 +10,7 @@ $(document).ready(function () {
 		selector: "#delete-gt-button",
 		method: "DELETE",
 		url: element => `/api/groupTypes/${element.data("id")}/`,
-		confirmMessage: "Vill du radera denna grupptyp och alla dess undergrupper?",
+		confirmMessage: "Vill du radera denna grupp och alla dess undergrupper?",
 		newLocation: "/admin/groups/",
 	});
 
@@ -25,7 +25,7 @@ $(document).ready(function () {
 		selector: ".delete-g-button",
 		method: "DELETE",
 		url: element => `/api/groups/${element.data("id")}/`,
-		confirmMessage: "Vill du ta bort denna undergrupp och alla dess medlemskap?",
+		confirmMessage: "Vill du radera denna undergrupp och alla dess gruppmedlemskap?",
 		newLocation: element => `/admin/groups/${element.data("grouptype_id")}`,
 	});
 
@@ -47,7 +47,7 @@ $(document).ready(function () {
 		selector: ".delete-gm-button",
 		method: "DELETE",
 		url: element => `/api/groupMembership/${element.data("id")}/`,
-		confirmMessage: "Vill du ta bort detta undergruppsmedlemskap?",
+		confirmMessage: "Vill du radera detta gruppmedlemskap?",
 	});
 
 	// Copy the hidden list of emails to the clipboard
