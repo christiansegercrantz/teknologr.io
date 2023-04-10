@@ -30,7 +30,7 @@ def search(request):
     if query_list:
         result = Member.objects.filter(
            reduce(and_, (Q(given_names__icontains=q) | Q(surname__icontains=q) for q in query_list))
-        ).order_by('surname')
+        ).order_by('surname', 'given_names')
 
     return render(request, 'browse.html', {
         **_get_base_context(request),
@@ -62,7 +62,7 @@ def profile(request, member_id):
 def startswith(request, letter):
     return render(request, 'browse.html', {
         **_get_base_context(request),
-        'persons': Member.objects.filter(surname__istartswith=letter).order_by('surname'),
+        'persons': Member.objects.filter(surname__istartswith=letter).order_by('surname', 'given_names'),
     })
 
 
@@ -89,7 +89,7 @@ def decoration_ownerships(request, decoration_id):
     return render(request, 'decoration_ownerships.html', {
         **_get_base_context(request),
         'decoration': decoration,
-        'decoration_ownerships': DecorationOwnership.objects.filter(decoration_id=decoration_id).order_by('-acquired'),
+        'decoration_ownerships': DecorationOwnership.objects.filter(decoration_id=decoration_id).order_by('-acquired', 'member__surname', 'member__given_names'),
     })
 
 
@@ -99,7 +99,7 @@ def functionary_types(request):
     #  - Date of first/latest?
     return render(request, 'functionary_types.html', {
         **_get_base_context(request),
-        'functionary_types': FunctionaryType.objects.order_by('name').annotate(num_functionaries=Count('functionaries')),
+        'functionary_types': FunctionaryType.objects.order_by('name').annotate(num_total=Count('functionaries'), num_unique=Count('functionaries__member__id', distinct=True)),
     })
 
 
@@ -107,7 +107,7 @@ def functionary_types(request):
 def functionaries(request, functionary_type_id):
     functionary_type = get_object_or_404(FunctionaryType, id=functionary_type_id)
 
-    functionaries = functionary_type.functionaries.order_by('-end_date', 'member__surname')
+    functionaries = functionary_type.functionaries.order_by('-end_date', 'member__surname', 'member__given_names')
     for f in functionaries:
         f.duration_string = create_duration_string(f.begin_date, f.end_date)
 
@@ -124,7 +124,7 @@ def group_types(request):
     #  - Date of first/latest?
     return render(request, 'group_types.html', {
         **_get_base_context(request),
-        'group_types': GroupType.objects.order_by('name').annotate(num_groups=Count('groups')),
+        'group_types': GroupType.objects.annotate(num_groups=Count('groups', distinct=True, filter=Q(groups__memberships__gt=0)), num_members=Count('groups__memberships__member__id', distinct=True)).order_by('name'),
     })
 
 
@@ -132,9 +132,11 @@ def group_types(request):
 def groups(request, group_type_id):
     group_type = get_object_or_404(GroupType, id=group_type_id)
 
-    groups = group_type.groups.annotate(num_members=Count('memberships')).order_by('-end_date')
+    groups = group_type.groups.annotate(num_members=Count('memberships', distinct=True)).filter(num_members__gt=0).order_by('-end_date')
     for g in groups:
         g.duration_string = create_duration_string(g.begin_date, g.end_date)
+        # XXX: Is there a better way to order the memberships in group?
+        g.memberships_ordered = g.memberships.order_by('member__surname', 'member__given_names')
 
     return render(request, 'groups.html', {
         **_get_base_context(request),

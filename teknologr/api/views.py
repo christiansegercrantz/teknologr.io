@@ -64,7 +64,7 @@ def getOrCreateMemberIdFromMultiSelectValue(id_or_names):
     """
     if id_or_names[0] == '$':
         names = id_or_names[1:].split()
-        member = Member.objects.create(given_names=''.join(names[0:-1]), surname=names[-1])
+        member = Member.objects.create(given_names=' '.join(names[0:-1]), surname=names[-1])
         return member.id
     return int(id_or_names)
 

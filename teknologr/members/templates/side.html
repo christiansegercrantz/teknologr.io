@@ -35,7 +35,7 @@
 
 <div id="side-objects" class="list-group">
   {% for obj in side.objects %}
-    <a class="side-object list-group-item{% ifequal obj.id side.active_obj %} active {% endifequal %}" href="{% url 'admin:empty' side.active %}{{ obj.id }}">{{ obj.name|default:"Namnlös" }}</a>
+    <a class="side-object list-group-item{% ifequal obj.id side.active_obj %} active {% endifequal %}" href="{% url 'admin:empty' side.active %}{{ obj.id }}">{{ obj.name|default:"Namnlös" }}{% if obj.count >= 0 %} ({{ obj.count }}) {% endif %}</a>
   {% empty %}
     <span class="text-muted">Skriv i sökfältet för att visa medlemmar</span>
   {% endfor %}

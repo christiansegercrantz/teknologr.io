@@ -18,7 +18,7 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-sm-7">
+    <div class="col-lg-8">
       <ul class="list-inline">
         <li class="list-inline-item">
           <h3>Undergrupper</h3>
@@ -32,34 +32,36 @@
         <thead class="no-border">
           <tr>
             <th></th>
-            <th>Från</th>
-            <th>Till</th>
+            <th class="text-center">Från</th>
+            <th class="text-center">Till</th>
+            <th class="text-center">Medlemmar</th>
           </tr>
         </thead>
         <tbody>
         {% for g in groups %}
-          <tr {% if group.id == g.id %} class="bg-light" {% endif %}>
+          <tr {% if group.id == g.id %} class="active" {% endif %}>
             <td>
               <a href="{% url 'admin:group' grouptype.id g.id %}"><i class="far fa-edit text-info"></i></a>
               <i class="fas fa-times delete-g-button text-danger" role="button" data-id="{{ g.id }}" data-grouptype_id="{{ grouptype.id }}"></i>
             </td>
-            <td>{{ g.begin_date }}</td>
-            <td>{{ g.end_date }}</td>
+            <td class="text-center">{{ g.begin_date }}</td>
+            <td class="text-center">{{ g.end_date }}</td>
+            <td class="text-center">{{ g.num_members }}</td>
           </tr>
         {% endfor %}
         </tbody>
       </table>
     </div>
     <!-- Right block, view single group -->
-    <div class="col-sm-5">
+    <div class="col-lg-4">
       {% if group %}
         <table class="table table-sm table-striped table-borderless">
           <thead class="no-border">
             <tr>
               <th>
                 <h3>
-                  <span class="col-10">{{ group.begin_date }} - {{ group.end_date }}</span>
-                  <span class="float-right">
+                  {{ group.begin_date }}<br>- {{ group.end_date }}<br>
+                  <span>
                     <i class="far fa-edit text-info icon-20" role="button" data-toggle="modal" data-target="#edit-g-modal"></i>
                     <i class="fas fa-plus text-success icon-20 align-middle" role="button" data-toggle="modal" data-target="#add-gm-modal"></i>
                     <i id="copy2clipboard" class="far fa-copy icon-20" role="button" title="Kopiera medlemmarnas epostadresser"></i>
