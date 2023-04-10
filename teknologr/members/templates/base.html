@@ -89,16 +89,13 @@
   {% block scripts %}
     <!-- Always include block.super in this block in templates to avoid removing previous scripts-->
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <!-- JavaScript files, placed at the end of the document so the pages load faster -->
+    <!-- For modals and tooltips -->
+    <script src="{% static 'assets/js/popper-1.14.7.min.js' %}"></script>
     <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
 
     <script src="{% static 'js/ajax_api.js' %}"></script>
     <script src="{% static 'js/base.js' %}"></script>
-    <!-- For tooltips -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
   {% endblock %}
 </body>
 </html>

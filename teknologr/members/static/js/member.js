@@ -74,10 +74,6 @@ $(document).ready(function() {
 		});
 	});
 
-	$('[data-toggle="tooltip"]').tooltip({
-		placement : 'top'
-	});
-
 	$('#memberform').change(function(){
 		changed = true;
 	});
