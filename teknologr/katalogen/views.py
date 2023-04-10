@@ -148,7 +148,11 @@ def years(request):
     years = {}
 
     def add(obj, key, count_key=None):
-        y = obj['year'].year
+        date = obj['year']
+        if date == None:
+            return
+
+        y = date.year
         if y not in years:
             years[y] = {}
         years[y][key] = obj[count_key or key]
