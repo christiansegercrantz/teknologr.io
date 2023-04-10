@@ -7,15 +7,17 @@
       <table class="table table-sm table-striped">
         <thead>
           <tr>
-            <th>Funktionär</th>
-            <th>Antal</th>
+            <th>Funktionärspost</th>
+            <th class="text-center">Antal (totalt)</th>
+            <th class="text-center">Antal (unika)</th>
           </tr>
         </thead>
         <tbody>
           {% for ft in functionary_types %}
             <tr>
               <td><a href="{% url 'katalogen:functionaries' ft.id %}">{{ ft.name }}</a></td>
-              <td>{{ ft.num_functionaries }}</td>
+              <td class="text-center">{{ ft.num_total }}</td>
+              <td class="text-center">{{ ft.num_unique }}</td>
             </tr>
           {% endfor %}
         </tbody>

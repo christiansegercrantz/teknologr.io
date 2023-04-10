@@ -48,7 +48,7 @@
           <tr>
             <th>Phuxår</th>
             <td align="right">
-              {{ person.phux_year }}
+              {{ person.phux_year|default_if_none:'' }}
             </td>
           </tr>
           <tr>

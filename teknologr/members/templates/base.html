@@ -48,9 +48,11 @@
             <a class="dropdown-item" href="{% url 'api:regEmailDump' %}" data-toggle="tooltip" title="Lista av alla nuvarande ansökningars emails.">Ansökandes email dump</a>
           </div>
         </li>
+        {% if info_url %}
         <li class="nav-item">
-          <a class="nav-link" href="https://wiki.teknologforeningen.fi/itwiki/index.php/Medlemsregister" target="_blank">Info</a>
+          <a class="nav-link" href="{{ info_url }}" target="_blank">Info</a>
         </li>
+        {% endif %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'logout' %}">Logga ut</a>
         </li>

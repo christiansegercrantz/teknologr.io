@@ -140,7 +140,7 @@ class GroupMembershipForm(BSModelForm):
         fields = '__all__'
 
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
-    group = ModelChoiceField(queryset=Group.objects.order_by('grouptype__name', '-end_date'))
+    group = ModelChoiceField(queryset=Group.objects.order_by('grouptype__name', '-begin_date'))
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
@@ -152,8 +152,7 @@ class GroupMembershipForm(BSModelForm):
 
         # Do not list groups that the member already is part of
         if member_id:
-            groups = Group.objects.exclude(id__in=GroupMembership.objects.filter(member=member_id).values('group'))
-            self.fields['group'].queryset = groups
+            self.fields['group'].queryset = self.fields['group'].queryset.exclude(id__in=GroupMembership.objects.filter(member=member_id).values('group'))
 
 
 class MemberTypeForm(BSModelForm):

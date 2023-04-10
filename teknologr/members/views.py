@@ -1,12 +1,13 @@
-from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
+from django.db.models import Count
 
 from members.models import *
 from members.forms import *
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
 from registration.forms import RegistrationForm
+from getenv import env
 
 
 def set_side_context(context, category, active_obj=None):
@@ -27,15 +28,15 @@ def set_side_context(context, category, active_obj=None):
     elif category == 'groups':
         side['sname'] = 'grupp'
         side['form'] = GroupTypeForm(auto_id="gtmodal_%s")
-        side['objects'] = GroupType.objects.all()
+        side['objects'] = GroupType.objects.annotate(count=Count('groups', distinct=True))
     elif category == 'functionaries':
         side['sname'] = 'post'
         side['form'] = FunctionaryTypeForm(auto_id="ftmodal_%s")
-        side['objects'] = FunctionaryType.objects.all()
+        side['objects'] = FunctionaryType.objects.annotate(count=Count('functionaries', distinct=True))
     elif category == 'decorations':
         side['sname'] = 'betygelse'
         side['form'] = DecorationForm(auto_id="dmodal_%s")
-        side['objects'] = Decoration.objects.all()
+        side['objects'] = Decoration.objects.annotate(count=Count('ownerships', distinct=True))
     elif category == 'applicants':
         side['sname'] = 'ansökning'
         side['objects'] = Applicant.objects.all()
@@ -44,6 +45,9 @@ def set_side_context(context, category, active_obj=None):
         side['multiple_applicants_form'] = MultipleApplicantAdditionForm()
 
     context['side'] = side
+
+    # XXX: Is not part of the side context, but this is a convenient place to define it. Could change the function name to something like set/get_default_context instead.
+    context['info_url'] = env('INFO_URL')
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
@@ -140,7 +144,7 @@ def group(request, grouptype_id, group_id=None):
     form = GroupTypeForm(instance=grouptype)
 
     # Get groups of group type
-    context['groups'] = Group.objects.filter(grouptype__id=grouptype_id).order_by('-begin_date')
+    context['groups'] = Group.objects.filter(grouptype__id=grouptype_id).annotate(num_members=Count('memberships', distinct=True)).order_by('-begin_date')
     context['edit_gt_form'] = form
 
     context['add_g_form'] = GroupForm(initial={"grouptype": grouptype_id})
@@ -148,9 +152,9 @@ def group(request, grouptype_id, group_id=None):
     if group_id is not None:
         group = get_object_or_404(Group, id=group_id)
         context['group'] = group
-        context['edit_g_form'] = GroupForm(instance=group)
+        context['edit_g_form'] = GroupForm(instance=group, initial={ 'begin_date': group.begin_date, 'end_date': group.end_date })
         context['add_gm_form'] = GroupMembershipForm(initial={"group": group_id})
-        context['groupmembers'] = GroupMembership.objects.filter(group=group)
+        context['groupmembers'] = GroupMembership.objects.filter(group=group).order_by('member__surname', 'member__given_names')
         context['emails'] = "\n".join(
             [membership.member.email for membership in context['groupmembers']]
         )
@@ -169,7 +173,7 @@ def functionary_type(request, functionarytype_id):
 
     # Get functionaries of functionary type
     context['functionaries'] = Functionary.objects.filter(
-        functionarytype__id=functionarytype_id).order_by('-begin_date')
+        functionarytype__id=functionarytype_id).order_by('-begin_date', 'member__surname', 'member__given_names')
     context['edit_ft_form'] = form
     context['add_f_form'] = FunctionaryForm(initial={"functionarytype": functionarytype_id})
 
@@ -186,7 +190,7 @@ def decoration(request, decoration_id):
     context['edit_d_form'] = DecorationForm(instance=decoration)
 
     # Get groups of group type
-    context['decorations'] = DecorationOwnership.objects.filter(decoration__id=decoration_id).order_by('-acquired')
+    context['decorations'] = DecorationOwnership.objects.filter(decoration__id=decoration_id).order_by('-acquired', 'member__surname', 'member__given_names')
     context['add_do_form'] = DecorationOwnershipForm(initial={"decoration": decoration_id})
 
     set_side_context(context, 'decorations', decoration.id)

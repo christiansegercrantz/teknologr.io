@@ -90,6 +90,11 @@ thead.no-border th {
   border: 0;
 }
 
+tr.active {
+  background-color: #337ab7 !important;
+  color: white !important;
+}
+
 .negative-link {
   color: grey;
 }
