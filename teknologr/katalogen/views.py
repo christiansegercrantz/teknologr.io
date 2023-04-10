@@ -124,7 +124,7 @@ def group_types(request):
     #  - Date of first/latest?
     return render(request, 'group_types.html', {
         **_get_base_context(request),
-        'group_types': GroupType.objects.annotate(num_groups=Count('groups', distinct=True, filter=Q(groups__memberships__gt=0)), num_members=Count('groups__memberships__member__id', distinct=True)).order_by('name'),
+        'group_types': GroupType.objects.annotate(num_groups=Count('groups', distinct=True, filter=Q(groups__memberships__gt=0)), num_members_total=Count('groups__memberships__member__id'), num_members_unique=Count('groups__memberships__member__id', distinct=True)).order_by('name'),
     })
 
 

@@ -2,31 +2,25 @@
 {% load static %}
 
 {% block main %}
-<div class="container-fluid">
-  <ul class="list-inline page-header">
-    <li class="list-inline-item">
-      <h1><a class="katalogen-link" href="{% url 'katalogen:functionaries' functionaryType.id %}">{{ functionaryType.name }}</a></h1>
-    </li>
-    <li class="list-inline-item">
-      <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#edit-ft-modal"></i>
-    </li>
-    <li class="list-inline-item">
-      <i id="delete-ft-button" class="fas fa-times text-danger icon-20" role="button" data-id="{{ functionaryType.id }}"></i>
-    </li>
-  </ul>
-  {% include "modals/functionarytype.html" with modalname="edit-ft-modal" title="Editera funktionärstyp" form=edit_ft_form functionaryType=functionaryType only %}
+<div class="container-fluid page-header">
+  <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:functionaries' functionaryType.id %}">{{ functionaryType.name }}</a></h1>
+  <i class="list-inline-item far fa-edit text-info align-self-center icon-20" role="button" title="Editera post" data-toggle="modal" data-target="#edit-ft-modal"></i>
+  <i id="delete-ft-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" title="Radera post" data-id="{{ functionaryType.id }}"></i>
+  {% include "modals/functionarytype.html" with modalname="edit-ft-modal" title="Editera post" form=edit_ft_form functionaryType=functionaryType only %}
 </div>
 
 <div class="container-fluid">
-  <ul class="list-inline">
-    <li class="list-inline-item">
-      <h3>Innehavare av posten</h3>
-    </li>
-    <li class="list-inline-item">
-      <i class="fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#add-f-modal"></i>
-    </li>
-  </ul>
-  {% include "modals/functionary.html" with modalname="add-f-modal" title="Lägg till ny "|add:functionaryType.name form=add_f_form only %}
+  <h4>Kommentar</h4>
+  {% if functionaryType.comment %}
+    {{ functionaryType.comment|linebreaks }}
+  {% else %}
+    <p><i>Ingen kommentar hittades</i></p>
+  {% endif %}
+
+  <h4 class="list-inline-item">Innehavare av posten</h4>
+  <i class="list-inline-item fas fa-plus text-success icon-20" role="button" title="Lägg till postinnehav" data-toggle="modal" data-target="#add-f-modal"></i>
+  {% include "modals/functionary.html" with modalname="add-f-modal" title="Lägg till postinnehav ("|add:functionaryType.name|add:")" form=add_f_form only %}
+
   <table class="table table-sm table-striped table-borderless">
     <thead class="no-border">
       <tr>
@@ -39,7 +33,7 @@
     <tbody>
     {% for functionary in functionaries %}
       <tr>
-        <td><i class="fas fa-times delete-f-button text-danger" role="button" data-id="{{ functionary.id }}" data-functionarytype_id="{{ functionaryType.id }}"></i></td>
+        <td><i class="fas fa-times delete-f-button text-danger" role="button" title="Radera postinnehav" data-id="{{ functionary.id }}" data-functionarytype_id="{{ functionaryType.id }}"></i></td>
         <td><a href="{% url 'admin:member' functionary.member.id %}">{{ functionary.member.full_name }}</a></td>
         <td>{{ functionary.begin_date }}</td>
         <td>{{ functionary.end_date }}</td>

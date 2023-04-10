@@ -1,33 +1,28 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block main %}
-<div class="container-fluid">
-  <ul class="list-inline page-header">
-    <li class="list-inline-item">
-      <h1><a class="katalogen-link" href="{% url 'katalogen:groups' grouptype.id %}">{{ grouptype.name }}</a></h1>
-    </li>
-    <li class="list-inline-item">
-      <i class="far fa-edit text-info align-self-center icon-20" role="button" data-toggle="modal" data-target="#edit-gt-modal"></i>
-    </li>
-    <li class="list-inline-item">
-      <i id="delete-gt-button" class="fas fa-times text-danger icon-20" role="button" data-id="{{ grouptype.id }}"></i>
-    </li>
-  </ul>
-  {% include "modals/grouptype.html" with modalname="edit-gt-modal" title="Editera grupptyp" form=edit_gt_form grouptype=grouptype only %}
+<div class="container-fluid page-header">
+  <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:groups' grouptype.id %}">{{ grouptype.name }}</a></h1>
+  <i class="list-inline-item far fa-edit text-info align-self-center icon-20" role="button" title="Editera grupp" data-toggle="modal" data-target="#edit-gt-modal"></i>
+  <i id="delete-gt-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" title="Radera grupp" data-id="{{ grouptype.id }}"></i>
+  {% include "modals/grouptype.html" with modalname="edit-gt-modal" title="Editera undergrupp" form=edit_gt_form grouptype=grouptype only %}
 </div>
 
 <div class="container-fluid">
+  <h4>Kommentar</h4>
+  {% if grouptype.comment %}
+    {{ grouptype.comment|linebreaks }}
+  {% else %}
+    <p><i>Ingen kommentar hittades</i></p>
+  {% endif %}
+
   <div class="row">
     <div class="col-lg-8">
-      <ul class="list-inline">
-        <li class="list-inline-item">
-          <h3>Undergrupper</h3>
-        </li>
-        <li class="list-inline-item">
-          <i class="fas fa-plus text-success icon-20" role="button" data-toggle="modal" data-target="#add-g-modal"></i>
-        </li>
-      </ul>
-      {% include "modals/addgroup.html" with modalname="add-g-modal" title="Lägg till grupp" form=add_g_form grouptype=grouptype only %}
+      <h4 class="list-inline-item">Undergrupper</h4>
+      <i class="list-inline-item fas fa-plus text-success icon-20" role="button" title="Skapa ny undergrupp" data-toggle="modal" data-target="#add-g-modal"></i>
+      {% include "modals/addgroup.html" with modalname="add-g-modal" title="Skapa ny undergrupp för "|add:grouptype.name form=add_g_form grouptype=grouptype only %}
+
       <table class="table table-sm table-striped table-borderless">
         <thead class="no-border">
           <tr>
@@ -41,8 +36,8 @@
         {% for g in groups %}
           <tr {% if group.id == g.id %} class="active" {% endif %}>
             <td>
-              <a href="{% url 'admin:group' grouptype.id g.id %}"><i class="far fa-edit text-info"></i></a>
-              <i class="fas fa-times delete-g-button text-danger" role="button" data-id="{{ g.id }}" data-grouptype_id="{{ grouptype.id }}"></i>
+              <a href="{% url 'admin:group' grouptype.id g.id %}"><i class="far fa-edit text-info" title="Hantera undergrupp"></i></a>
+              <i class="fas fa-times delete-g-button text-danger" role="button" title="Radera undergrupp" data-id="{{ g.id }}" data-grouptype_id="{{ grouptype.id }}"></i>
             </td>
             <td class="text-center">{{ g.begin_date }}</td>
             <td class="text-center">{{ g.end_date }}</td>
@@ -52,6 +47,7 @@
         </tbody>
       </table>
     </div>
+
     <!-- Right block, view single group -->
     <div class="col-lg-4">
       {% if group %}
@@ -59,14 +55,14 @@
           <thead class="no-border">
             <tr>
               <th>
-                <h3>
+                <h4>
                   {{ group.begin_date }}<br>- {{ group.end_date }}<br>
                   <span>
-                    <i class="far fa-edit text-info icon-20" role="button" data-toggle="modal" data-target="#edit-g-modal"></i>
-                    <i class="fas fa-plus text-success icon-20 align-middle" role="button" data-toggle="modal" data-target="#add-gm-modal"></i>
-                    <i id="copy2clipboard" class="far fa-copy icon-20" role="button" title="Kopiera medlemmarnas epostadresser"></i>
+                    <i class="far fa-edit text-info icon-20" role="button" title="Editera undergrupp" data-toggle="modal" data-target="#edit-g-modal"></i>
+                    <i class="fas fa-plus text-success icon-20 align-middle" role="button" title="Lägg till gruppmedlemskap" data-toggle="modal" data-target="#add-gm-modal"></i>
+                    <i id="copy2clipboard" class="far fa-copy icon-20" role="button" title="Kopiera gruppmedlemmarnas epostadresser"></i>
                   </span>
-                </h3>
+                </h4>
               </th>
             </tr>
           </thead>
@@ -74,7 +70,7 @@
             {% for membership in groupmembers %}
               <tr>
                 <td>
-                  <i class="col-2 fas fa-times delete-gm-button text-danger" role="button" data-id="{{ membership.id }}"></i>
+                  <i class="col-2 fas fa-times delete-gm-button text-danger" role="button" title="Radera gruppmedlemskap" data-id="{{ membership.id }}"></i>
                   <a class="col-10" href="{% url 'admin:member' membership.member.id %}">{{ membership.member.full_name }}</a>
                 </td>
               </tr>
@@ -82,8 +78,8 @@
           </tbody>
         </table>
         <textarea id="members_email_list" style="opacity: 0;width: 0; height:0;">{{ emails }}</textarea>
-        {% include "modals/group.html" with modalname="edit-g-modal" title="Editera grupp" form=edit_g_form groupid=group.id only %}
-        {% include "modals/groupmembership.html" with modalname="add-gm-modal" title="Lägg till medlem i grupp" form=add_gm_form only %}
+        {% include "modals/group.html" with modalname="edit-g-modal" title="Editera undergrupp" form=edit_g_form groupid=group.id only %}
+        {% include "modals/groupmembership.html" with modalname="add-gm-modal" title="Lägg till gruppmedlemskap" form=add_gm_form only %}
       {% endif %}
     </div>
   </div>

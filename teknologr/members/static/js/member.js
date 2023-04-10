@@ -31,13 +31,13 @@ $(document).ready(function() {
 		selector: ".delete-do-button",
 		method: "DELETE",
 		url: element => `/api/decorationOwnership/${element.data("id")}/`,
-		confirmMessage: "Vill du radera detta hedersbetygelseinnehav?",
+		confirmMessage: "Vill du radera detta betygelseinnehav?",
 	});
 	add_request_listener({
 		selector: ".delete-f-button",
 		url: element => `/api/functionaries/${element.data("id")}/`,
 		method: "DELETE",
-		confirmMessage: "Vill du radera denna post?",
+		confirmMessage: "Vill du radera detta postinnehav?",
 	});
 	add_request_listener({
 		selector: ".delete-gm-button",

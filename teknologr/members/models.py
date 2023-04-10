@@ -153,6 +153,7 @@ class DecorationOwnership(SuperClass):
 
 class Decoration(SuperClass):
     name = models.CharField(max_length=64, blank=False, null=False, unique=True)
+    comment = models.TextField(blank=True, default='')
 
     def __str__(self):
         return self.name
@@ -177,6 +178,7 @@ class Group(SuperClass):
 
 class GroupType(SuperClass):
     name = models.CharField(max_length=64, blank=False, null=False, unique=True)
+    comment = models.TextField(blank=True, default='')
 
     def __str__(self):
         return self.name
@@ -211,6 +213,7 @@ class Functionary(SuperClass):
 
 class FunctionaryType(SuperClass):
     name = models.CharField(max_length=64, blank=False, null=False, unique=True)
+    comment = models.TextField(blank=True, default='')
 
     def __str__(self):
         return self.name
