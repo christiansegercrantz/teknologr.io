@@ -4,7 +4,7 @@
 <div class="row">
   <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
     {% if group_types %}
-      <table class="table table-sm table-striped">
+      <table class="table table-sm table-striped text-center">
         <thead>
           <tr>
             <th></th>
@@ -12,19 +12,19 @@
             <th colspan="2">Gruppmedlemmar</th>
           </tr>
           <tr>
-            <th>Grupp</th>
-            <th class="text-center">Undergrupper</th>
-            <th class="text-center">Totalt</th>
-            <th class="text-center">Unika</th>
+            <th class="text-left">Grupp</th>
+            <th>Undergrupper</th>
+            <th>Totalt</th>
+            <th>Unika</th>
           </tr>
         </thead>
         <tbody>
           {% for gt in group_types %}
             <tr>
-              <td><a href="{% url 'katalogen:groups' gt.id %}">{{ gt.name }}</a></td>
-              <td class="text-center">{{ gt.num_groups }}</td>
-              <td class="text-center">{{ gt.num_members_total }}</td>
-              <td class="text-center">{{ gt.num_members_unique }}</td>
+              <td class="text-left"><a href="{% url 'katalogen:groups' gt.id %}">{{ gt.name }}</a></td>
+              <td>{{ gt.num_groups }}</td>
+              <td>{{ gt.num_members_total }}</td>
+              <td>{{ gt.num_members_unique }}</td>
             </tr>
           {% endfor %}
         </tbody>
