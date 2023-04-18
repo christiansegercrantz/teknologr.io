@@ -215,7 +215,7 @@
           <li class="list-inline-item"><h4>Betygelser</h4></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-do-modal">Lägg till ny</button>
-            {% include "modals/memberdecoration.html" with modalname="add-do-modal" title="Lägg till betygelseinnehav" form=add_do_form only %}
+            {% include "modals/decorationownership.html" with modalname="add-do-modal" title="Lägg till betygelseinnehav" form=add_do_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">
@@ -237,7 +237,7 @@
           <li class="list-inline-item"><h4>Poster</h4></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-f-modal">Lägg till ny</button>
-            {% include "modals/memberfunctionary.html" with modalname="add-f-modal" title="Lägg till postinnehav" form=add_f_form only %}
+            {% include "modals/functionary.html" with modalname="add-f-modal" title="Lägg till postinnehav" form=add_f_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">
@@ -261,7 +261,7 @@
           <li class="list-inline-item"><h4>Grupper</h4></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-gm-modal">Lägg till ny</button>
-            {% include "modals/membergroup.html" with modalname="add-gm-modal" title="Lägg till gruppmedlemskap" form=add_gm_form only %}
+            {% include "modals/groupmembership.html" with modalname="add-gm-modal" title="Lägg till gruppmedlemskap" form=add_gm_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">

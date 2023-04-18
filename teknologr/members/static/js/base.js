@@ -89,12 +89,15 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input, selec
 		create_member_button.prop("disabled", !value || !value.trim().includes(" "));
 	});
 
+	const handleDisablingSubmit = () => submit_button.prop("disabled", deck.children().length == 0);
+
 	// Listen for changes in the list of members to enable/disable submit button
 	const observer = new MutationObserver(() => {
 		input.trigger("input");
-		submit_button.prop("disabled", deck.children().length == 0);
+		handleDisablingSubmit();
 	});
 	observer.observe(deck.get(0), { childList: true });
+	handleDisablingSubmit();
 
 	// Handle creating new members
 	create_member_button.click(e => {
