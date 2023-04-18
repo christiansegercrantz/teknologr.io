@@ -1,21 +1,28 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <meta name="description" content="Medlemsregister">
+  <meta name="author" content="Teknologföreningen">
+  <title>TF Medlemsregister</title>
   <link rel="icon" href="{% static 'favicon.ico' %}">
 
-  <title>TF Medlemsregistrer</title>
   <!-- Bootstrap core CSS -->
-  <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+
   <!-- Icons -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-  <!-- Custom styles for this template -->
-  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+  <!-- Custom CSS for this template -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  <!-- Load jQuery and jQuery UI, which are needed for ajax_select. Would be nice to be able to load them in the end like the rest of the JS files but ajax_select is automatically loaded before that, and if these modules have not been loaded by then ajax_select tries to fetch them from external sources instead. -->
+  <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
+  <script src="{% static 'assets/js/jquery-ui-1.13.2.min.js' %}"></script>
 </head>
 
 <body>
@@ -85,17 +92,13 @@
   {% block scripts %}
     <!-- Always include block.super in this block in templates to avoid removing previous scripts-->
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <!-- JavaScript files, placed at the end of the document so the pages load faster -->
+    <!-- For modals and tooltips -->
+    <script src="{% static 'assets/js/popper-1.14.7.min.js' %}"></script>
     <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
 
     <script src="{% static 'js/ajax_api.js' %}"></script>
     <script src="{% static 'js/base.js' %}"></script>
-    <!-- For tooltips -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
   {% endblock %}
 </body>
 </html>
