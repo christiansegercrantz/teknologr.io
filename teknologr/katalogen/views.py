@@ -160,12 +160,14 @@ def years(request):
         years[y][key] = obj[count_key or key]
 
     # Get all functionaries and group them by their start year, and for each year return a count for the total amount of functionaries and the amount of unique members holding the posts
+    # XXX: This does not include all valid date intervals
     f_counts = Functionary.objects.annotate(year=TruncYear('begin_date')).values('year').annotate(functionaries_total=Count('id'), functionaries_unique=Count('member__id', distinct=True)).values('year', 'functionaries_total', 'functionaries_unique')
     for obj in f_counts:
         add(obj, 'functionaries_total')
         add(obj, 'functionaries_unique')
 
     # Get groups and group them by their start year, and for each year return a count for the total amount of groups, the total amount of members in the groups, and the amount of unique members holding in the groups
+    # XXX: This does not include all valid date intervals
     gm_counts = GroupMembership.objects.annotate(year=TruncYear('group__begin_date')).values('year').annotate(groups=Count('group', distinct=True), group_memberships_total=Count('member'), group_memberships_unique=Count('member', distinct=True)).values('year', 'groups', 'group_memberships_total', 'group_memberships_unique')
     for obj in gm_counts:
         add(obj, 'groups')
@@ -189,14 +191,17 @@ def years(request):
 
 @login_required
 def year(request, year):
+    first_day = datetime.date(int(year), 1, 1)
+    last_day = datetime.date(int(year), 12, 31)
+
     # Get all decoration ownerships for the year
-    decoration_ownerships = DecorationOwnership.objects.annotate(year=TruncYear('acquired')).filter(year=f'{year}-01-01').order_by('decoration__name', 'member__surname', 'member__given_names')
+    decoration_ownerships = DecorationOwnership.objects.filter(acquired__year=year).order_by('decoration__name', 'member__surname', 'member__given_names')
 
     # Get all functionaries for the year
-    functionaries = Functionary.objects.annotate(year=TruncYear('begin_date')).filter(year=f'{year}-01-01').order_by('functionarytype__name', 'member__surname', 'member__given_names')
+    functionaries = Functionary.objects.filter(begin_date__lte=last_day, end_date__gte=first_day).order_by('functionarytype__name', 'member__surname', 'member__given_names')
 
     # Get all groups for the year
-    groups = Group.objects.annotate(year=TruncYear('begin_date')).filter(year=f'{year}-01-01').annotate(num_members=Count('memberships', distinct=True)).filter(num_members__gt=0).order_by('grouptype__name')
+    groups = Group.objects.filter(begin_date__lte=last_day, end_date__gte=first_day).annotate(num_members=Count('memberships', distinct=True)).filter(num_members__gt=0).order_by('grouptype__name')
     for g in groups:
         # XXX: Is there a better way of sorting the memberships?
         g.memberships_ordered = g.memberships.order_by('member__surname', 'member__given_names')
@@ -205,7 +210,7 @@ def year(request, year):
     gm_counts = groups.aggregate(total=Count('memberships__member__id'), unique=Count('memberships__member__id', distinct=True))
 
     # Get all new members for the year
-    member_types = MemberType.objects.annotate(year=TruncYear('begin_date')).filter(year=f'{year}-01-01').order_by('member__surname', 'member__given_names')
+    member_types = MemberType.objects.filter(begin_date__year=year).order_by('member__surname', 'member__given_names')
 
     return render(request, 'year.html', {
         **_get_base_context(request),
