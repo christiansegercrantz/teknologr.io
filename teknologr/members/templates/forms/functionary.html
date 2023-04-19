@@ -1,13 +1,10 @@
-{% extends "modals/modal.html" %}
-
-{% block modalcontent %}
-<form id="add-f-form" autocomplete="off">
+<form id="{{ form_id }}" autocomplete="off">
   {% csrf_token %}
-  {{ form.media }}
 
   {% if form.member.initial %}
   {{ form.member.as_hidden }}
   {% else %}
+  {{ form.media }}
   <div class="row form-group">
     <div class="col-3">
       <label for="{{ form.member.id_for_label }}">Medlem</label>
@@ -52,10 +49,9 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-12">
+  <div class="row form-group">
+    <div class="col">
       <button id="fform-submit-functionaries" type="submit" class="btn btn-success float-right">Spara</button>
     </div>
   </div>
 </form>
-{% endblock %}

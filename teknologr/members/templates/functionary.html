@@ -19,7 +19,7 @@
 
   <h4 class="list-inline-item">Innehavare av posten</h4>
   <i class="list-inline-item fas fa-plus text-success icon-20" role="button" title="Lägg till postinnehav" data-toggle="modal" data-target="#add-f-modal"></i>
-  {% include "modals/functionary.html" with modalname="add-f-modal" title="Lägg till postinnehav ("|add:functionaryType.name|add:")" form=add_f_form only %}
+  {% include "modals/functionary_add.html" with modalname="add-f-modal" title="Lägg till postinnehav ("|add:functionaryType.name|add:")" form=add_f_form only %}
 
   <table class="table table-sm table-striped table-borderless">
     <thead class="no-border">
