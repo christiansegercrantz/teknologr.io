@@ -11,6 +11,8 @@ urlpatterns = [
     url(r'^grouptypes/(\d+)/$', views.group_type, name='group_type'),
     url(r'^grouptypes/(\d+)/(\d+)/$', views.group_type, name='group'),
     url(r'^functionarytypes/(\d+)/$', views.functionary_type, name='functionary_type'),
+    url(r'^functionaries/(\d+)/form/$', views.functionary_form),
     url(r'^decorations/(\d+)/$', views.decoration, name='decoration'),
+    url(r'^decorationownerships/(\d+)/form/$', views.decoration_ownership_form),
     url(r'^applicants/(\d+)/$', views.applicant, name='applicant'),
 ]

@@ -33,11 +33,16 @@
     <tbody>
       {% for ownership in decorations %}
         <tr>
-          <td><i class="fas fa-times delete-do-button text-danger" role="button" title="Radera betygelseinnehav" data-id="{{ ownership.id }}" data-decoration_id="{{ decoration.id }}"></i></td>
+          <td>
+            <i class="far fa-edit edit-do-button text-info" role="button" title="Editera betygelseinnehav" data-id="{{ ownership.id }}"></i>
+            <i class="fas fa-times delete-do-button text-danger" role="button" title="Radera betygelseinnehav" data-id="{{ ownership.id }}"></i>
+          </td>
           <td><a href="{% url 'admin:member' ownership.member.id %}">{{ ownership.member.full_name }}</a></td>
           <td>{{ ownership.acquired }}</td>
         </tr>
       {% endfor %}
+      <!-- This modal is populated by base.js when an edit-do-button is clicked -->
+      {% include "modals/modal.html" with modalname="edit-do-modal" title="Editera betygelseinnehav" only %}
     </tbody>
   </table>
 </div>

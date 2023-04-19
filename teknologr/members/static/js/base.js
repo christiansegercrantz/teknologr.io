@@ -204,4 +204,38 @@ $(document).ready(function () {
 	$('[data-toggle="tooltip"]').tooltip({
 		placement : 'top'
 	});
+
+	/**
+	 * Populate modal for editing a decoration ownership.
+	 * Can not be placed in functionary.js because it is needed on the member page too.
+	 */
+	$(".edit-do-button").click(function() {
+		const id = $(this).data("id");
+		$("#edit-do-modal .modal-body").load(`/admin/decorationownerships/${id}/form/`, () => {
+			add_request_listener({
+				selector: "#edit-do-form",
+				method: "PUT",
+				url: `/api/decorationownerships/${id}/`,
+			});
+
+			$("#edit-do-modal").modal();
+		});
+	});
+
+	/**
+	 * Populate modal for editing a functionary.
+	 * Can not be placed in decoration.js because it is needed on the member page too.
+	 */
+	$(".edit-f-button").click(function() {
+		const id = $(this).data("id");
+		$("#edit-f-modal .modal-body").load(`/admin/functionaries/${id}/form/`, () => {
+			add_request_listener({
+				selector: "#edit-f-form",
+				method: "PUT",
+				url: `/api/functionaries/${id}/`,
+			});
+
+			$("#edit-f-modal").modal();
+		});
+	});
 });

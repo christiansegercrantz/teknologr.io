@@ -226,11 +226,16 @@
             </tr></thead>
             {% for do in decoration_ownerships %}
             <tr>
-              <td><i class="fas fa-times delete-do-button text-danger" role="button" title="Radera betygelseinnehav" data-id="{{ do.id }}"></i></td>
+              <td>
+                <i class="far fa-edit edit-do-button text-info" role="button" title="Editera betygelseinnehav" data-id="{{ do.id }}"></i>
+                <i class="fas fa-times delete-do-button text-danger" role="button" title="Radera betygelseinnehav" data-id="{{ do.id }}"></i>
+              </td>
               <td><a href="{% url 'admin:decoration' do.decoration.id %}">{{ do.decoration.name }}</a></td>
               <td>{{ do.acquired }}</td>
             </tr>
             {% endfor %}
+            <!-- This modal is populated by base.js when an edit-f-button is clicked -->
+            {% include "modals/modal.html" with modalname="edit-do-modal" title="Editera betygelseinnehav" only %}
         </table>
 
         <ul class="list-inline mt-4 mb-0">
@@ -249,12 +254,17 @@
             </tr></thead>
             {% for f in functionaries %}
               <tr>
-                <td><i class="fas fa-times delete-f-button text-danger" role="button" title="Radera postinnehav" data-id="{{ f.id }}"></i></td>
+                <td>
+                  <i class="far fa-edit edit-f-button text-info" role="button" title="Editera postinnehav" data-id="{{ f.id }}"></i>
+                  <i class="fas fa-times delete-f-button text-danger" role="button" title="Radera postinnehav" data-id="{{ f.id }}"></i>
+                </td>
                 <td><a href="{% url 'admin:functionary_type' f.functionary_type_id %}">{{ f.functionarytype.name }}</a></td>
                 <td>{{ f.begin_date }}</td>
                 <td>{{ f.end_date }}</td>
               </tr>
             {% endfor %}
+            <!-- This modal is populated by base.js when an edit-f-button is clicked -->
+            {% include "modals/modal.html" with modalname="edit-f-modal" title="Editera postinnehav" only %}
         </table>
 
         <ul class="list-inline mt-4 mb-0">
@@ -312,6 +322,7 @@
               </td></tr>
               {% endfor %}
         </table>
+        <!-- This modal is populated by member.js when an edit-mt-button is clicked -->
         {% include "modals/modal.html" with modalname="edit-mt-modal" title="Editera medlemstyp" only %}
       </div>
     </div>

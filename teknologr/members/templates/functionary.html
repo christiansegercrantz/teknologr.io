@@ -33,12 +33,17 @@
     <tbody>
     {% for functionary in functionaries %}
       <tr>
-        <td><i class="fas fa-times delete-f-button text-danger" role="button" title="Radera postinnehav" data-id="{{ functionary.id }}" data-functionarytype_id="{{ functionaryType.id }}"></i></td>
+        <td>
+          <i class="far fa-edit edit-f-button text-info" role="button" title="Editera postinnehav" data-id="{{ functionary.id }}"></i>
+          <i class="fas fa-times delete-f-button text-danger" role="button" title="Radera postinnehav" data-id="{{ functionary.id }}"></i>
+        </td>
         <td><a href="{% url 'admin:member' functionary.member.id %}">{{ functionary.member.full_name }}</a></td>
         <td>{{ functionary.begin_date }}</td>
         <td>{{ functionary.end_date }}</td>
       </tr>
     {% endfor %}
+    <!-- This modal is populated by base.js when an edit-f-button is clicked -->
+    {% include "modals/modal.html" with modalname="edit-f-modal" title="Editera postinnehav" only %}
     </tbody>
   </table>
 </div>

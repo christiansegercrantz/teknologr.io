@@ -182,6 +182,15 @@ def functionary_type(request, functionarytype_id):
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
+def functionary_form(request, functionary_id):
+    functionary = get_object_or_404(Functionary, id=functionary_id)
+    return render(request, 'forms/functionary.html', {
+        'form': FunctionaryForm(instance=functionary),
+        'form_id': 'edit-f-form',
+    })
+
+
+@user_passes_test(lambda u: u.is_staff, login_url='/login/')
 def decoration(request, decoration_id):
     context = {}
 
@@ -195,6 +204,15 @@ def decoration(request, decoration_id):
 
     set_side_context(context, 'decorations', decoration.id)
     return render(request, 'decoration.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff, login_url='/login/')
+def decoration_ownership_form(request, decration_ownership_id):
+    decoration_ownership = get_object_or_404(DecorationOwnership, id=decration_ownership_id)
+    return render(request, 'forms/decorationownership.html', {
+        'form': DecorationOwnershipForm(instance=decoration_ownership),
+        'form_id': 'edit-do-form',
+    })
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login')
