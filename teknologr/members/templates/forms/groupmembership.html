@@ -1,13 +1,10 @@
-{% extends "modals/modal.html" %}
-
-{% block modalcontent %}
-<form id="add-gm-form" action="" method="post">
+<form id="{{ form_id }}" autocomplete="off">
   {% csrf_token %}
-  {{ form.media }}
 
   {% if form.member.initial %}
   {{ form.member.as_hidden }}
   {% else %}
+  {{ form.media }}
   <div class="row form-group">
     <div class="col-3">
       <label for="{{ form.member.id_for_label }}">Namn</label>
@@ -40,4 +37,3 @@
     </div>
   </div>
 </form>
-{% endblock %}

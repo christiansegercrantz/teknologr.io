@@ -79,7 +79,7 @@
         </table>
         <textarea id="members_email_list" style="opacity: 0;width: 0; height:0;">{{ emails }}</textarea>
         {% include "modals/group.html" with modalname="edit-g-modal" title="Editera undergrupp" form=edit_g_form groupid=group.id only %}
-        {% include "modals/groupmembership.html" with modalname="add-gm-modal" title="Lägg till gruppmedlemskap" form=add_gm_form only %}
+        {% include "modals/groupmembership_add.html" with modalname="add-gm-modal" title="Lägg till gruppmedlemskap" form=add_gm_form only %}
       {% endif %}
     </div>
   </div>
