@@ -179,12 +179,12 @@
             </ul>
             <br/>
             <button class="btn btn-primary" data-toggle="modal" data-target="#changepw_modal">Ändra lösenord</button>
-            {% include "modals/changeldappw.html" with modalname="changepw_modal" title="Ändra LDAP lösenord" member_id=member.id only %}
+            {% include "modals/ldap_changepw.html" with modalname="changepw_modal" title="Ändra LDAP lösenord" member_id=member.id only %}
             <button id="delete-ldap-button" class="btn btn-danger" data-id="{{ member.id }}">Ta bort LDAP konto</button>
             {% endif %}
             {% else %}
             <button class="btn btn-primary" data-toggle="modal" data-target="#addldap_modal">Skapa LDAP konto</button>
-            {% include "modals/addldap.html" with modalname="addldap_modal" title="Skapa LDAP konto" member_id=member.id only %}
+            {% include "modals/ldap_add.html" with modalname="addldap_modal" title="Skapa LDAP konto" member_id=member.id only %}
             {% endif %}
           </div>
           <div class="col-sm-6">
@@ -215,7 +215,7 @@
           <li class="list-inline-item"><h4>Betygelser</h4></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-do-modal">Lägg till ny</button>
-            {% include "modals/decorationownership.html" with modalname="add-do-modal" title="Lägg till betygelseinnehav" form=add_do_form only %}
+            {% include "modals/decorationownership_add.html" with modalname="add-do-modal" title="Lägg till betygelseinnehav" form=add_do_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">
@@ -261,7 +261,7 @@
           <li class="list-inline-item"><h4>Grupper</h4></li>
           <li class="list-inline-item float-right">
             <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add-gm-modal">Lägg till ny</button>
-            {% include "modals/groupmembership.html" with modalname="add-gm-modal" title="Lägg till gruppmedlemskap" form=add_gm_form only %}
+            {% include "modals/groupmembership_add.html" with modalname="add-gm-modal" title="Lägg till gruppmedlemskap" form=add_gm_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">
@@ -284,8 +284,8 @@
         <ul class="list-inline mt-4 mb-0">
           <li class="list-inline-item"><h4>Medlemstyper</h4></li>
           <li class="list-inline-item float-right">
-            <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addMemberType">Lägg till ny</button>
-            {% include "modals/membertype.html" with modalname="addMemberType" title="Lägg till medlemstyp" form=add_mt_form only %}
+            <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#add-mt-modal">Lägg till ny</button>
+            {% include "modals/membertype_add.html" with modalname="add-mt-modal" title="Lägg till medlemstyp" form=add_mt_form only %}
           </li>
         </ul>
         <table class="table table-sm table-striped table-borderless">

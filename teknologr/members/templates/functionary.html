@@ -6,7 +6,7 @@
   <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:functionaries' functionaryType.id %}">{{ functionaryType.name }}</a></h1>
   <i class="list-inline-item far fa-edit text-info align-self-center icon-20" role="button" title="Editera post" data-toggle="modal" data-target="#edit-ft-modal"></i>
   <i id="delete-ft-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" title="Radera post" data-id="{{ functionaryType.id }}"></i>
-  {% include "modals/functionarytype.html" with modalname="edit-ft-modal" title="Editera post" form=edit_ft_form functionaryType=functionaryType only %}
+  {% include "modals/functionarytype_edit.html" with modalname="edit-ft-modal" title="Editera post" form=edit_ft_form functionaryType=functionaryType only %}
 </div>
 
 <div class="container-fluid">

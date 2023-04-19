@@ -131,7 +131,7 @@ def membertype_form(request, membertype_id):
     membertype = get_object_or_404(MemberType, id=membertype_id)
     form = MemberTypeForm(instance=membertype)
     context = {'form': form, 'formid': 'edit-mt-form'}
-    return render(request, 'membertypeform.html', context)
+    return render(request, 'forms/membertype.html', context)
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')

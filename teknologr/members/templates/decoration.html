@@ -6,7 +6,7 @@
   <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:decoration_ownerships' decoration.id %}">{{ decoration.name }}</a></h1>
   <i class="list-inline-item far fa-edit text-info align-self-center icon-20" role="button" title="Editera betygelse" data-toggle="modal" data-target="#edit-d-modal"></i>
   <i id="delete-d-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" title="Radera betygelse" data-id="{{ decoration.id }}"></i>
-  {% include "modals/decoration.html" with modalname="edit-d-modal" title="Editera betygelse" form=edit_d_form decoration=decoration only %}
+  {% include "modals/decoration_edit.html" with modalname="edit-d-modal" title="Editera betygelse" form=edit_d_form decoration=decoration only %}
 </div>
 
 
