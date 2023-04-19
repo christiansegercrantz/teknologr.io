@@ -52,14 +52,14 @@ $(document).ready(function() {
     add_request_listener({
         selector: "#make-member-form",
         method: "POST",
-        url: element => `/api/applicants/makeMember/${element.data("id")}/`,
+        url: element => `/api/applicants/make-member/${element.data("id")}/`,
         newLocation: "/admin/applicants/",
     });
 
     add_request_listener({
         selector: "#choose-multiple-applicants-form",
         method: "POST",
-        url: "/api/multiApplicantSubmission/",
+        url: "/api/multi-applicantsubmissions/",
         newLocation: "/admin/applicants/",
     });
 

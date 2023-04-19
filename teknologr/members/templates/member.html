@@ -6,7 +6,7 @@
     <h2 class="page-header">
       <a class="katalogen-link" href="{% url 'katalogen:profile' member.id %}">{{ member.full_name }}</a>
       <a href="{% url 'api:member-detail' member.id %}" class="btn btn-outline-dark float-right">API länk</a>
-      <a href="{% url 'api:htkDump' member.id %}" class="btn btn-outline-dark float-right">HTK dump</a>
+      <a href="{% url 'api:dump_htk' member.id %}" class="btn btn-outline-dark float-right">HTK dump</a>
     </h2>
 
     {% if result %}

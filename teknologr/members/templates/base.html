@@ -47,13 +47,13 @@
             Dumpar<span class="caret"></span>
           </a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="{% url 'api:fullDump' %}">Full dump</a>
-            <a class="dropdown-item" href="{% url 'api:modulenDump' %}">Modulen dump</a>
-            <a class="dropdown-item" href="{% url 'api:studentbladetDump' %}" data-toggle="tooltip" title="Lista av alla medlemmar som prenumererar på Studentbladet">Studentbladet dump</a>
-            <a class="dropdown-item" href="{% url 'api:activeDump' %}" data-toggle="tooltip" title="Lista av medlemmar som är funkkisar eller i kommittéer med aktiva mandat">Aktiva dump</a>
-            <a class="dropdown-item" href="{% url 'api:htkDump' %}?format=json">Full HTK dump</a>
-            <a class="dropdown-item" href="{% url 'api:arskDump' %}" data-toggle="tooltip" title="Lista av hedersmedlemmar, alla råd, alla styrelsen 5 år tillbaka, och styrelsen 10 år, och även alla funktionärer. Används för Årsfestlistor.">Arsk dump</a>
-            <a class="dropdown-item" href="{% url 'api:regEmailDump' %}" data-toggle="tooltip" title="Lista av alla nuvarande ansökningars emails.">Ansökandes email dump</a>
+            <a class="dropdown-item" href="{% url 'api:dump_full' %}">Full dump</a>
+            <a class="dropdown-item" href="{% url 'api:dump_modulen' %}">Modulen dump</a>
+            <a class="dropdown-item" href="{% url 'api:dump_studentbladet' %}" data-toggle="tooltip" title="Lista av alla medlemmar som prenumererar på Studentbladet">Studentbladet dump</a>
+            <a class="dropdown-item" href="{% url 'api:dump_active' %}" data-toggle="tooltip" title="Lista av medlemmar som är funkkisar eller i kommittéer med aktiva mandat">Aktiva dump</a>
+            <a class="dropdown-item" href="{% url 'api:dump_htk' %}?format=json">Full HTK dump</a>
+            <a class="dropdown-item" href="{% url 'api:dump_arsk' %}" data-toggle="tooltip" title="Lista av hedersmedlemmar, alla råd, alla styrelsen 5 år tillbaka, och styrelsen 10 år, och även alla funktionärer. Används för Årsfestlistor.">Arsk dump</a>
+            <a class="dropdown-item" href="{% url 'api:dump_reg_emails' %}" data-toggle="tooltip" title="Lista av alla nuvarande ansökningars emails.">Ansökandes email dump</a>
           </div>
         </li>
         {% if info_url %}

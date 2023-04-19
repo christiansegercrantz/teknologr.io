@@ -25,11 +25,11 @@ def set_side_context(context, category, active_obj=None):
                 from itertools import chain
                 objects = list(chain([active], objects))
         side['objects'] = objects
-    elif category == 'groups':
+    elif category == 'grouptypes':
         side['sname'] = 'grupp'
         side['form'] = GroupTypeForm(auto_id="gtmodal_%s")
         side['objects'] = GroupType.objects.annotate(count=Count('groups', distinct=True))
-    elif category == 'functionaries':
+    elif category == 'functionarytypes':
         side['sname'] = 'post'
         side['form'] = FunctionaryTypeForm(auto_id="ftmodal_%s")
         side['objects'] = FunctionaryType.objects.annotate(count=Count('functionaries', distinct=True))
@@ -135,7 +135,7 @@ def membertype_form(request, membertype_id):
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
-def group(request, grouptype_id, group_id=None):
+def group_type(request, grouptype_id, group_id=None):
     context = {}
 
     grouptype = get_object_or_404(GroupType, id=grouptype_id)
@@ -159,7 +159,7 @@ def group(request, grouptype_id, group_id=None):
             [membership.member.email for membership in context['groupmembers']]
         )
 
-    set_side_context(context, 'groups', grouptype.id)
+    set_side_context(context, 'grouptypes', grouptype.id)
     return render(request, 'group.html', context)
 
 
@@ -168,7 +168,7 @@ def functionary_type(request, functionarytype_id):
     context = {}
 
     functionarytype = get_object_or_404(FunctionaryType, id=functionarytype_id)
-    context['functionaryType'] = functionarytype
+    context['functionary_type'] = functionarytype
     form = FunctionaryTypeForm(instance=functionarytype)
 
     # Get functionaries of functionary type
@@ -177,7 +177,7 @@ def functionary_type(request, functionarytype_id):
     context['edit_ft_form'] = form
     context['add_f_form'] = FunctionaryForm(initial={"functionarytype": functionarytype_id})
 
-    set_side_context(context, 'functionaries', functionarytype.id)
+    set_side_context(context, 'functionarytypes', functionarytype.id)
     return render(request, 'functionary.html', context)
 
 

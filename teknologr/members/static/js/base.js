@@ -141,19 +141,10 @@ const confirmMessageCreateMembers = e => {
 }
 
 $(document).ready(function () {
-	const element_to_api_path = element => {
-		switch(element.data("active")) {
-			case "members": return "members";
-			case "groups": return "groupTypes";
-			case "functionaries": return "functionaryTypes";
-			case "decorations": return "decorations";
-		}
-	}
-
 	add_request_listener({
 		selector: "#new-mgtftd-form",
 		method: "POST",
-		url: element => `/api/${element_to_api_path(element)}/`,
+		url: element => `/api/${element.data("active")}/`,
 		newLocation: (element, msg) => `/admin/${element.data("active")}/${msg.id}/`,
 	});
 

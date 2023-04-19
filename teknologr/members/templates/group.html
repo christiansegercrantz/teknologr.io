@@ -3,7 +3,7 @@
 
 {% block main %}
 <div class="container-fluid page-header">
-  <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:groups' grouptype.id %}">{{ grouptype.name }}</a></h1>
+  <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:group_type' grouptype.id %}">{{ grouptype.name }}</a></h1>
   <i class="list-inline-item far fa-edit text-info align-self-center icon-20" role="button" title="Editera grupp" data-toggle="modal" data-target="#edit-gt-modal"></i>
   <i id="delete-gt-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" title="Radera grupp" data-id="{{ grouptype.id }}"></i>
   {% include "modals/grouptype_edit.html" with modalname="edit-gt-modal" title="Editera undergrupp" form=edit_gt_form grouptype=grouptype only %}

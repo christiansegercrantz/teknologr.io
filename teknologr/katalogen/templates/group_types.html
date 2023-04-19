@@ -21,7 +21,7 @@
         <tbody>
           {% for gt in group_types %}
             <tr>
-              <td class="text-left"><a href="{% url 'katalogen:groups' gt.id %}">{{ gt.name }}</a></td>
+              <td class="text-left"><a href="{% url 'katalogen:group_type' gt.id %}">{{ gt.name }}</a></td>
               <td>{{ gt.num_groups }}</td>
               <td>{{ gt.num_members_total }}</td>
               <td>{{ gt.num_members_unique }}</td>

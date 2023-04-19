@@ -7,7 +7,7 @@ $(document).ready(function() {
 	add_request_listener({
 		selector: "#add-do-form",
 		method: "POST",
-		url: "/api/decorationOwnership/",
+		url: "/api/decorationownerships/",
 	});
 	add_request_listener({
 		selector: "#add-f-form",
@@ -17,12 +17,12 @@ $(document).ready(function() {
 	add_request_listener({
 		selector: "#add-gm-form",
 		method: "POST",
-		url: "/api/groupMembership/",
+		url: "/api/groupmemberships/",
 	});
 	add_request_listener({
 		selector: "#add-mt-form",
 		method: "POST",
-		url: "/api/memberTypes/",
+		url: "/api/membertypes/",
 	});
 
 	// Buttons for deleting individual items from the selected member
@@ -30,7 +30,7 @@ $(document).ready(function() {
 	add_request_listener({
 		selector: ".delete-do-button",
 		method: "DELETE",
-		url: element => `/api/decorationOwnership/${element.data("id")}/`,
+		url: element => `/api/decorationownerships/${element.data("id")}/`,
 		confirmMessage: "Vill du radera detta betygelseinnehav?",
 	});
 	add_request_listener({
@@ -42,13 +42,13 @@ $(document).ready(function() {
 	add_request_listener({
 		selector: ".delete-gm-button",
 		method: "DELETE",
-		url: element => `/api/groupMembership/${element.data("id")}/`,
+		url: element => `/api/groupmemberships/${element.data("id")}/`,
 		confirmMessage: "Vill du radera detta gruppmedlemskap?",
 	});
 	add_request_listener({
 		selector: ".delete-mt-button",
 		method: "DELETE",
-		url: element => `/api/memberTypes/${element.data("id")}/`,
+		url: element => `/api/membertypes/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna medlemstyp?",
 	});
 
@@ -63,11 +63,11 @@ $(document).ready(function() {
 
 	$('.edit-mt-button').click(function(){
 		const id = $(this).data("id");
-		$("#edit-mt-modal .modal-body").load("/admin/membertype/" + id + "/form/", function () {
+		$("#edit-mt-modal .modal-body").load(`/admin/membertypes/${id}/form/`, () => {
 			add_request_listener({
 				selector: "#edit-mt-form",
 				method: "PUT",
-				url: `/api/memberTypes/${id}/`,
+				url: `/api/membertypes/${id}/`,
 			});
 
 			$('#edit-mt-modal').modal();

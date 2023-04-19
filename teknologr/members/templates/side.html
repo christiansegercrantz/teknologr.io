@@ -1,7 +1,7 @@
 <ul class="nav nav-pills nav-fill side-item">
   <li class="nav-item"><a class="nav-link {% if side.active == 'members' %}active{% endif %}" href="{% url 'admin:empty' 'members' %}">Medlemmar</a></li>
-  <li class="nav-item"><a class="nav-link {% if side.active == 'groups' %}active{% endif %}" href="{% url 'admin:empty' 'groups' %}">Grupper</a></li>
-  <li class="nav-item"><a class="nav-link {% if side.active == 'functionaries' %}active{% endif %}" href="{% url 'admin:empty' 'functionaries' %}">Poster</a></li>
+  <li class="nav-item"><a class="nav-link {% if side.active == 'grouptypes' %}active{% endif %}" href="{% url 'admin:empty' 'grouptypes' %}">Grupper</a></li>
+  <li class="nav-item"><a class="nav-link {% if side.active == 'functionarytypes' %}active{% endif %}" href="{% url 'admin:empty' 'functionarytypes' %}">Poster</a></li>
   <li class="nav-item"><a class="nav-link {% if side.active == 'decorations' %}active{% endif %}" href="{% url 'admin:empty' 'decorations' %}">Betygelser</a></li>
   <li class="nav-item"><a class="nav-link {% if side.active == 'applicants' %}active{% endif %}" href="{% url 'admin:empty' 'applicants' %}">Ansökande</a></li>
 </ul>
@@ -21,7 +21,7 @@
     </li>
     <li class="list-inline-item">
       <button class="btn" data-toggle="tooltip" title="Ladda ner modersmålet för alla nuvarande ansökningar.">
-        <a href="{% url 'api:applicantLanguages' %}">
+        <a href="{% url 'api:dump_applicant_languages' %}">
           <i class="fas fa-download text-info icon-20"></i>
         </a>
       </button>

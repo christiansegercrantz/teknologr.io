@@ -83,7 +83,7 @@ def decorations(request):
 
 
 @login_required
-def decoration_ownerships(request, decoration_id):
+def decoration(request, decoration_id):
     decoration = get_object_or_404(Decoration,  id=decoration_id)
 
     return render(request, 'decoration_ownerships.html', {
@@ -104,7 +104,7 @@ def functionary_types(request):
 
 
 @login_required
-def functionaries(request, functionary_type_id):
+def functionary_type(request, functionary_type_id):
     functionary_type = get_object_or_404(FunctionaryType, id=functionary_type_id)
 
     functionaries = functionary_type.functionaries.order_by('-end_date', 'member__surname', 'member__given_names')
@@ -129,7 +129,7 @@ def group_types(request):
 
 
 @login_required
-def groups(request, group_type_id):
+def group_type(request, group_type_id):
     group_type = get_object_or_404(GroupType, id=group_type_id)
 
     groups = group_type.groups.annotate(num_members=Count('memberships', distinct=True)).filter(num_members__gt=0).order_by('-end_date')

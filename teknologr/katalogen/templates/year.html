@@ -50,7 +50,7 @@
       <tbody>
         {% for do in decoration_ownerships %}
           <tr>
-            <td><a href="{% url 'katalogen:decoration_ownerships' do.decoration.id %}">{{ do.decoration.name }}</a></td>
+            <td><a href="{% url 'katalogen:decoration' do.decoration.id %}">{{ do.decoration.name }}</a></td>
             <td><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.full_preferred_name }}</a></td>
           </tr>
         {% endfor %}
@@ -67,7 +67,7 @@
       <tbody>
         {% for f in functionaries %}
           <tr>
-            <td><a href="{% url 'katalogen:functionaries' f.functionarytype.id %}">{{ f.functionarytype.name }}</a></td>
+            <td><a href="{% url 'katalogen:functionary_type' f.functionarytype.id %}">{{ f.functionarytype.name }}</a></td>
             <td><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.full_preferred_name }}</a></td>
           </tr>
         {% endfor %}
@@ -84,7 +84,7 @@
       <tbody>
         {% for g in groups %}
           <tr>
-            <td><a href="{% url 'katalogen:groups' g.grouptype.id %}">{{ g.grouptype.name }}</a></td>
+            <td><a href="{% url 'katalogen:group_type' g.grouptype.id %}">{{ g.grouptype.name }}</a></td>
             <td><i>{{ g.num_members }} {% if g.num_members == 1 %}medlem{% else %}medlemmar{% endif %}</i></td>
           </tr>
           {% for gm in g.memberships_ordered %}

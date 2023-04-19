@@ -70,7 +70,7 @@ def getOrCreateMemberIdFromMultiSelectValue(id_or_names):
 
 
 @api_view(['POST'])
-def multiGroupMembershipSave(request):
+def multi_group_memberships_save(request):
     gid = request.data.get('group')
     members = getMultiSelectValues(request, 'member')
 
@@ -83,7 +83,7 @@ def multiGroupMembershipSave(request):
 
 
 @api_view(['POST'])
-def multiFunctionarySave(request):
+def multi_functionaries_save(request):
     fid = request.data.get('functionarytype')
     members = getMultiSelectValues(request, 'member')
     begin_date = request.data.get('begin_date')
@@ -103,7 +103,7 @@ def multiFunctionarySave(request):
 
 
 @api_view(['POST'])
-def multiDecorationOwnershipSave(request):
+def multi_decoration_ownerships_save(request):
     did = request.data.get('decoration')
     members = getMultiSelectValues(request, 'member')
     acquired = request.data.get('acquired')
@@ -337,7 +337,7 @@ class ApplicantMembershipView(APIView):
 
 
 @api_view(['POST'])
-def multiApplicantSubmission(request):
+def multi_applicant_submissions(request):
     applicants = getMultiSelectValues(request, 'applicant')
 
     # Simulate a POST request to ApplicantMembershipView
@@ -353,8 +353,7 @@ def multiApplicantSubmission(request):
 
 # Used by BILL
 @api_view(['GET'])
-def memberTypesForMember(request, mode, query):
-
+def member_types_for_member(request, mode, query):
     try:
         if mode == 'username':
             member = Member.objects.get(username=query)
@@ -383,7 +382,7 @@ def memberTypesForMember(request, mode, query):
 
 # Used by GeneriKey
 @api_view(['GET'])
-def membersByMemberType(request, membertype, field=None):
+def members_by_member_type(request, membertype, field=None):
     member_pks = MemberType.objects.filter(type=membertype, end_date=None).values_list("member", flat=True)
     fld = "username" if field == "usernames" else "student_id"
     members = Member.objects.filter(pk__in=member_pks).values_list(fld, flat=True)
@@ -393,7 +392,7 @@ def membersByMemberType(request, membertype, field=None):
 # Data for HTK
 # JSON file including all necessary information for HTK, i.e. member's activity at TF
 @api_view(['GET'])
-def htkDump(request, member_id=None):
+def dump_htk(request, member_id=None):
     def dumpMember(member):
         # Functionaries
         funcs = Functionary.objects.filter(member=member)
@@ -466,8 +465,7 @@ class ModulenRenderer(csv_renderer.CSVRenderer):
 # List of addresses whom to post modulen to
 @api_view(['GET'])
 @renderer_classes((ModulenRenderer,))
-def modulenDump(request):
-
+def dump_modulen(request):
     recipients = Member.objects.exclude(
             postal_code='02150'
         ).exclude(
@@ -510,7 +508,7 @@ class ActiveRenderer(csv_renderer.CSVRenderer):
 # active mandate
 @api_view(['GET'])
 @renderer_classes((ActiveRenderer,))
-def activeDump(request):
+def dump_active(request):
     now = datetime.now().date()
     content = []
 
@@ -568,8 +566,7 @@ class FullRenderer(csv_renderer.CSVRenderer):
 # to save time in the long run.
 @api_view(['GET'])
 @renderer_classes((FullRenderer,))
-def fullDump(request):
-
+def dump_full(request):
     members = Member.objects.exclude(dead=True)
 
     content = [{
@@ -615,7 +612,7 @@ class ArskRenderer(csv_renderer.CSVRenderer):
 # These include: honor-members, all TFS 5 years back + exactly 10 years back, all counsels, all current functionaries
 @api_view(['GET'])
 @renderer_classes((ArskRenderer,))
-def arskDump(request):
+def dump_arsk(request):
     tfs_low_range = 5
     current_year = datetime.now().year
 
@@ -686,7 +683,7 @@ class RegEmailRenderer(csv_renderer.CSVRenderer):
 # Used by e.g. the PhuxMästare to send out information
 @api_view(['GET'])
 @renderer_classes((RegEmailRenderer,))
-def regEmailDump(request):
+def dump_reg_emails(request):
     applicants = Applicant.objects.all()
     content = [{
         'name': applicant.given_names,
@@ -709,7 +706,7 @@ class ApplicantLanguagesRenderer(csv_renderer.CSVRenderer):
 
 @api_view(['GET'])
 @renderer_classes((ApplicantLanguagesRenderer,))
-def applicantLanguages(request):
+def dump_applicant_languages(request):
     applicants = Applicant.objects.exclude(Q(mother_tongue__isnull=True) | Q(mother_tongue__exact=''))
     content = [{
         'language': applicant.mother_tongue}
@@ -731,7 +728,7 @@ class StudentbladetRenderer(csv_renderer.CSVRenderer):
 # List of addresses whom to post Studentbladet to
 @api_view(['GET'])
 @renderer_classes((StudentbladetRenderer,))
-def studentbladetDump(request):
+def dump_studentbladet(request):
     recipients = Member.objects.exclude(dead=True).filter(allow_studentbladet=True)
     recipients = [m for m in recipients if m.isValidMember()]
 

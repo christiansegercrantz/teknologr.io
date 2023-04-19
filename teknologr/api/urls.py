@@ -5,14 +5,14 @@ from api.views import *
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'members', MemberViewSet)
+router.register(r'grouptypes', GroupTypeViewSet)
 router.register(r'groups', GroupViewSet)
-router.register(r'groupTypes', GroupTypeViewSet)
-router.register(r'groupMembership', GroupMembershipViewSet)
+router.register(r'groupmemberships', GroupMembershipViewSet)
+router.register(r'functionarytypes', FunctionaryTypeViewSet)
 router.register(r'functionaries', FunctionaryViewSet)
-router.register(r'functionaryTypes', FunctionaryTypeViewSet)
 router.register(r'decorations', DecorationViewSet)
-router.register(r'decorationOwnership', DecorationOwnershipViewSet)
-router.register(r'memberTypes', MemberTypeViewSet)
+router.register(r'decorationownerships', DecorationOwnershipViewSet)
+router.register(r'membertypes', MemberTypeViewSet)
 router.register(r'applicants', ApplicantViewSet)
 
 # Wire up our API using automatic URL routing.
@@ -20,22 +20,24 @@ router.register(r'applicants', ApplicantViewSet)
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^multiGroupMembership/$', multiGroupMembershipSave),
-    url(r'^multiFunctionary/$', multiFunctionarySave),
-    url(r'^multiDecorationOwnership/$', multiDecorationOwnershipSave),
-    url(r'^memberTypesForMember/(?P<mode>username|studynumber)/(?P<query>[A-Za-z0-9]+)/$', memberTypesForMember),
+    url(r'^multi-groupmemberships/$', multi_group_memberships_save),
+    url(r'^multi-functionaries/$', multi_functionaries_save),
+    url(r'^multi-decorationownerships/$', multi_decoration_ownerships_save),
+    url(r'^multi-applicantsubmissions/$', multi_applicant_submissions, name='multi_applicant_submissions'),
     url(r'^accounts/ldap/(\d+)/$', LDAPAccountView.as_view()),
     url(r'^accounts/ldap/change_pw/(\d+)/$', change_ldap_password),
     url(r'^accounts/bill/(\d+)/$', BILLAccountView.as_view()),
-    url(r'^htkdump/(\d+)?$', htkDump, name='htkDump'),
-    url(r'^modulendump/$', modulenDump, name='modulenDump'),
-    url(r'^fulldump/$', fullDump, name='fullDump'),
-    url(r'^activedump/$', activeDump, name='activeDump'),
-    url(r'^arskdump/$', arskDump, name='arskDump'),
-    url(r'^regemaildump/$', regEmailDump, name='regEmailDump'),
-    url(r'^applicantlanguagedump/$', applicantLanguages, name='applicantLanguages'),
-    url(r'^membersByMemberType/([A-Z]{2})/(\w+)?$', membersByMemberType),
-    url(r'^applicants/makeMember/(\d+)/$', ApplicantMembershipView.as_view()),
-    url(r'^multiApplicantSubmission/$', multiApplicantSubmission, name='multiApplicantSubmission'),
-    url(r'^studentbladetdump/$', studentbladetDump, name='studentbladetDump'),
+    url(r'^applicants/make-member/(\d+)/$', ApplicantMembershipView.as_view()),
+    url(r'^dump-htk/(\d+)?$', dump_htk, name='dump_htk'),
+    url(r'^dump-modulen/$', dump_modulen, name='dump_modulen'),
+    url(r'^dump-full/$', dump_full, name='dump_full'),
+    url(r'^dump-active/$', dump_active, name='dump_active'),
+    url(r'^dump-arsk/$', dump_arsk, name='dump_arsk'),
+    url(r'^dump-regemails/$', dump_reg_emails, name='dump_reg_emails'),
+    url(r'^dump-applicantlanguages/$', dump_applicant_languages, name='dump_applicant_languages'),
+    url(r'^dump-studentbladet/$', dump_studentbladet, name='dump_studentbladet'),
+    # Used by BILL
+    url(r'^memberTypesForMember/(?P<mode>username|studynumber)/(?P<query>[A-Za-z0-9]+)/$', member_types_for_member),
+    # Used by Generikey
+    url(r'^membersByMemberType/([A-Z]{2})/(\w+)?$', members_by_member_type),
 ]
