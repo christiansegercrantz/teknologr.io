@@ -220,6 +220,8 @@ def year(request, year):
 
     # Get all functionaries for the year
     functionaries = Functionary.objects.select_related('member', 'functionarytype').filter(begin_date__lte=last_day, end_date__gte=first_day).order_by('functionarytype__name', 'member__surname', 'member__given_names')
+    for f in functionaries:
+        f.duration_string = create_duration_string(f.begin_date, f.end_date)
 
     # Get all groups and group memberships for the year
     groups = Group.objects.prefetch_related(
@@ -229,6 +231,8 @@ def year(request, year):
         ),
         'grouptype'
     ).annotate(num_members=Count('memberships', distinct=True)).filter(begin_date__lte=last_day, end_date__gte=first_day, num_members__gt=0).order_by('grouptype__name')
+    for g in groups:
+        g.duration_string = create_duration_string(g.begin_date, g.end_date)
 
     # Count the number of total and unique group memebers
     gm_counts = groups.aggregate(total=Count('memberships__member__id'), unique=Count('memberships__member__id', distinct=True))
