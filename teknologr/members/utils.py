@@ -63,7 +63,7 @@ def get_functionary_type_prefetched_and_ordered(functionary_type_id):
       2. SELECT Functionary WHERE functionarytype__id=functionary_type_id
     '''
     queryset = FunctionaryType.objects.prefetch_related(
-        Prefetch('functionaries', queryset=Functionary.objects.select_related('member').order_by('-begin_date', 'member__surname', 'member__given_names')),
+        Prefetch('functionaries', queryset=Functionary.objects.select_related('member').order_by('-begin_date', '-end_date', 'member__surname', 'member__given_names')),
     )
     return get_object_or_404(queryset, id=functionary_type_id)
 
@@ -83,7 +83,7 @@ def get_group_type_prefetched_and_ordered(group_type_id):
       3. SELECT GroupMembership WHERE group__id IN ^
     '''
     queryset = GroupType.objects.prefetch_related(
-        Prefetch('groups', queryset=Group.objects.order_by('begin_date').annotate(num_members=Count('memberships', distinct=True))),
+        Prefetch('groups', queryset=Group.objects.annotate(num_members=Count('memberships', distinct=True)).order_by('-begin_date', '-end_date')),
         Prefetch('groups__memberships', queryset=GroupMembership.objects.select_related('member').order_by('member__surname', 'member__given_names')),
     )
     return get_object_or_404(queryset, id=group_type_id)
