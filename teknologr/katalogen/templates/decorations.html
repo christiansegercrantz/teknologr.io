@@ -15,7 +15,7 @@
           {% for d in decorations %}
             <tr>
               <td><a href="{% url 'katalogen:decoration' d.id %}">{{ d.name }}</a></td>
-              <td class="text-center">{{ d.num_owners }}</td>
+              <td class="text-center">{{ d.count }}</td>
             </tr>
           {% endfor %}
         </tbody>

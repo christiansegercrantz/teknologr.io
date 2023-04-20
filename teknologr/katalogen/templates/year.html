@@ -87,7 +87,7 @@
             <td><a href="{% url 'katalogen:group_type' g.grouptype.id %}">{{ g.grouptype.name }}</a></td>
             <td><i>{{ g.num_members }} {% if g.num_members == 1 %}medlem{% else %}medlemmar{% endif %}</i></td>
           </tr>
-          {% for gm in g.memberships_ordered %}
+          {% for gm in g.memberships.all %}
             <tr>
               <td></td>
               <td><a href="{% url 'katalogen:profile' gm.member.id %}">{{ gm.member.full_preferred_name }}</a></td>

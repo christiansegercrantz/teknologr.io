@@ -157,7 +157,7 @@ class GroupMembershipForm(BSModelForm):
 
         # Do not list groups that the member already is part of
         if member_id:
-            self.fields['group'].queryset = self.fields['group'].queryset.exclude(id__in=GroupMembership.objects.filter(member=member_id).values('group'))
+            self.fields['group'].queryset = self.fields['group'].queryset.select_related('grouptype').exclude(id__in=GroupMembership.objects.filter(member=member_id).values('group'))
 
 
 class MemberTypeForm(BSModelForm):
