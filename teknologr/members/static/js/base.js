@@ -196,8 +196,8 @@ $(document).ready(function () {
 				$("#mmodal_surname").val(last);
 			} break;
 			case "decorations": $("#dmodal_name").val(value); break;
-			case "groups": $("#gtmodal_name").val(value); break;
-			case "functionaries": $("#ftmodal_name").val(value); break;
+			case "grouptypes": $("#gtmodal_name").val(value); break;
+			case "functionarytypes": $("#ftmodal_name").val(value); break;
 		}
 	});
 
