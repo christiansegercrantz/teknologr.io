@@ -302,6 +302,9 @@ class ApplicantMembershipView(APIView):
         for field in filter(lambda _: not _.primary_key, applicant._meta.fields):
             setattr(new_member, field.name, getattr(applicant, field.name))
 
+        # Keep username as None until the LDAP account has been created
+        new_member.username = None
+
         # Fix needed fields
         degree_programme = applicant.degree_programme.split('_')
         if len(degree_programme) == 2:
@@ -324,6 +327,25 @@ class ApplicantMembershipView(APIView):
         phux_date = request.data.get('phux_date')
         if phux_date:
             self._create_member_type(new_member, phux_date, 'PH')
+
+        # Create an LDAP account if the application included a username
+        if applicant.username:
+            with LDAPAccountManager() as lm:
+                try:
+                    import secrets
+                    password = secrets.token_urlsafe(16)
+                    lm.add_account(new_member, applicant.username, password)
+                    status = mailNewPassword(new_member, password)
+
+                    # Store account details
+                    new_member.username = applicant.username
+                    new_member.save()
+
+                    if not status:
+                        return Response(f'Account created, failed to send mail to {new_member}', status=500)
+
+                except LDAPError as e:
+                    return Response(str(e), status=500)
 
         return Response(status=200)
 
