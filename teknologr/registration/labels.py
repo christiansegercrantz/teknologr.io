@@ -12,6 +12,7 @@ MEMBERSHIP_FORM_LABELS = {
     'birth_date': 'Födelsedatum',
     'student_id': 'Studienummer',
     'enrolment_year': 'Inskrivningsår vid Aalto-universitetet',
+    'username': 'Användarnamn för TF-Konto',
     'motivation': 'Motivering till medlemskapet',
     # Keep these empty as the Bootstrap4 module for Django is not predictable for checkboxes (i.e. manual labelling)
     'subscribed_to_modulen': '',
