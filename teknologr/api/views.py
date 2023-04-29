@@ -14,7 +14,7 @@ from api.ldap import LDAPAccountManager
 from ldap import LDAPError
 from api.bill import BILLAccountManager, BILLException
 from rest_framework_csv import renderers as csv_renderer
-from api.mailutils import mailNewPassword
+from api.mailutils import mailNewPassword, mailNewAccount
 from collections import defaultdict
 from datetime import datetime
 
@@ -177,7 +177,7 @@ class LDAPAccountView(APIView):
             try:
                 lm.add_account(member, username, password)
                 if mailToUser:
-                    status = mailNewPassword(member, password)
+                    status = mailNewAccount(member, password)
                     if not status:
                         return Response("Password changed, failed to send mail", status=500)
             except LDAPError as e:
@@ -335,7 +335,7 @@ class ApplicantMembershipView(APIView):
                     import secrets
                     password = secrets.token_urlsafe(16)
                     lm.add_account(new_member, applicant.username, password)
-                    status = mailNewPassword(new_member, password)
+                    status = mailNewAccount(new_member, password)
 
                     # Store account details
                     new_member.username = applicant.username
