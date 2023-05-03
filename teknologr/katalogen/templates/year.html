@@ -50,7 +50,7 @@
       <tbody>
         {% for do in decoration_ownerships %}
           <tr>
-            <td><a href="{% url 'katalogen:decoration_ownerships' do.decoration.id %}">{{ do.decoration.name }}</a></td>
+            <td><a href="{% url 'katalogen:decoration' do.decoration.id %}">{{ do.decoration.name }}</a></td>
             <td><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.full_preferred_name }}</a></td>
           </tr>
         {% endfor %}
@@ -67,7 +67,7 @@
       <tbody>
         {% for f in functionaries %}
           <tr>
-            <td><a href="{% url 'katalogen:functionaries' f.functionarytype.id %}">{{ f.functionarytype.name }}</a></td>
+            <td><a href="{% url 'katalogen:functionary_type' f.functionarytype.id %}">{{ f.functionarytype.name }}{% if f.duration_string != year %} ({{ f.duration_string }}){% endif %}</a></td>
             <td><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.full_preferred_name }}</a></td>
           </tr>
         {% endfor %}
@@ -84,10 +84,10 @@
       <tbody>
         {% for g in groups %}
           <tr>
-            <td><a href="{% url 'katalogen:groups' g.grouptype.id %}">{{ g.grouptype.name }}</a></td>
+            <td><a href="{% url 'katalogen:group_type' g.grouptype.id %}">{{ g.grouptype.name }}{% if g.duration_string != year %} ({{ g.duration_string }}){% endif %}</a></td>
             <td><i>{{ g.num_members }} {% if g.num_members == 1 %}medlem{% else %}medlemmar{% endif %}</i></td>
           </tr>
-          {% for gm in g.memberships_ordered %}
+          {% for gm in g.memberships.all %}
             <tr>
               <td></td>
               <td><a href="{% url 'katalogen:profile' gm.member.id %}">{{ gm.member.full_preferred_name }}</a></td>
@@ -101,14 +101,14 @@
       <thead>
         <tr>
           <th>Nya ordinarie medlemmar år {{ year }}</th>
-          <th></th>
+          <th>Datum</th>
         </tr>
       </thead>
       <tbody>
         {% for mt in member_types_ordinary %}
           <tr>
             <td><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
-            <td></td>
+            <td>{{ mt.begin_date }}</td>
           </tr>
         {% endfor %}
         <tr><td></td><td></td></tr>
@@ -118,14 +118,14 @@
       <thead>
         <tr>
           <th>Nya ständiga äldre medlemmar år {{ year }}</th>
-          <th></th>
+          <th>Datum</th>
         </tr>
       </thead>
       <tbody>
         {% for mt in member_types_stalm %}
           <tr>
             <td><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
-            <td></td>
+            <td>{{ mt.begin_date }}</td>
           </tr>
         {% endfor %}
         <tr><td></td><td></td></tr>

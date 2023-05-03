@@ -3,15 +3,15 @@ $(document).ready(function () {
 	add_request_listener({
 		selector: "#edit-gt-form",
 		method: "PUT",
-		url: element => `/api/groupTypes/${element.data("id")}/`
+		url: element => `/api/grouptypes/${element.data("id")}/`
 	});
 	// Remove the selected group type
 	add_request_listener({
 		selector: "#delete-gt-button",
 		method: "DELETE",
-		url: element => `/api/groupTypes/${element.data("id")}/`,
+		url: element => `/api/grouptypes/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna grupp och alla dess undergrupper?",
-		newLocation: "/admin/groups/",
+		newLocation: "/admin/grouptypes/",
 	});
 
 	// Add a group to the list
@@ -26,7 +26,7 @@ $(document).ready(function () {
 		method: "DELETE",
 		url: element => `/api/groups/${element.data("id")}/`,
 		confirmMessage: "Vill du radera denna undergrupp och alla dess gruppmedlemskap?",
-		newLocation: element => `/admin/groups/${element.data("grouptype_id")}`,
+		newLocation: element => `/admin/grouptypes/${element.data("grouptype_id")}`,
 	});
 
 	// Edit the selected group
@@ -39,14 +39,14 @@ $(document).ready(function () {
 	add_request_listener({
 		selector: "#add-gm-form",
 		method: "POST",
-		url: "/api/multiGroupMembership/",
+		url: "/api/multi-groupmemberships/",
 		confirmMessage: confirmMessageCreateMembers,
 	});
 	// Remove a member from the selected group
 	add_request_listener({
 		selector: ".delete-gm-button",
 		method: "DELETE",
-		url: element => `/api/groupMembership/${element.data("id")}/`,
+		url: element => `/api/groupmemberships/${element.data("id")}/`,
 		confirmMessage: "Vill du radera detta gruppmedlemskap?",
 	});
 

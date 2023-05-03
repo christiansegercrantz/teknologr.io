@@ -3,23 +3,23 @@
 
 {% block main %}
 <div class="container-fluid page-header">
-  <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:functionaries' functionaryType.id %}">{{ functionaryType.name }}</a></h1>
+  <h1 class="list-inline-item"><a class="katalogen-link" href="{% url 'katalogen:functionary_type' functionary_type.id %}">{{ functionary_type.name }}</a></h1>
   <i class="list-inline-item far fa-edit text-info align-self-center icon-20" role="button" title="Editera post" data-toggle="modal" data-target="#edit-ft-modal"></i>
-  <i id="delete-ft-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" title="Radera post" data-id="{{ functionaryType.id }}"></i>
-  {% include "modals/functionarytype.html" with modalname="edit-ft-modal" title="Editera post" form=edit_ft_form functionaryType=functionaryType only %}
+  <i id="delete-ft-button" class="list-inline-item fas fa-times text-danger icon-20" role="button" title="Radera post" data-id="{{ functionary_type.id }}"></i>
+  {% include "modals/functionarytype_edit.html" with modalname="edit-ft-modal" title="Editera post" form=edit_ft_form functionary_type=functionary_type only %}
 </div>
 
 <div class="container-fluid">
   <h4>Kommentar</h4>
-  {% if functionaryType.comment %}
-    {{ functionaryType.comment|linebreaks }}
+  {% if functionary_type.comment %}
+    {{ functionary_type.comment|linebreaks }}
   {% else %}
     <p><i>Ingen kommentar hittades</i></p>
   {% endif %}
 
   <h4 class="list-inline-item">Innehavare av posten</h4>
   <i class="list-inline-item fas fa-plus text-success icon-20" role="button" title="Lägg till postinnehav" data-toggle="modal" data-target="#add-f-modal"></i>
-  {% include "modals/functionary.html" with modalname="add-f-modal" title="Lägg till postinnehav ("|add:functionaryType.name|add:")" form=add_f_form only %}
+  {% include "modals/functionary_add.html" with modalname="add-f-modal" title="Lägg till postinnehav ("|add:functionary_type.name|add:")" form=add_f_form only %}
 
   <table class="table table-sm table-striped table-borderless">
     <thead class="no-border">
@@ -33,12 +33,17 @@
     <tbody>
     {% for functionary in functionaries %}
       <tr>
-        <td><i class="fas fa-times delete-f-button text-danger" role="button" title="Radera postinnehav" data-id="{{ functionary.id }}" data-functionarytype_id="{{ functionaryType.id }}"></i></td>
+        <td>
+          <i class="far fa-edit edit-f-button text-info" role="button" title="Editera postinnehav" data-id="{{ functionary.id }}"></i>
+          <i class="fas fa-times delete-f-button text-danger" role="button" title="Radera postinnehav" data-id="{{ functionary.id }}"></i>
+        </td>
         <td><a href="{% url 'admin:member' functionary.member.id %}">{{ functionary.member.full_name }}</a></td>
         <td>{{ functionary.begin_date }}</td>
         <td>{{ functionary.end_date }}</td>
       </tr>
     {% endfor %}
+    <!-- This modal is populated by base.js when an edit-f-button is clicked -->
+    {% include "modals/modal.html" with modalname="edit-f-modal" title="Editera postinnehav" only %}
     </tbody>
   </table>
 </div>

@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
-from django.db.models import Count
-
+from django.http import Http404
 from members.models import *
 from members.forms import *
 from members.programmes import DEGREE_PROGRAMME_CHOICES
@@ -13,33 +12,31 @@ from getenv import env
 def set_side_context(context, category, active_obj=None):
     side = {}
     side['active'] = category
-    side['active_obj'] = active_obj
+    side['active_obj'] = active_obj.id if active_obj else None
     side['new_button'] = True
     if category == 'members':
         side['sname'] = 'medlem'
         side['form'] = MemberForm(initial={'given_names': '', 'surname': ''}, auto_id="mmodal_%s")
-        objects = Member.objects.order_by('-modified')[:50]
-        if active_obj:
-            active = Member.objects.get(pk=active_obj)
-            if active not in objects:
-                from itertools import chain
-                objects = list(chain([active], objects))
-        side['objects'] = objects
-    elif category == 'groups':
+        side['objects'] = Member.objects.order_by('-modified')[:50]
+        # Add the active member to the list if it is not there already
+        if active_obj and active_obj not in side['objects']:
+            from itertools import chain
+            side['objects'] = list(chain([active_obj], side['objects']))
+    elif category == 'grouptypes':
         side['sname'] = 'grupp'
         side['form'] = GroupTypeForm(auto_id="gtmodal_%s")
-        side['objects'] = GroupType.objects.annotate(count=Count('groups', distinct=True))
-    elif category == 'functionaries':
+        side['objects'] = get_group_types_ordered_and_annotated()
+    elif category == 'functionarytypes':
         side['sname'] = 'post'
         side['form'] = FunctionaryTypeForm(auto_id="ftmodal_%s")
-        side['objects'] = FunctionaryType.objects.annotate(count=Count('functionaries', distinct=True))
+        side['objects'] = get_functionary_types_ordered_and_annotated()
     elif category == 'decorations':
         side['sname'] = 'betygelse'
         side['form'] = DecorationForm(auto_id="dmodal_%s")
-        side['objects'] = Decoration.objects.annotate(count=Count('ownerships', distinct=True))
+        side['objects'] = get_decorations_ordered_and_annotated()
     elif category == 'applicants':
         side['sname'] = 'ansökning'
-        side['objects'] = Applicant.objects.all()
+        side['objects'] = Applicant.objects.order_by('-created_at')
         side['new_button'] = False
         side['applicant_tool_icons'] = True
         side['multiple_applicants_form'] = MultipleApplicantAdditionForm()
@@ -59,9 +56,16 @@ def empty(request, category):
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
 def member(request, member_id):
+    '''
+    This is done in 10 queries:
+      1-5. Fetch Member with prefetched and ordered fields
+      6. SELECT Decoration (for form drop-down list)
+      7. SELECT FunctionaryType (for form drop-down list)
+      8-9. SELECT Group WHERE not_already_member (for form drop-down list)
+      10. SELECT Member (for side bar)
+    '''
     context = {}
-
-    member = get_object_or_404(Member, id=member_id)
+    member = get_member_prefetched_and_ordered(member_id)
     context['member'] = member
 
     if request.method == 'POST':
@@ -89,19 +93,19 @@ def member(request, member_id):
     context['full_name'] = member
 
     # Get decorations
-    context['decoration_ownerships'] = DecorationOwnership.objects.filter(member__id=member_id).order_by('-acquired')
+    context['decoration_ownerships'] = member.decoration_ownerships.all()
     context['add_do_form'] = DecorationOwnershipForm(initial={'member': member_id})
 
     # Get functionary positions
-    context['functionaries'] = Functionary.objects.filter(member__id=member_id).order_by('-begin_date')
+    context['functionaries'] = member.functionaries.all()
     context['add_f_form'] = FunctionaryForm(initial={'member': member_id})
 
     # Get groups
-    context['group_memberships'] = GroupMembership.objects.filter(member__id=member_id).order_by('-group__begin_date')
+    context['group_memberships'] = member.group_memberships.all()
     context['add_gm_form'] = GroupMembershipForm(initial={'member': member_id})
 
     # Get membertypes
-    context['membertypes'] = MemberType.objects.filter(member__id=member_id)
+    context['membertypes'] = member.member_types.all()
     context['add_mt_form'] = MemberTypeForm(initial={'member': member_id})
 
     # Get user account info
@@ -122,79 +126,110 @@ def member(request, member_id):
             context['BILL'] = {"error": str(e)}
 
     # load side list items
-    set_side_context(context, 'members', member.id)
+    set_side_context(context, 'members', member)
     return render(request, 'member.html', context)
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
 def membertype_form(request, membertype_id):
     membertype = get_object_or_404(MemberType, id=membertype_id)
-    form = MemberTypeForm(instance=membertype)
-    context = {'form': form, 'formid': 'edit-mt-form'}
-    return render(request, 'membertypeform.html', context)
+    return render(request, 'forms/membertype.html', {
+        'form': MemberTypeForm(instance=membertype),
+        'formid': 'edit-mt-form'
+    })
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
-def group(request, grouptype_id, group_id=None):
+def group_type(request, grouptype_id, group_id=None):
+    '''
+    Could probably be enhanced to not query for memberships if no group_id is given, because currently 4 queries are done no matter what:
+      1-3. Fetch GroupType with prefetched and ordered fields
+      4. SELECT GroupType (for side bar)
+    '''
     context = {}
 
-    grouptype = get_object_or_404(GroupType, id=grouptype_id)
+    grouptype = get_group_type_prefetched_and_ordered(grouptype_id)
     context['grouptype'] = grouptype
+    context['groups'] = grouptype.groups.all()
 
-    form = GroupTypeForm(instance=grouptype)
-
-    # Get groups of group type
-    context['groups'] = Group.objects.filter(grouptype__id=grouptype_id).annotate(num_members=Count('memberships', distinct=True)).order_by('-begin_date')
-    context['edit_gt_form'] = form
-
+    context['edit_gt_form'] = GroupTypeForm(instance=grouptype)
     context['add_g_form'] = GroupForm(initial={"grouptype": grouptype_id})
 
     if group_id is not None:
-        group = get_object_or_404(Group, id=group_id)
+        # Find the selected group, while making sure the group is of the correct group type
+        group = next((g for g in context['groups'] if g.id == int(group_id)), None)
+        if not group:
+            raise Http404('No Group matches the given query.')
+
         context['group'] = group
+        context['groupmembers'] = group.memberships.all()
+
         context['edit_g_form'] = GroupForm(instance=group, initial={ 'begin_date': group.begin_date, 'end_date': group.end_date })
         context['add_gm_form'] = GroupMembershipForm(initial={"group": group_id})
-        context['groupmembers'] = GroupMembership.objects.filter(group=group).order_by('member__surname', 'member__given_names')
         context['emails'] = "\n".join(
             [membership.member.email for membership in context['groupmembers']]
         )
 
-    set_side_context(context, 'groups', grouptype.id)
+    set_side_context(context, 'grouptypes', grouptype)
     return render(request, 'group.html', context)
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
 def functionary_type(request, functionarytype_id):
+    '''
+    This is done in 3 queries:
+      1-2. Fetch FunctionaryType with prefetched and ordered fields
+      4. SELECT FunctionaryType (for side bar)
+    '''
     context = {}
 
-    functionarytype = get_object_or_404(FunctionaryType, id=functionarytype_id)
-    context['functionaryType'] = functionarytype
-    form = FunctionaryTypeForm(instance=functionarytype)
+    functionarytype = get_functionary_type_prefetched_and_ordered(functionarytype_id)
+    context['functionary_type'] = functionarytype
+    context['functionaries'] = functionarytype.functionaries.all()
 
-    # Get functionaries of functionary type
-    context['functionaries'] = Functionary.objects.filter(
-        functionarytype__id=functionarytype_id).order_by('-begin_date', 'member__surname', 'member__given_names')
-    context['edit_ft_form'] = form
+    context['edit_ft_form'] = FunctionaryTypeForm(instance=functionarytype)
     context['add_f_form'] = FunctionaryForm(initial={"functionarytype": functionarytype_id})
 
-    set_side_context(context, 'functionaries', functionarytype.id)
+    set_side_context(context, 'functionarytypes', functionarytype)
     return render(request, 'functionary.html', context)
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login/')
+def functionary_form(request, functionary_id):
+    functionary = get_object_or_404(Functionary, id=functionary_id)
+    return render(request, 'forms/functionary.html', {
+        'form': FunctionaryForm(instance=functionary),
+        'form_id': 'edit-f-form',
+    })
+
+
+@user_passes_test(lambda u: u.is_staff, login_url='/login/')
 def decoration(request, decoration_id):
+    '''
+    This is done in 3 queries:
+      1-2. Fetch Decoration with prefetched and ordered fields
+      3. SELECT Decoration (for side bar)
+    '''
     context = {}
 
-    decoration = get_object_or_404(Decoration, id=decoration_id)
+    decoration = get_decoration_prefetched_and_ordered(decoration_id)
     context['decoration'] = decoration
-    context['edit_d_form'] = DecorationForm(instance=decoration)
+    context['decoration_ownerships'] = decoration.ownerships.all()
 
-    # Get groups of group type
-    context['decorations'] = DecorationOwnership.objects.filter(decoration__id=decoration_id).order_by('-acquired', 'member__surname', 'member__given_names')
+    context['edit_d_form'] = DecorationForm(instance=decoration)
     context['add_do_form'] = DecorationOwnershipForm(initial={"decoration": decoration_id})
 
-    set_side_context(context, 'decorations', decoration.id)
+    set_side_context(context, 'decorations', decoration)
     return render(request, 'decoration.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff, login_url='/login/')
+def decoration_ownership_form(request, decration_ownership_id):
+    decoration_ownership = get_object_or_404(DecorationOwnership, id=decration_ownership_id)
+    return render(request, 'forms/decorationownership.html', {
+        'form': DecorationOwnershipForm(instance=decoration_ownership),
+        'form_id': 'edit-do-form',
+    })
 
 
 @user_passes_test(lambda u: u.is_staff, login_url='/login')
@@ -214,5 +249,5 @@ def applicant(request, applicant_id):
     context['form'] = form
     context['make_member_form'] = ApplicantAdditionForm()
 
-    set_side_context(context, 'applicants', applicant.id)
+    set_side_context(context, 'applicants', applicant)
     return render(request, 'applicant.html', context)

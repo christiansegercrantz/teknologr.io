@@ -110,7 +110,7 @@ class Member(SuperClass):
             raise error
 
     def getMostRecentMemberType(self):
-        types = MemberType.objects.filter(member=self).order_by()
+        types = self.member_types.all()
 
         if (len(types)) == 0:
             return None
@@ -135,7 +135,9 @@ class Member(SuperClass):
 
     @property
     def phux_year(self):
-        member_type_phux = MemberType.objects.filter(Q(member=self) & Q(type='PH')).order_by('begin_date').first()
+        types = self.member_types.all()
+        # XXX: Do we need to take into account multiple Phux MemberTypes?
+        member_type_phux = next((x for x in types if x.type == "PH"), None)
         return member_type_phux.begin_date.year if member_type_phux else None
 
     def showContactInformation(self):
@@ -143,7 +145,7 @@ class Member(SuperClass):
 
 
 class DecorationOwnership(SuperClass):
-    member = models.ForeignKey("Member", on_delete=models.CASCADE)
+    member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="decoration_ownerships")
     decoration = models.ForeignKey("Decoration", on_delete=models.CASCADE, related_name="ownerships")
     acquired = models.DateField()
 
@@ -160,7 +162,7 @@ class Decoration(SuperClass):
 
 
 class GroupMembership(SuperClass):
-    member = models.ForeignKey("Member", on_delete=models.CASCADE)
+    member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="group_memberships")
     group = models.ForeignKey("Group", on_delete=models.CASCADE, related_name="memberships")
 
     class Meta:
@@ -185,7 +187,7 @@ class GroupType(SuperClass):
 
 
 class Functionary(SuperClass):
-    member = models.ForeignKey("Member", on_delete=models.CASCADE)
+    member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="functionaries")
     functionarytype = models.ForeignKey("FunctionaryType", on_delete=models.CASCADE, related_name="functionaries")
     begin_date = models.DateField()
     end_date = models.DateField()
@@ -233,7 +235,7 @@ class MemberType(SuperClass):
         ("KE", "Kanslist emerita"),
 
     )
-    member = models.ForeignKey("Member", on_delete=models.CASCADE)
+    member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name='member_types')
     begin_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
     type = models.CharField(max_length=2, choices=TYPES, default="PH")

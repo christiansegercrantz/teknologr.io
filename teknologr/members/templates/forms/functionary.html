@@ -1,8 +1,9 @@
-{% extends "modals/modal.html" %}
-
-{% block modalcontent %}
-<form id="add-f-form" autocomplete="off">
+<form id="{{ form_id }}" autocomplete="off">
   {% csrf_token %}
+
+  {% if form.member.initial %}
+  {{ form.member.as_hidden }}
+  {% else %}
   {{ form.media }}
   <div class="row form-group">
     <div class="col-3">
@@ -15,6 +16,21 @@
       <button disabled id="fform-create-member" class="btn btn-warning float-right">Skapa ny</button>
     </div>
   </div>
+  {% endif %}
+
+  {% if form.functionarytype.initial %}
+  {{ form.functionarytype.as_hidden }}
+  {% else %}
+  <div class="row form-group">
+    <div class="col-3">
+      <label for="{{ form.functionarytype.id_for_label }}">Post</label>
+    </div>
+    <div class="col-9">
+      {{ form.functionarytype }}
+    </div>
+  </div>
+  {% endif %}
+
   <div class="row form-group">
     <div class="col-3">
       <label for="{{ form.begin_date.id_for_label }}">Från</label>
@@ -23,6 +39,7 @@
       {{ form.begin_date }}
     </div>
   </div>
+
   <div class="row form-group">
     <div class="col-3">
       <label for="{{ form.end_date.id_for_label }}">Till</label>
@@ -31,11 +48,10 @@
       {{ form.end_date }}
     </div>
   </div>
-  <div class="row">
-    <div class="col-12">
-      <button disabled id="fform-submit-functionaries" type="submit" class="btn btn-success float-right">Spara</button>
+
+  <div class="row form-group">
+    <div class="col">
+      <button id="fform-submit-functionaries" type="submit" class="btn btn-success float-right">Spara</button>
     </div>
   </div>
-  {{ form.functionarytype.as_hidden}}
 </form>
-{% endblock %}

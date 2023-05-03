@@ -4,24 +4,24 @@
 <div class="row">
   <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
     {% if functionary_types %}
-      <table class="table table-sm table-striped">
+      <table class="table table-sm table-striped text-center">
         <thead>
           <tr>
             <th></th>
-            <th colspan="2">Postinnehavare</th>
+            <th colspan="2" class="text-center">Postinnehavare</th>
           </tr>
           <tr>
-            <th>Post</th>
-            <th class="text-center">Totalt</th>
-            <th class="text-center">Unika</th>
+            <th class="text-left">Post</th>
+            <th>Totalt</th>
+            <th>Unika</th>
           </tr>
         </thead>
         <tbody>
           {% for ft in functionary_types %}
             <tr>
-              <td><a href="{% url 'katalogen:functionaries' ft.id %}">{{ ft.name }}</a></td>
-              <td class="text-center">{{ ft.num_total }}</td>
-              <td class="text-center">{{ ft.num_unique }}</td>
+              <td class="text-left"><a href="{% url 'katalogen:functionary_type' ft.id %}">{{ ft.name }}</a></td>
+              <td>{{ ft.count }}</td>
+              <td>{{ ft.count_unique }}</td>
             </tr>
           {% endfor %}
         </tbody>

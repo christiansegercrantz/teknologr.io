@@ -1,7 +1,7 @@
 {% extends "modals/modal.html" %}
 
 {% block modalcontent %}
-<form id="edit-ft-form" autocomplete="off" data-id="{{ functionaryType.id }}" class="form-inline">
+<form id="edit-ft-form" autocomplete="off" data-id="{{ functionary_type.id }}" class="form-inline">
   {% csrf_token %}
   <div class="row form-group w-100">
     <div class="col-3"><label for="{{ form.name.id_for_label }}">Namn</label></div>

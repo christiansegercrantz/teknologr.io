@@ -89,12 +89,15 @@ const add_ajax_multiselect_extension = ({ selector_button, selector_input, selec
 		create_member_button.prop("disabled", !value || !value.trim().includes(" "));
 	});
 
+	const handleDisablingSubmit = () => submit_button.prop("disabled", deck.children().length == 0);
+
 	// Listen for changes in the list of members to enable/disable submit button
 	const observer = new MutationObserver(() => {
 		input.trigger("input");
-		submit_button.prop("disabled", deck.children().length == 0);
+		handleDisablingSubmit();
 	});
 	observer.observe(deck.get(0), { childList: true });
+	handleDisablingSubmit();
 
 	// Handle creating new members
 	create_member_button.click(e => {
@@ -138,19 +141,10 @@ const confirmMessageCreateMembers = e => {
 }
 
 $(document).ready(function () {
-	const element_to_api_path = element => {
-		switch(element.data("active")) {
-			case "members": return "members";
-			case "groups": return "groupTypes";
-			case "functionaries": return "functionaryTypes";
-			case "decorations": return "decorations";
-		}
-	}
-
 	add_request_listener({
 		selector: "#new-mgtftd-form",
 		method: "POST",
-		url: element => `/api/${element_to_api_path(element)}/`,
+		url: element => `/api/${element.data("active")}/`,
 		newLocation: (element, msg) => `/admin/${element.data("active")}/${msg.id}/`,
 	});
 
@@ -202,12 +196,46 @@ $(document).ready(function () {
 				$("#mmodal_surname").val(last);
 			} break;
 			case "decorations": $("#dmodal_name").val(value); break;
-			case "groups": $("#gtmodal_name").val(value); break;
-			case "functionaries": $("#ftmodal_name").val(value); break;
+			case "grouptypes": $("#gtmodal_name").val(value); break;
+			case "functionarytypes": $("#ftmodal_name").val(value); break;
 		}
 	});
 
 	$('[data-toggle="tooltip"]').tooltip({
 		placement : 'top'
+	});
+
+	/**
+	 * Populate modal for editing a decoration ownership.
+	 * Can not be placed in functionary.js because it is needed on the member page too.
+	 */
+	$(".edit-do-button").click(function() {
+		const id = $(this).data("id");
+		$("#edit-do-modal .modal-body").load(`/admin/decorationownerships/${id}/form/`, () => {
+			add_request_listener({
+				selector: "#edit-do-form",
+				method: "PUT",
+				url: `/api/decorationownerships/${id}/`,
+			});
+
+			$("#edit-do-modal").modal();
+		});
+	});
+
+	/**
+	 * Populate modal for editing a functionary.
+	 * Can not be placed in decoration.js because it is needed on the member page too.
+	 */
+	$(".edit-f-button").click(function() {
+		const id = $(this).data("id");
+		$("#edit-f-modal .modal-body").load(`/admin/functionaries/${id}/form/`, () => {
+			add_request_listener({
+				selector: "#edit-f-form",
+				method: "PUT",
+				url: `/api/functionaries/${id}/`,
+			});
+
+			$("#edit-f-modal").modal();
+		});
 	});
 });

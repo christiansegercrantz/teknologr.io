@@ -21,6 +21,7 @@
       </thead>
       <tbody>
         {% for g in groups %}
+          {% if g.num_members > 0 %}
           <tr>
             <td><b>
               {% if is_staff %}
@@ -31,12 +32,13 @@
             </b></td>
             <td><i>{{ g.num_members }} {% if g.num_members == 1 %}medlem{% else %}medlemmar{% endif %}</i></td>
           </tr>
-          {% for gm in g.memberships_ordered %}
+          {% for gm in g.memberships.all %}
             <tr>
               <td></td>
               <td><a href="{% url 'katalogen:profile' gm.member.id %}">{{ gm.member.name }}</a></td>
             </tr>
           {% endfor %}
+          {% endif %}
         {% endfor %}
       </tbody>
     </table>

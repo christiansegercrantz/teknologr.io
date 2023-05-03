@@ -18,7 +18,7 @@ $(document).ready(function () {
 	add_request_listener({
 		selector: "#add-do-form",
 		method: "POST",
-		url: "/api/multiDecorationOwnership/",
+		url: "/api/multi-decorationownerships/",
 		confirmMessage: confirmMessageCreateMembers,
 	});
 
@@ -26,7 +26,7 @@ $(document).ready(function () {
 	add_request_listener({
 		selector: ".delete-do-button",
 		method: "DELETE",
-		url: element => `/api/decorationOwnership/${element.data("id")}/`,
+		url: element => `/api/decorationownerships/${element.data("id")}/`,
 		confirmMessage: "Vill du radera detta betygelseinnehav?",
 	});
 
