@@ -330,29 +330,29 @@ class ApplicantMembershipView(APIView):
         if phux_date:
             self._create_member_type(new_member, phux_date, 'PH')
 
-        # Create an LDAP account if the application included a username
-        if username:
+        # Create an LDAP account if the application included a username and the username is not taken
+        if username and not Member.objects.filter(username=username).exists():
             with LDAPAccountManager() as lm:
                 try:
                     import secrets
                     password = secrets.token_urlsafe(16)
-                    lm.add_account(new_member, applicant.username, password)
+                    lm.add_account(new_member, username, password)
 
                     # Store account details
-                    new_member.username = applicant.username
+                    new_member.username = username
                     new_member.save()
 
                     status = mailNewAccount(new_member, password)
                     if not status:
                         return Response(f'LDAP account created, failed to send mail to {new_member}', status=400)
 
-                # LDAP account creation failed
+                # LDAP account creation failed (e.g. if the account already exists)
                 except LDAPError as e:
                     return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
                 # Updating the username field failed, remove the created LDAP account
                 # as it is not currently referenced by any member.
                 except IntegrityError as e:
-                    lm.delete_account(applicant.username)
+                    lm.delete_account(username)
                     return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
 
         return Response(status=200)

@@ -4,6 +4,7 @@ from registration.models import Applicant
 from registration.labels import MEMBERSHIP_FORM_LABELS
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from datetime import datetime
+from members.models import Member
 
 
 def format_programmes():
@@ -65,4 +66,13 @@ class RegistrationForm(forms.ModelForm):
                     _('Enrolment year is larger than current year: %(enrolment_year)d'),
                     code='invalid',
                     params={'enrolment_year': enrolment_year}
+            )
+
+        # Check if the username is taken if one was provided in the application
+        username = cleaned_data.get('username')
+        if username and Member.objects.filter(username=username).exists():
+            raise forms.ValidationError(
+                    'Username is already taken: %(username)s',
+                    code='invalid',
+                    params={'username': username}
             )
