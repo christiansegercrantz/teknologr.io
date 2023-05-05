@@ -56,13 +56,6 @@ $(document).ready(function() {
         newLocation: "/admin/applicants/",
     });
 
-    add_request_listener({
-        selector: "#choose-multiple-applicants-form",
-        method: "POST",
-        url: "/api/multi-applicantsubmissions/",
-        newLocation: "/admin/applicants/",
-    });
-
     // Set the datepicker on birth date, in case input type of date is not supported
     if (datefield.type != 'date') {
         const currentYear = new Date().getFullYear();
