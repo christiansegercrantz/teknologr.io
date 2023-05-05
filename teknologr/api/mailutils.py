@@ -1,7 +1,8 @@
 from django.core.mail import send_mail
+from getenv import env
 
 
-def mailNewPassword(member, password, sender="infochef@tf.fi"):
+def mailNewPassword(member, password, sender=env('EMAIL_LDAP_SENDER')):
 
     subject = 'Ditt nya TF-lösenord'
 
@@ -29,7 +30,7 @@ def mailNewPassword(member, password, sender="infochef@tf.fi"):
         fail_silently=False)
 
 
-def mailNewAccount(member, password, sender="infochef@tf.fi"):
+def mailNewAccount(member, password, sender=env('EMAIL_LDAP_SENDER')):
 
     subject = 'Ditt nya TF-konto'
 

@@ -1,12 +1,13 @@
 from django.core.mail import send_mail
+from getenv import env
 
 
-def mailApplicantSubmission(context, sender='phuxivator@tf.fi'):
+def mailApplicantSubmission(context, sender=env('EMAIL_APPLICANT_SENDER')):
     name = context['name']
     receiver = context['email']
 
     subject = 'Tack för din medlemsansökan till Teknologföreningen!'
-    message = '''Hej {name},
+    message = f'''Hej {name},
 
     Tack för din medlemsansökan till Teknologföreningen!
 
@@ -16,7 +17,7 @@ def mailApplicantSubmission(context, sender='phuxivator@tf.fi'):
     Vid frågor eller ifall du inte ansökt om medlemskap, kontakta {sender}
 
     Detta är ett automatiskt meddelande, du behöver inte svara på det.
-    '''.format(name=name, sender=sender)
+    '''
 
     return send_mail(
         subject,
