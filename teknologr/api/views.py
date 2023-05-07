@@ -14,7 +14,7 @@ from api.ldap import LDAPAccountManager
 from ldap import LDAPError
 from api.bill import BILLAccountManager, BILLException
 from rest_framework_csv import renderers as csv_renderer
-from api.mailutils import mailNewPassword
+from api.mailutils import mailNewPassword, mailNewAccount
 from collections import defaultdict
 from datetime import datetime
 
@@ -176,10 +176,6 @@ class LDAPAccountView(APIView):
         with LDAPAccountManager() as lm:
             try:
                 lm.add_account(member, username, password)
-                if mailToUser:
-                    status = mailNewPassword(member, password)
-                    if not status:
-                        return Response("Password changed, failed to send mail", status=500)
             except LDAPError as e:
                 return Response(str(e), status=400)
 
@@ -187,7 +183,10 @@ class LDAPAccountView(APIView):
         member.username = username
         member.save()
 
-        # TODO: Send mail to user to notify about new account?
+        if mailToUser:
+            status = mailNewAccount(member, password)
+            if not status:
+                return Response(f'Account created, failed to send mail to {member}', status=500)
 
         return Response(status=200)
 
@@ -302,6 +301,12 @@ class ApplicantMembershipView(APIView):
         for field in filter(lambda _: not _.primary_key, applicant._meta.fields):
             setattr(new_member, field.name, getattr(applicant, field.name))
 
+        # LDAP account creation might fail, keep the username as None until it succeeds.
+        new_member.username = None
+
+        # Keep track of the applicant username for the LDAP account creation
+        username = applicant.username 
+
         # Fix needed fields
         degree_programme = applicant.degree_programme.split('_')
         if len(degree_programme) == 2:
@@ -314,7 +319,7 @@ class ApplicantMembershipView(APIView):
             new_member.save()
             applicant.delete()
         except IntegrityError as err:
-            return Response(str(err), status=400)
+            return Response(f'Error accepting application with id {applicant_id}: {str(err)}', status=400)
 
         # Add MemberTypes if set
         membership_date = request.data.get('membership_date')
@@ -324,6 +329,31 @@ class ApplicantMembershipView(APIView):
         phux_date = request.data.get('phux_date')
         if phux_date:
             self._create_member_type(new_member, phux_date, 'PH')
+
+        # Create an LDAP account if the application included a username and the username is not taken
+        if username and not Member.objects.filter(username=username).exists():
+            with LDAPAccountManager() as lm:
+                try:
+                    import secrets
+                    password = secrets.token_urlsafe(16)
+                    lm.add_account(new_member, username, password)
+
+                    # Store account details
+                    new_member.username = username
+                    new_member.save()
+
+                    status = mailNewAccount(new_member, password)
+                    if not status:
+                        return Response(f'LDAP account created, failed to send mail to {new_member}', status=400)
+
+                # LDAP account creation failed (e.g. if the account already exists)
+                except LDAPError as e:
+                    return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
+                # Updating the username field failed, remove the created LDAP account
+                # as it is not currently referenced by any member.
+                except IntegrityError as e:
+                    lm.delete_account(username)
+                    return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
 
         return Response(status=200)
 
@@ -340,11 +370,17 @@ class ApplicantMembershipView(APIView):
 def multi_applicant_submissions(request):
     applicants = getMultiSelectValues(request, 'applicant')
 
+    # Keep track of any errors that occur during applicant submission
+    errors = []
     # Simulate a POST request to ApplicantMembershipView
     am_view = ApplicantMembershipView()
     for aid in applicants:
-        # TODO: add notification to user if unsuccesful applicant saving
-        am_view.post(request, aid)
+        response = am_view.post(request, aid)
+        if (response.status_code != 200):
+            errors.append(response.data)
+
+    if len(errors) > 0:
+        return Response(f'{len(errors)} error(s) occured when accepting submissions: {" ".join(errors)}', status=400)
 
     return Response(status=200)
 

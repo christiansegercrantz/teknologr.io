@@ -1,7 +1,8 @@
 from django.core.mail import send_mail
+from getenv import env
 
 
-def mailNewPassword(member, password, sender="infochef@tf.fi"):
+def mailNewPassword(member, password, sender=env('EMAIL_LDAP_SENDER')):
 
     subject = 'Ditt nya TF-lösenord'
 
@@ -18,6 +19,35 @@ def mailNewPassword(member, password, sender="infochef@tf.fi"):
 
     Detta är ett automatiskt meddelande, du behöver inte svara på det.
     ''' % (password, sender)
+
+    receiver = member.email
+
+    return send_mail(
+        subject,
+        message,
+        sender,
+        [receiver],
+        fail_silently=False)
+
+
+def mailNewAccount(member, password, sender=env('EMAIL_LDAP_SENDER')):
+
+    subject = 'Ditt nya TF-konto'
+
+    message = f'''Hej,
+
+    Ett TF-konto har skapats åt dig med följande inloggningsuppgifter:
+
+    Användarnamn: {member.username}
+    Lösenord: {password}
+
+    Vänligen logga in på TF:s hemsida och byt lösenordet så snabbt som möjligt:
+    https://medlem.teknologforeningen.fi/index.php/aendra-loesenord
+
+    Vid frågor eller ifall du inte begärt detta, kontakta {sender}
+
+    Detta är ett automatiskt meddelande, du behöver inte svara på det.
+    '''
 
     receiver = member.email
 

@@ -10,7 +10,11 @@
 
     <form id="registration-form" action="/registration/submit/" autocomplete="off" method="post">
       {% csrf_token %}
-
+      {% if form.errors %}
+       <div class="alert alert-danger">
+          {{ form.errors }}
+        </div>
+      {% endif %}
       <!-- Applicant name information -->
       <div id="names" class="row">
         {% bootstrap_field form.given_names    form_group_class="form-group col-md-4" placeholder=False required_css_class="required" bound_css_class="" %}
@@ -49,6 +53,11 @@
         <div id="unknown_degree" style="display: none;">
           {% bootstrap_field form.degree_programme form_group_class="form-group" placeholder=False required_css_class="required" bound_css_class="" %}
         </div>
+      </div>
+
+      <!-- Username -->
+      <div id="username" class="row">
+        {% bootstrap_field form.username form_group_class="form-group col-md-6" placeholder="Skolans användarnamn" bound_css_class="" %}
       </div>
 
       <!-- Mother tongue -->
