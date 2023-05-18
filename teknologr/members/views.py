@@ -164,7 +164,7 @@ def group_type(request, grouptype_id, group_id=None):
         context['group'] = group
         context['groupmembers'] = group.memberships.all()
 
-        context['edit_g_form'] = GroupForm(instance=group, initial={ 'begin_date': group.begin_date, 'end_date': group.end_date })
+        context['edit_g_form'] = GroupForm(instance=group)
         context['add_gm_form'] = GroupMembershipForm(initial={"group": group_id})
         context['emails'] = "\n".join(
             [membership.member.email for membership in context['groupmembers']]
