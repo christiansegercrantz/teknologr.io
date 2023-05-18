@@ -36,7 +36,7 @@
         {% for g in groups %}
           <tr {% if group.id == g.id %} class="active" {% endif %}>
             <td>
-              <a href="{% url 'admin:group' grouptype.id g.id %}"><i class="far fa-edit text-info" title="Hantera undergrupp"></i></a>
+              <a href="{% url 'admin:group' grouptype.id g.id %}"><i class="far fa-eye text-info" title="Hantera undergrupp"></i></a>
               <i class="fas fa-times delete-g-button text-danger" role="button" title="Radera undergrupp" data-id="{{ g.id }}" data-grouptype_id="{{ grouptype.id }}"></i>
             </td>
             <td class="text-center">{{ g.begin_date }}</td>
