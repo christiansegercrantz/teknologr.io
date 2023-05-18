@@ -34,6 +34,8 @@ $(document).ready(function () {
 		selector: "#edit-g-form",
 		method: "PUT",
 		url: element => `/api/groups/${element.data("id")}/`,
+		// Can not just reload the page in case the grouptype was edited
+		newLocation: (_, msg) => `/admin/grouptypes/${msg.grouptype}/${msg.id}/`,
 	});
 	// Add members to the selected group
 	add_request_listener({
