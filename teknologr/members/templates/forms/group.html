@@ -1,7 +1,18 @@
 <form id="{{ form_id }}" autocomplete="off" data-id="{{ group_id }}">
   {% csrf_token %}
 
+  {% if show_grouptype %}
+  <div class="row form-group">
+    <div class="col-3">
+      <label for="{{ form.grouptype.id_for_label }}">Grupp</label>
+    </div>
+    <div class="col-9">
+      {{ form.grouptype }}
+    </div>
+  </div>
+  {% else %}
   {{ form.grouptype.as_hidden }}
+  {% endif %}
 
   <div class="row form-group">
     <div class="col-3">
