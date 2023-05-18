@@ -159,6 +159,7 @@ $(document).ready(function () {
 		var active = $(this).data('active');
 		var filter = $(this).val().toLowerCase();
 
+		// If members, search with ajax_select Django app by doing a GET request
 		if (active === 'members') {
 			timer && clearTimeout(timer);
 			timer = setTimeout(function(){
@@ -175,13 +176,12 @@ $(document).ready(function () {
 				});
 			}, 300);
 
+		// If not members, simply hide/unhide the elements
 		} else {
-			$("#side-objects a").each(function(index){
-				if($(this).text().toLowerCase().indexOf(filter) > -1) {
-					$(this).css('display', '');
-				} else {
-					$(this).css('display', 'none');
-				}
+			$("#side-objects a").each(function () {
+				const element = $(this);
+				const show = element.text().toLowerCase().indexOf(filter) > -1 || element.attr("search").toLowerCase().indexOf(filter) > -1;
+				element.css("display", show ? "" : "none");
 			});
 		}
 	});
