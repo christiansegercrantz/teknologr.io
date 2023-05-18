@@ -245,4 +245,11 @@ $(document).ready(function () {
 			$("#edit-f-modal").modal();
 		});
 	});
+
+	/**
+	 * Set focus on the first (visible) input element in the form when opening any modal. All modals should have an id ending with '-modal'.
+	 */
+	$("[id$='-modal']").on("shown.bs.modal", function() {
+		$(this).find("form :input:visible:first").focus();
+	  })
 });
