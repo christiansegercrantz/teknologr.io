@@ -19,6 +19,7 @@ $(document).ready(function () {
 		selector: "#add-g-form",
 		method: "POST",
 		url: "/api/groups/",
+		newLocation: (_, msg) => `/admin/grouptypes/${msg.grouptype}/${msg.id}/`,
 	});
 	// Remove a group from the list
 	add_request_listener({
