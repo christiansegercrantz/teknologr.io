@@ -3,6 +3,16 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count, Prefetch
 from .models import *
 
+# Set the desired locale for string sorting
+# XXX: Is there a better way/place to set this?
+import locale
+locale.setlocale(locale.LC_COLLATE, 'sv_FI.utf8')
+# The sort order still depends on which method is used:
+#  - order_by as is:                A a Ä Å Ö ä å ö (case sensitive and does not understand ÅÄÖ)
+#  - order_by with Lower()/Upper(): A+a Ä Å Ö ä å ö (does not understand ÅÄÖ)
+#  - sort() as is:                  A a Ä Å Ö ä å ö (case sensitive)
+#  - sort() with .lower()/.upper(): A+a Ä+ä Å+å Ö+ö (all good except Ä comes before Å...)
+#  - sort() locale.strxfrm:         A+a Å+å Ä+ä Ö+ö (OK)
 
 def getCurrentDate():
     return datetime.datetime.now()
@@ -30,14 +40,35 @@ def get_member_prefetched_and_ordered(member_id):
     '''
     queryset = Member.objects.prefetch_related(
         Prefetch('decoration_ownerships', queryset=DecorationOwnership.objects.select_related('decoration').order_by('acquired')),
-        Prefetch('functionaries', queryset=Functionary.objects.select_related('functionarytype').order_by('functionarytype__name', 'begin_date')),
-        Prefetch('group_memberships', queryset=GroupMembership.objects.select_related('group', 'group__grouptype').order_by('group__grouptype__name', 'group__begin_date')),
+        Prefetch('functionaries', queryset=Functionary.objects.select_related('functionarytype')),
+        Prefetch('group_memberships', queryset=GroupMembership.objects.select_related('group', 'group__grouptype')),
         'member_types',
     )
-    return get_object_or_404(queryset, id=member_id)
+    member = get_object_or_404(queryset, id=member_id)
+
+    # Some manual sorting of the related items
+    # - DecorationOwnerships:
+    #    1. Aquired date, descending
+    # - Functionaries:
+    #    1. FunctionaryType name, ascending
+    #    2. Start date, descending
+    # - GroupMemeberships:
+    #    1. GroupType name, ascending
+    #    2. Group start date, descending
+    # - XXX: MemberTypes:
+    #    1. Start date, ascending
+    member.functionaries_sorted = sorted(list(member.functionaries.order_by('begin_date')), key=lambda f: locale.strxfrm(f.functionarytype.name))
+    member.group_memberships_sorted = sorted(list(member.group_memberships.order_by('group__begin_date')), key=lambda gm: locale.strxfrm(gm.group.grouptype.name))
+
+    return member
 
 def get_decorations_ordered_and_annotated():
-    return Decoration.objects.annotate(count=Count('ownerships')).order_by('name')
+    decorations = Decoration.objects.annotate(count=Count('ownerships'))
+
+    # Sort manually to get a suitable order that respects ÅÄÖ but not lower/upper cases
+    decorations = list(decorations)
+    decorations.sort(key=lambda d: locale.strxfrm(d.name))
+    return decorations
 
 def get_decoration_prefetched_and_ordered(decoration_id):
     '''
@@ -51,10 +82,15 @@ def get_decoration_prefetched_and_ordered(decoration_id):
     return get_object_or_404(queryset, id=decoration_id)
 
 def get_functionary_types_ordered_and_annotated():
-    return FunctionaryType.objects.annotate(
+    functionary_types = FunctionaryType.objects.annotate(
         count=Count('functionaries'),
         count_unique=Count('functionaries__member', distinct=True)
-    ).order_by('name')
+    )
+
+    # Sort manually to get a suitable order that respects ÅÄÖ but not lower/upper cases
+    functionary_types = list(functionary_types)
+    functionary_types.sort(key=lambda ft: locale.strxfrm(ft.name))
+    return functionary_types
 
 def get_functionary_type_prefetched_and_ordered(functionary_type_id):
     '''
@@ -68,12 +104,17 @@ def get_functionary_type_prefetched_and_ordered(functionary_type_id):
     return get_object_or_404(queryset, id=functionary_type_id)
 
 def get_group_types_ordered_and_annotated():
-    return GroupType.objects.annotate(
+    group_types = GroupType.objects.annotate(
         count=Count('groups', distinct=True),
         count_non_empty=Count('groups', distinct=True, filter=Q(groups__memberships__gt=0)),
         count_members_total=Count('groups__memberships'),
         count_members_unique=Count('groups__memberships__member', distinct=True)
-    ).order_by('name')
+    )
+
+    # Sort manually to get a suitable order that respects ÅÄÖ but not lower/upper cases
+    group_types = list(group_types)
+    group_types.sort(key=lambda gt: locale.strxfrm(gt.name))
+    return group_types
 
 def get_group_type_prefetched_and_ordered(group_type_id):
     '''

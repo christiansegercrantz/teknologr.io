@@ -97,11 +97,11 @@ def member(request, member_id):
     context['add_do_form'] = DecorationOwnershipForm(initial={'member': member_id})
 
     # Get functionary positions
-    context['functionaries'] = member.functionaries.all()
+    context['functionaries'] = member.functionaries_sorted
     context['add_f_form'] = FunctionaryForm(initial={'member': member_id})
 
     # Get groups
-    context['group_memberships'] = member.group_memberships.all()
+    context['group_memberships'] = member.group_memberships_sorted
     context['add_gm_form'] = GroupMembershipForm(initial={'member': member_id})
 
     # Get membertypes
