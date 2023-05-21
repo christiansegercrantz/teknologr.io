@@ -2,17 +2,7 @@ import datetime
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Prefetch
 from .models import *
-
-# Set the desired locale for string sorting
-# XXX: Is there a better way/place to set this?
 import locale
-locale.setlocale(locale.LC_COLLATE, 'sv_FI.utf8')
-# The sort order still depends on which method is used:
-#  - order_by as is:                A a Ä Å Ö ä å ö (case sensitive and does not understand ÅÄÖ)
-#  - order_by with Lower()/Upper(): A+a Ä Å Ö ä å ö (does not understand ÅÄÖ)
-#  - sort() as is:                  A a Ä Å Ö ä å ö (case sensitive)
-#  - sort() with .lower()/.upper(): A+a Ä+ä Å+å Ö+ö (all good except Ä comes before Å...)
-#  - sort() locale.strxfrm:         A+a Å+å Ä+ä Ö+ö (OK)
 
 def getCurrentDate():
     return datetime.datetime.now()
