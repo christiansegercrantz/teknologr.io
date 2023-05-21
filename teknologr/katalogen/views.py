@@ -111,16 +111,11 @@ def functionary_types(request):
 @login_required
 def functionary_type(request, functionary_type_id):
     functionary_type = FunctionaryType.objects.get_prefetched_or_404(functionary_type_id)
-    functionaries = functionary_type.functionaries_ordered
-
-    # Add date interval string to all functionaries
-    for f in functionaries:
-        f.duration_string = create_duration_string(f.begin_date, f.end_date)
 
     return render(request, 'functionaries.html', {
         **_get_base_context(request),
         'functionary_type': functionary_type,
-        'functionaries': functionaries,
+        'functionaries': functionary_type.functionaries_ordered,
     })
 
 
@@ -139,16 +134,11 @@ def group_type(request, group_type_id):
     group_type = GroupType.objects.get_prefetched_or_404(group_type_id)
 
     # Do not want to display empty groups here, but filtering that in the template instead of the query
-    groups = group_type.groups_ordered
-
-    # Add date interval string to all groups
-    for g in groups:
-        g.duration_string = create_duration_string(g.begin_date, g.end_date)
 
     return render(request, 'groups.html', {
         **_get_base_context(request),
         'group_type': group_type,
-        'groups': groups,
+        'groups': group_type.groups_ordered,
     })
 
 
@@ -235,8 +225,6 @@ def year(request, year):
     # Sort the functionaries manually
     functionaries = list(functionaries)
     functionaries.sort(key=lambda f: (strxfrm(f.functionarytype.name), strxfrm(f.member.surname), strxfrm(f.member.given_names)))
-    for f in functionaries:
-        f.duration_string = create_duration_string(f.begin_date, f.end_date)
 
     # Get all groups and group memberships for the year
     groups = Group.objects.prefetch_related(
@@ -253,8 +241,6 @@ def year(request, year):
     # Sort the groups manually
     groups = list(groups)
     groups.sort(key=lambda g: strxfrm(g.grouptype.name))
-    for g in groups:
-        g.duration_string = create_duration_string(g.begin_date, g.end_date)
 
     # Get all new members for the year and sort them manually
     member_types = MemberType.objects.select_related('member').filter(begin_date__year=year)

@@ -5,6 +5,7 @@ from django.db.models import Q, Prefetch, Count
 from django_countries.fields import CountryField
 from django.shortcuts import get_object_or_404
 from locale import strxfrm
+from katalogen.utils import *
 
 
 class SuperClass(models.Model):
@@ -254,6 +255,10 @@ class Group(SuperClass):
         return "{0}: {1} - {2}".format(self.grouptype.name, self.begin_date, self.end_date)
 
     @property
+    def duration_string(self):
+        return create_duration_string(self.begin_date, self.end_date)
+
+    @property
     def memberships_ordered(self):
         l = list(self.memberships.all())
         l.sort(key=lambda gm: (strxfrm(gm.member.surname), strxfrm(gm.member.given_names)))
@@ -306,6 +311,10 @@ class Functionary(SuperClass):
     functionarytype = models.ForeignKey("FunctionaryType", on_delete=models.CASCADE, related_name="functionaries")
     begin_date = models.DateField()
     end_date = models.DateField()
+
+    @property
+    def duration_string(self):
+        return create_duration_string(self.begin_date, self.end_date)
 
     def _get_str_member(self):
         return "{0} - {1}: {2}".format(self.begin_date, self.end_date, self.member)
