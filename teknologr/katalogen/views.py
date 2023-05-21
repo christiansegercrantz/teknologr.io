@@ -41,10 +41,10 @@ def search(request):
 
 @login_required
 def profile(request, member_id):
-    person = get_member_prefetched_and_ordered(member_id)
+    person = get_member_prefetched(member_id)
 
-    functionary_duration_strings = create_functionary_duration_strings(person.functionaries.all())
-    group_type_duration_strings = create_group_type_duration_strings(person.group_memberships.all())
+    functionary_duration_strings = create_functionary_duration_strings(person.functionaries_ordered)
+    group_type_duration_strings = create_group_type_duration_strings(person.group_memberships_ordered)
 
     return render(request, 'profile.html', {
         **_get_base_context(request),
@@ -52,7 +52,7 @@ def profile(request, member_id):
         'person': person,
         'functionary_duration_strings': functionary_duration_strings,
         'group_type_duration_strings': group_type_duration_strings,
-        'decoration_ownerships': person.decoration_ownerships.all(),
+        'decoration_ownerships': person.decoration_ownerships_ordered,
     })
 
 
@@ -82,8 +82,8 @@ def decorations(request):
 
 @login_required
 def decoration(request, decoration_id):
-    decoration = get_decoration_prefetched_and_ordered(decoration_id)
-    decoration_ownerships = decoration.ownerships.all()
+    decoration = get_decoration_prefetched(decoration_id)
+    decoration_ownerships = decoration.ownerships_ordered
 
     return render(request, 'decoration_ownerships.html', {
         **_get_base_context(request),
@@ -104,8 +104,8 @@ def functionary_types(request):
 
 @login_required
 def functionary_type(request, functionary_type_id):
-    functionary_type = get_functionary_type_prefetched_and_ordered(functionary_type_id)
-    functionaries = functionary_type.functionaries.all()
+    functionary_type = get_functionary_type_prefetched(functionary_type_id)
+    functionaries = functionary_type.functionaries_ordered
 
     # Add date interval string to all functionaries
     for f in functionaries:
@@ -130,10 +130,10 @@ def group_types(request):
 
 @login_required
 def group_type(request, group_type_id):
-    group_type = get_group_type_prefetched_and_ordered(group_type_id)
+    group_type = get_group_type_prefetched(group_type_id)
 
     # Do not want to display empty groups here, but filtering that in the template instead of the query
-    groups = group_type.groups.all()
+    groups = group_type.groups_ordered
 
     # Add date interval string to all groups
     for g in groups:

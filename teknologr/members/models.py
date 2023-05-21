@@ -3,6 +3,7 @@
 from django.db import models
 from django.db.models import Q
 from django_countries.fields import CountryField
+from locale import strxfrm
 
 
 class SuperClass(models.Model):
@@ -143,6 +144,26 @@ class Member(SuperClass):
     def showContactInformation(self):
         return self.allow_publish_info and self.isValidMember() and not self.dead
 
+    @property
+    def decoration_ownerships_ordered(self):
+        l = list(self.decoration_ownerships.all())
+        l.sort(key=lambda do: do.acquired, reverse=True)
+        return l
+
+    @property
+    def functionaries_ordered(self):
+        l = list(self.functionaries.all())
+        l.sort(key=lambda f: (f.begin_date, f.end_date), reverse=True)
+        l.sort(key=lambda f: strxfrm(f.functionarytype.name))
+        return l
+
+    @property
+    def group_memberships_ordered(self):
+        l = list(self.group_memberships.all())
+        l.sort(key=lambda gm: (gm.group.begin_date, gm.group.end_date), reverse=True)
+        l.sort(key=lambda gm: strxfrm(gm.group.grouptype.name))
+        return l
+
 
 class DecorationOwnership(SuperClass):
     member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="decoration_ownerships")
@@ -159,6 +180,13 @@ class Decoration(SuperClass):
 
     def __str__(self):
         return self.name
+
+    @property
+    def ownerships_ordered(self):
+        l = list(self.ownerships.all())
+        l.sort(key=lambda do: (strxfrm(do.member.surname), strxfrm(do.member.given_names)))
+        l.sort(key=lambda do: do.acquired, reverse=True)
+        return l
 
 
 class GroupMembership(SuperClass):
@@ -177,6 +205,12 @@ class Group(SuperClass):
     def __str__(self):
         return "{0}: {1} - {2}".format(self.grouptype.name, self.begin_date, self.end_date)
 
+    @property
+    def memberships_ordered(self):
+        l = list(self.memberships.all())
+        l.sort(key=lambda gm: (strxfrm(gm.member.surname), strxfrm(gm.member.given_names)))
+        return l
+
 
 class GroupType(SuperClass):
     name = models.CharField(max_length=64, blank=False, null=False, unique=True)
@@ -184,6 +218,12 @@ class GroupType(SuperClass):
 
     def __str__(self):
         return self.name
+
+    @property
+    def groups_ordered(self):
+        l = list(self.groups.all())
+        l. sort(key=lambda g: g.begin_date, reverse=True)
+        return l
 
 
 class Functionary(SuperClass):
@@ -219,6 +259,13 @@ class FunctionaryType(SuperClass):
 
     def __str__(self):
         return self.name
+
+    @property
+    def functionaries_ordered(self):
+        l = list(self.functionaries.all())
+        l.sort(key=lambda f: (strxfrm(f.member.surname), strxfrm(f.member.given_names)))
+        l.sort(key=lambda f: (f.begin_date, f.end_date), reverse=True)
+        return l
 
 
 class MemberType(SuperClass):
