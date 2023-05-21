@@ -197,67 +197,33 @@ def years(request):
 def year(request, year):
     '''
     This could be enhanced, but curretnly it is done with 10 queries:
-      1. SELECT DecortaionOwnership WHERE correct_year
+      1. SELECT Functionary WHERE correct_year => COUNT
       2. SELECT Functionary WHERE correct_year
-      3. group_ids, group_type_ids = SELECT Group WHERE correct_year
-      4. SELECT GroupMemebership WHERE group__id IN group_ids
-      5. SELECT GroupType WHERE id IN group_type_ids
-      6. SELECT MemberType WHERE correct_year AND type="OM"
-      7. SELECT MemberType WHERE correct_year AND type="ST"
-      8. SELECT GroupMemebership WHERE correct_year => COUNT
-      9. COUNT DISTINCT over ^
-      10. SELECT Functionary WHERE correct_year => COUNT
+      3. SELECT GroupMemebership WHERE correct_year => COUNT
+      4. COUNT DISTINCT over ^
+      5. group_ids, group_type_ids = SELECT Group WHERE correct_year
+      6. SELECT GroupMemebership WHERE group__id IN group_ids
+      7. SELECT GroupType WHERE id IN group_type_ids
+      8. SELECT DecortaionOwnership WHERE correct_year
+      9. SELECT MemberType WHERE correct_year AND type="OM"
+      10. SELECT MemberType WHERE correct_year AND type="ST"
     '''
-    first_day = datetime.date(int(year), 1, 1)
-    last_day = datetime.date(int(year), 12, 31)
-
-    # Get all decoration ownerships for the year and sort them manually
-    decoration_ownerships = DecorationOwnership.objects.select_related('member', 'decoration').filter(acquired__year=year)
-    decoration_ownerships = list(decoration_ownerships)
-    decoration_ownerships.sort(key=lambda do: (strxfrm(do.decoration.name), strxfrm(do.member.surname), strxfrm(do.member.given_names)))
 
     # Get all functionaries for the year
-    functionaries = Functionary.objects.select_related('member', 'functionarytype').filter(begin_date__lte=last_day, end_date__gte=first_day)
-
-    # Count the number unique functionaries
-    functionaries_unique_count = functionaries.aggregate(count=Count('member__id', distinct=True))['count']
-
-    # Sort the functionaries manually
-    functionaries = list(functionaries)
-    functionaries.sort(key=lambda f: (strxfrm(f.functionarytype.name), strxfrm(f.member.surname), strxfrm(f.member.given_names)))
+    functionaries, functionaries_unique_count = Functionary.objects.year_ordered_and_unique(year)
 
     # Get all groups and group memberships for the year
-    groups = Group.objects.prefetch_related(
-        Prefetch(
-            'memberships',
-            queryset=GroupMembership.objects.select_related('member')
-        ),
-        'grouptype'
-    ).annotate(num_members=Count('memberships', distinct=True)).filter(begin_date__lte=last_day, end_date__gte=first_day, num_members__gt=0)
-
-    # Count the number of total and unique group memebers
-    gm_counts = groups.aggregate(total=Count('memberships__member__id'), unique=Count('memberships__member__id', distinct=True))
-
-    # Sort the groups manually
-    groups = list(groups)
-    groups.sort(key=lambda g: strxfrm(g.grouptype.name))
-
-    # Get all new members for the year and sort them manually
-    member_types = MemberType.objects.select_related('member').filter(begin_date__year=year)
-    member_types_ordinary = list(member_types.filter(type='OM'))
-    member_types_ordinary.sort(key=lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names)))
-    member_types_stalm = list(member_types.filter(type='ST'))
-    member_types_stalm.sort(key=lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names)))
+    groups, group_memberships_total, group_memberships_unique = Group.objects.year_ordered_and_counts(year)
 
     return render(request, 'year.html', {
         **_get_base_context(request),
         'year': year,
-        'decoration_ownerships': decoration_ownerships,
+        'decoration_ownerships': DecorationOwnership.objects.year_ordered(year),
         'functionaries': functionaries,
         'functionaries_unique_count': functionaries_unique_count,
         'groups': groups,
-        'group_memberships_total': gm_counts['total'],
-        'group_memberships_unique': gm_counts['unique'],
-        'member_types_ordinary': member_types_ordinary,
-        'member_types_stalm': member_types_stalm,
+        'group_memberships_total': group_memberships_total,
+        'group_memberships_unique': group_memberships_unique,
+        'member_types_ordinary': MemberType.objects.ordinary_members_begin_year_sorted(year),
+        'member_types_stalm': MemberType.objects.stalms_begin_year_sorted(year),
     })

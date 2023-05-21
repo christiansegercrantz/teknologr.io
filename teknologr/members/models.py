@@ -187,8 +187,26 @@ class Member(SuperClass):
         l.sort(key=lambda gm: strxfrm(gm.group.grouptype.name))
         return l
 
+    @property
+    def functionary_duration_strings(self):
+        return create_functionary_duration_strings(self.functionaries_ordered)
+
+    @property
+    def group_type_duration_strings(self):
+        return create_group_type_duration_strings(self.group_memberships_ordered)
+
+
+class DecorationOwnershipManager(models.Manager):
+    def year(self, year):
+        return self.get_queryset().select_related('member', 'decoration').filter(acquired__year=year)
+
+    def year_ordered(self, year):
+        l = list(self.year(year))
+        l.sort(key=lambda do: (strxfrm(do.decoration.name), strxfrm(do.member.surname), strxfrm(do.member.given_names)))
+        return l
 
 class DecorationOwnership(SuperClass):
+    objects = DecorationOwnershipManager()
     member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="decoration_ownerships")
     decoration = models.ForeignKey("Decoration", on_delete=models.CASCADE, related_name="ownerships")
     acquired = models.DateField()
@@ -244,6 +262,22 @@ class GroupMembership(SuperClass):
 class GroupManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().annotate(num_members=Count('memberships', distinct=True))
+
+    def year(self, year):
+        return self.get_queryset().prefetch_related(
+            Prefetch(
+                'memberships',
+                queryset=GroupMembership.objects.select_related('member')
+            ),
+            'grouptype'
+        ).filter(begin_date__lte=datetime.date(int(year), 12, 31), end_date__gte=datetime.date(int(year), 1, 1), num_members__gt=0)
+
+    def year_ordered_and_counts(self, year):
+        queryset = self.year(year)
+        gm_counts = queryset.aggregate(total=Count('memberships__member__id'), unique=Count('memberships__member__id', distinct=True))
+        l = list(queryset)
+        l.sort(key=lambda g: strxfrm(g.grouptype.name))
+        return l, gm_counts['total'], gm_counts['unique']
 
 class Group(SuperClass):
     objects = GroupManager()
@@ -306,7 +340,19 @@ class GroupType(SuperClass):
         return l
 
 
+class FunctionaryManager(models.Manager):
+    def year(self, year):
+        return self.get_queryset().select_related('member', 'functionarytype').filter(begin_date__lte=datetime.date(int(year), 12, 31), end_date__gte=datetime.date(int(year), 1, 1))
+
+    def year_ordered_and_unique(self, year):
+        queryset = self.year(year)
+        unique_count = queryset.aggregate(count=Count('member__id', distinct=True))['count']
+        l = list(queryset)
+        l.sort(key=lambda f: (strxfrm(f.functionarytype.name), strxfrm(f.member.surname), strxfrm(f.member.given_names)))
+        return l, unique_count
+
 class Functionary(SuperClass):
+    objects = FunctionaryManager()
     member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="functionaries")
     functionarytype = models.ForeignKey("FunctionaryType", on_delete=models.CASCADE, related_name="functionaries")
     begin_date = models.DateField()
@@ -375,7 +421,29 @@ class FunctionaryType(SuperClass):
         return l
 
 
+class MemberTypeManager(models.Manager):
+    def begin_year(self, year):
+        return self.get_queryset().select_related('member').filter(begin_date__year=year)
+
+    def ordinary_members_begin_year(self, year):
+        return self.begin_year(year).filter(type='OM')
+
+    def ordinary_members_begin_year_sorted(self, year):
+        l = list(self.ordinary_members_begin_year(year))
+        l.sort(key=lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names)))
+        return l
+
+    def stalms_begin_year(self, year):
+        return self.begin_year(year).filter(type='ST')
+
+    def stalms_begin_year_sorted(self, year):
+        l = list(self.stalms_begin_year(year))
+        l.sort(key=lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names)))
+        return l
+
+
 class MemberType(SuperClass):
+    objects = MemberTypeManager()
     TYPES = (
         ("PH", "Phux"),
         ("OM", "Ordinarie Medlem"),
