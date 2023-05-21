@@ -26,15 +26,15 @@ def set_side_context(context, category, active_obj=None):
     elif category == 'grouptypes':
         side['sname'] = 'grupp'
         side['form'] = GroupTypeForm(auto_id="gtmodal_%s")
-        side['objects'] = get_group_types_ordered_and_annotated()
+        side['objects'] = GroupType.objects.all_ordered()
     elif category == 'functionarytypes':
         side['sname'] = 'post'
         side['form'] = FunctionaryTypeForm(auto_id="ftmodal_%s")
-        side['objects'] = get_functionary_types_ordered_and_annotated()
+        side['objects'] = FunctionaryType.objects.all_ordered()
     elif category == 'decorations':
         side['sname'] = 'betygelse'
         side['form'] = DecorationForm(auto_id="dmodal_%s")
-        side['objects'] = get_decorations_ordered_and_annotated()
+        side['objects'] = Decoration.objects.all_ordered()
     elif category == 'applicants':
         side['sname'] = 'ansökning'
         side['objects'] = Applicant.objects.order_by('-created_at')
@@ -66,7 +66,7 @@ def member(request, member_id):
       10. SELECT Member (for side bar)
     '''
     context = {}
-    member = get_member_prefetched(member_id)
+    member = Member.objects.get_prefetched_or_404(member_id)
     context['member'] = member
 
     if request.method == 'POST':
@@ -149,7 +149,7 @@ def group_type(request, grouptype_id, group_id=None):
     '''
     context = {}
 
-    grouptype = get_group_type_prefetched(grouptype_id)
+    grouptype = GroupType.objects.get_prefetched_or_404(grouptype_id)
     context['grouptype'] = grouptype
     context['groups'] = grouptype.groups_ordered
 
@@ -184,7 +184,7 @@ def functionary_type(request, functionarytype_id):
     '''
     context = {}
 
-    functionarytype = get_functionary_type_prefetched(functionarytype_id)
+    functionarytype = FunctionaryType.objects.get_prefetched_or_404(functionarytype_id)
     context['functionary_type'] = functionarytype
     context['functionaries'] = functionarytype.functionaries_ordered
 
@@ -213,7 +213,7 @@ def decoration(request, decoration_id):
     '''
     context = {}
 
-    decoration = get_decoration_prefetched(decoration_id)
+    decoration = Decoration.objects.get_prefetched_or_404(decoration_id)
     context['decoration'] = decoration
     context['decoration_ownerships'] = decoration.ownerships_ordered
 

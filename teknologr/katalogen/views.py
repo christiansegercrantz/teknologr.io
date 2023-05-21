@@ -43,7 +43,7 @@ def search(request):
 
 @login_required
 def profile(request, member_id):
-    person = get_member_prefetched(member_id)
+    person = Member.objects.get_prefetched_or_404(member_id)
 
     functionary_duration_strings = create_functionary_duration_strings(person.functionaries_ordered)
     group_type_duration_strings = create_group_type_duration_strings(person.group_memberships_ordered)
@@ -82,13 +82,13 @@ def decorations(request):
     #  - Date of first/latest?
     return render(request, 'decorations.html', {
         **_get_base_context(request),
-        'decorations': get_decorations_ordered_and_annotated()
+        'decorations': Decoration.objects.all_ordered(),
     })
 
 
 @login_required
 def decoration(request, decoration_id):
-    decoration = get_decoration_prefetched(decoration_id)
+    decoration = Decoration.objects.get_prefetched_or_404(decoration_id)
     decoration_ownerships = decoration.ownerships_ordered
 
     return render(request, 'decoration_ownerships.html', {
@@ -104,13 +104,13 @@ def functionary_types(request):
     #  - Date of first/latest?
     return render(request, 'functionary_types.html', {
         **_get_base_context(request),
-        'functionary_types': get_functionary_types_ordered_and_annotated(),
+        'functionary_types': FunctionaryType.objects.all_ordered(),
     })
 
 
 @login_required
 def functionary_type(request, functionary_type_id):
-    functionary_type = get_functionary_type_prefetched(functionary_type_id)
+    functionary_type = FunctionaryType.objects.get_prefetched_or_404(functionary_type_id)
     functionaries = functionary_type.functionaries_ordered
 
     # Add date interval string to all functionaries
@@ -130,13 +130,13 @@ def group_types(request):
     #  - Date of first/latest?
     return render(request, 'group_types.html', {
         **_get_base_context(request),
-        'group_types': get_group_types_ordered_and_annotated(),
+        'group_types': GroupType.objects.all_ordered(),
     })
 
 
 @login_required
 def group_type(request, group_type_id):
-    group_type = get_group_type_prefetched(group_type_id)
+    group_type = GroupType.objects.get_prefetched_or_404(group_type_id)
 
     # Do not want to display empty groups here, but filtering that in the template instead of the query
     groups = group_type.groups_ordered

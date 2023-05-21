@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Prefetch, Count
 from django_countries.fields import CountryField
+from django.shortcuts import get_object_or_404
 from locale import strxfrm
 
 
@@ -15,7 +16,27 @@ class SuperClass(models.Model):
         abstract = True
 
 
+class MemberManager(models.Manager):
+    def get_prefetched_or_404(self, member_id):
+        '''
+        This is done in 5 queries:
+        1. SELECT Member WHERE id=member_id
+        2. SELECT DecorationOwnership WHERE member__id=member_id
+        3. SELECT Functionary WHERE member__id=member_id
+        4. SELECT GroupMembership WHERE member__id=member_id
+        5. SELECT MemberType WHERE member__id=member_id
+        '''
+        queryset = Member.objects.prefetch_related(
+            Prefetch('decoration_ownerships', queryset=DecorationOwnership.objects.select_related('decoration')),
+            Prefetch('functionaries', queryset=Functionary.objects.select_related('functionarytype')),
+            Prefetch('group_memberships', queryset=GroupMembership.objects.select_related('group', 'group__grouptype')),
+            'member_types',
+        )
+        return get_object_or_404(queryset, id=member_id)
+
 class Member(SuperClass):
+    objects = MemberManager()
+
     # NAMES
     given_names = models.CharField(max_length=64, blank=False, null=False, default="UNKNOWN")
     preferred_name = models.CharField(max_length=32, blank=True, null=False, default="")
@@ -147,6 +168,7 @@ class Member(SuperClass):
     @property
     def decoration_ownerships_ordered(self):
         l = list(self.decoration_ownerships.all())
+        l.sort(key=lambda do: strxfrm(do.decoration.name))
         l.sort(key=lambda do: do.acquired, reverse=True)
         return l
 
@@ -174,7 +196,28 @@ class DecorationOwnership(SuperClass):
         return "%s - %s" % (self.decoration.name, self.member.full_name)
 
 
+class DecorationManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().annotate(count=Count('ownerships'))
+
+    def all_ordered(self):
+        l = list(self.get_queryset())
+        l.sort(key=lambda d: strxfrm(d.name))
+        return l
+
+    def get_prefetched_or_404(self, decoration_id):
+        '''
+        This is done in 2 queries:
+        1. SELECT Decoration WHERE id=decoration_id
+        2. SELECT DecorationOwnership WHERE decoration__id=decoration_id
+        '''
+        queryset = Decoration.objects.prefetch_related(
+            Prefetch('ownerships', queryset=DecorationOwnership.objects.select_related('member')),
+        )
+        return get_object_or_404(queryset, id=decoration_id)
+
 class Decoration(SuperClass):
+    objects = DecorationManager()
     name = models.CharField(max_length=64, blank=False, null=False, unique=True)
     comment = models.TextField(blank=True, default='')
 
@@ -197,7 +240,12 @@ class GroupMembership(SuperClass):
         unique_together = (("member", "group"),)
 
 
+class GroupManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().annotate(num_members=Count('memberships', distinct=True))
+
 class Group(SuperClass):
+    objects = GroupManager()
     grouptype = models.ForeignKey("GroupType", on_delete=models.CASCADE, related_name="groups")
     begin_date = models.DateField()
     end_date = models.DateField()
@@ -211,8 +259,35 @@ class Group(SuperClass):
         l.sort(key=lambda gm: (strxfrm(gm.member.surname), strxfrm(gm.member.given_names)))
         return l
 
+class GroupTypeManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().annotate(
+            count=Count('groups', distinct=True),
+            count_non_empty=Count('groups', distinct=True, filter=Q(groups__memberships__gt=0)),
+            count_members_total=Count('groups__memberships'),
+            count_members_unique=Count('groups__memberships__member', distinct=True),
+        )
+
+    def all_ordered(self):
+        l = list(self.get_queryset())
+        l.sort(key=lambda gt: strxfrm(gt.name))
+        return l
+
+    def get_prefetched_or_404(self, group_type_id):
+        '''
+        This is done in 3 queries:
+        1. SELECT GroupType WHERE id=group_type_id
+        2. SELECT Group WHERE grouptype__id=group_type_id
+        3. SELECT GroupMembership WHERE group__id IN ^
+        '''
+        queryset = GroupType.objects.prefetch_related(
+            Prefetch('groups', queryset=Group.objects.all()),
+            Prefetch('groups__memberships', queryset=GroupMembership.objects.select_related('member')),
+        )
+        return get_object_or_404(queryset, id=group_type_id)
 
 class GroupType(SuperClass):
+    objects = GroupTypeManager()
     name = models.CharField(max_length=64, blank=False, null=False, unique=True)
     comment = models.TextField(blank=True, default='')
 
@@ -221,7 +296,6 @@ class GroupType(SuperClass):
 
     @property
     def groups_ordered(self):
-        # self.groups.order_by('-begin_date') does NOT work if the groups are prefetched
         l = list(self.groups.all())
         l. sort(key=lambda g: g.begin_date, reverse=True)
         return l
@@ -253,8 +327,31 @@ class Functionary(SuperClass):
     def __str__(self):
         return "{0}: {1} - {2}, {3}".format(self.functionarytype, self.begin_date, self.end_date, self.member)
 
+class FunctionaryTypeManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().annotate(
+        count=Count('functionaries'),
+        count_unique=Count('functionaries__member', distinct=True),
+    )
+
+    def all_ordered(self):
+        l = list(self.get_queryset())
+        l.sort(key=lambda ft: strxfrm(ft.name))
+        return l
+
+    def get_prefetched_or_404(self, functionary_type_id):
+        '''
+        This is done in 2 queries:
+        1. SELECT FunctionaryType WHERE id=functionary_type_id
+        2. SELECT Functionary WHERE functionarytype__id=functionary_type_id
+        '''
+        queryset = FunctionaryType.objects.prefetch_related(
+            Prefetch('functionaries', queryset=Functionary.objects.select_related('member')),
+        )
+        return get_object_or_404(queryset, id=functionary_type_id)
 
 class FunctionaryType(SuperClass):
+    objects = FunctionaryTypeManager()
     name = models.CharField(max_length=64, blank=False, null=False, unique=True)
     comment = models.TextField(blank=True, default='')
 
