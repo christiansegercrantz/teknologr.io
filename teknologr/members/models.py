@@ -221,6 +221,7 @@ class GroupType(SuperClass):
 
     @property
     def groups_ordered(self):
+        # self.groups.order_by('-begin_date') does NOT work if the groups are prefetched
         l = list(self.groups.all())
         l. sort(key=lambda g: g.begin_date, reverse=True)
         return l

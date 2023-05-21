@@ -7,6 +7,7 @@ from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
 from registration.forms import RegistrationForm
 from getenv import env
+from locale import strxfrm
 
 
 def set_side_context(context, category, active_obj=None):
@@ -87,7 +88,7 @@ def member(request, member_id):
             for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
             for programme in programmes
     ]
-    context['programmes'].sort()
+    context['programmes'].sort(key=lambda p: strxfrm(p))
 
     context['form'] = form
     context['full_name'] = member

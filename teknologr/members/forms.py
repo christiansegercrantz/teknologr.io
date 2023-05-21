@@ -1,7 +1,7 @@
 from members.models import *
 from members.utils import *
 from registration.models import Applicant
-from django.forms import ModelForm, DateField, CharField, ModelChoiceField, Textarea
+from django.forms import ModelForm, DateField, CharField, ChoiceField, Textarea
 from django.forms.widgets import CheckboxInput, DateInput, TextInput, PasswordInput
 from ajax_select.fields import AutoCompleteSelectMultipleField
 from django.contrib.auth.forms import AuthenticationForm
@@ -68,7 +68,9 @@ class FunctionaryForm(BSModelForm):
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
-    functionarytype = ModelChoiceField(queryset=FunctionaryType.objects.order_by('name'))
+
+    # Could use ModelChoiceField, but that does not allow for sorting queryset manually
+    functionarytype = ChoiceField(choices=[(None, '---------')] + [(ft.id, ft.name) for ft in sorted(list(FunctionaryType.objects.all()), key=lambda ft: strxfrm(ft.name))])
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
@@ -103,7 +105,9 @@ class DecorationOwnershipForm(BSModelForm):
 
     acquired = DateField(widget=DateInput(attrs={'type': 'date'}))
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
-    decoration = ModelChoiceField(queryset=Decoration.objects.order_by('name'))
+
+    # Could use ModelChoiceField, but that does not allow for sorting queryset manually
+    decoration = ChoiceField(choices=[(None, '---------')] + [(d.id, d.name) for d in sorted(list(Decoration.objects.all()), key=lambda d: strxfrm(d.name))])
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
@@ -146,7 +150,9 @@ class GroupMembershipForm(BSModelForm):
         fields = '__all__'
 
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
-    group = ModelChoiceField(queryset=Group.objects.order_by('grouptype__name', '-begin_date'))
+
+    # Could use ModelChoiceField, but that does not allow for sorting queryset manually
+    group = ChoiceField(choices=[(None, '---------')])
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
@@ -155,9 +161,17 @@ class GroupMembershipForm(BSModelForm):
         member_id = kwargs.get('initial', {}).get('member', None)
         super(GroupMembershipForm, self).__init__(*args, **kwargs)
 
+        # Create the group choices dynamically
+        queryset = Group.objects.select_related('grouptype')
+
         # Do not list groups that the member already is part of
         if member_id:
-            self.fields['group'].queryset = self.fields['group'].queryset.select_related('grouptype').exclude(id__in=GroupMembership.objects.filter(member=member_id).values('group'))
+            queryset = queryset.exclude(id__in=GroupMembership.objects.filter(member=member_id).values('group'))
+
+        queryset = list(queryset)
+        queryset.sort(key=lambda g: g.begin_date)
+        queryset.sort(key=lambda g: strxfrm(g.grouptype.name))
+        self.fields['group'].choices += [(g.id, str(g)) for g in queryset]
 
 
 class MemberTypeForm(BSModelForm):

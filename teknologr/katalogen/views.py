@@ -31,7 +31,9 @@ def search(request):
     if query_list:
         result = Member.objects.filter(
            reduce(and_, (Q(given_names__icontains=q) | Q(surname__icontains=q) for q in query_list))
-        ).order_by('surname', 'given_names')
+        )
+        result = list(result)
+        result.sort(key=lambda m: (strxfrm(m.surname), strxfrm(m.given_names)))
 
     return render(request, 'browse.html', {
         **_get_base_context(request),
@@ -58,9 +60,13 @@ def profile(request, member_id):
 
 @login_required
 def startswith(request, letter):
+    members = Member.objects.filter(Q(surname__istartswith=letter.upper()) | Q(surname__istartswith=letter.lower()))
+    members = list(members)
+    members.sort(key=lambda m: (strxfrm(m.surname), strxfrm(m.given_names)))
+
     return render(request, 'browse.html', {
         **_get_base_context(request),
-        'persons': Member.objects.filter(surname__istartswith=letter).order_by('surname', 'given_names'),
+        'persons': members,
     })
 
 
@@ -215,11 +221,20 @@ def year(request, year):
     first_day = datetime.date(int(year), 1, 1)
     last_day = datetime.date(int(year), 12, 31)
 
-    # Get all decoration ownerships for the year
-    decoration_ownerships = DecorationOwnership.objects.select_related('member', 'decoration').filter(acquired__year=year).order_by('decoration__name', 'member__surname', 'member__given_names')
+    # Get all decoration ownerships for the year and sort them manually
+    decoration_ownerships = DecorationOwnership.objects.select_related('member', 'decoration').filter(acquired__year=year)
+    decoration_ownerships = list(decoration_ownerships)
+    decoration_ownerships.sort(key=lambda do: (strxfrm(do.decoration.name), strxfrm(do.member.surname), strxfrm(do.member.given_names)))
 
     # Get all functionaries for the year
-    functionaries = Functionary.objects.select_related('member', 'functionarytype').filter(begin_date__lte=last_day, end_date__gte=first_day).order_by('functionarytype__name', 'member__surname', 'member__given_names')
+    functionaries = Functionary.objects.select_related('member', 'functionarytype').filter(begin_date__lte=last_day, end_date__gte=first_day)
+
+    # Count the number unique functionaries
+    functionaries_unique_count = functionaries.aggregate(count=Count('member__id', distinct=True))['count']
+
+    # Sort the functionaries manually
+    functionaries = list(functionaries)
+    functionaries.sort(key=lambda f: (strxfrm(f.functionarytype.name), strxfrm(f.member.surname), strxfrm(f.member.given_names)))
     for f in functionaries:
         f.duration_string = create_duration_string(f.begin_date, f.end_date)
 
@@ -227,28 +242,36 @@ def year(request, year):
     groups = Group.objects.prefetch_related(
         Prefetch(
             'memberships',
-            queryset=GroupMembership.objects.select_related('member').order_by('member__surname', 'member__given_names')
+            queryset=GroupMembership.objects.select_related('member')
         ),
         'grouptype'
-    ).annotate(num_members=Count('memberships', distinct=True)).filter(begin_date__lte=last_day, end_date__gte=first_day, num_members__gt=0).order_by('grouptype__name')
-    for g in groups:
-        g.duration_string = create_duration_string(g.begin_date, g.end_date)
+    ).annotate(num_members=Count('memberships', distinct=True)).filter(begin_date__lte=last_day, end_date__gte=first_day, num_members__gt=0)
 
     # Count the number of total and unique group memebers
     gm_counts = groups.aggregate(total=Count('memberships__member__id'), unique=Count('memberships__member__id', distinct=True))
 
-    # Get all new members for the year
-    member_types = MemberType.objects.select_related('member').filter(begin_date__year=year).order_by('member__surname', 'member__given_names')
+    # Sort the groups manually
+    groups = list(groups)
+    groups.sort(key=lambda g: strxfrm(g.grouptype.name))
+    for g in groups:
+        g.duration_string = create_duration_string(g.begin_date, g.end_date)
+
+    # Get all new members for the year and sort them manually
+    member_types = MemberType.objects.select_related('member').filter(begin_date__year=year)
+    member_types_ordinary = list(member_types.filter(type='OM'))
+    member_types_ordinary.sort(key=lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names)))
+    member_types_stalm = list(member_types.filter(type='ST'))
+    member_types_stalm.sort(key=lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names)))
 
     return render(request, 'year.html', {
         **_get_base_context(request),
         'year': year,
         'decoration_ownerships': decoration_ownerships,
         'functionaries': functionaries,
-        'functionaries_unique_count': functionaries.aggregate(count=Count('member__id', distinct=True))['count'],
+        'functionaries_unique_count': functionaries_unique_count,
         'groups': groups,
         'group_memberships_total': gm_counts['total'],
         'group_memberships_unique': gm_counts['unique'],
-        'member_types_ordinary': member_types.filter(type='OM'),
-        'member_types_stalm': member_types.filter(type='ST'),
+        'member_types_ordinary': member_types_ordinary,
+        'member_types_stalm': member_types_stalm,
     })
