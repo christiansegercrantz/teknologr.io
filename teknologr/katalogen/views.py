@@ -43,17 +43,23 @@ def search(request):
 
 @login_required
 def profile(request, member_id):
-    person = Member.objects.get_prefetched_or_404(member_id)
+    """
+    View the public profile of a user. All details will be shown if the user allows it, or if this is the user's own profile.
 
-    lexicographical = request.GET.get('lexicographical', '0') != '0'
+    URL query parameters available:
+     - combine=<0/1>: Whether or not to combine the same Functionaries and GroupMemberships into a single row. The ordering will switch to lexicographical instead of reversed date as well.
+    """
+    person = Member.objects.get_prefetched_or_404(member_id)
+    functionaries = list(person.functionaries.all())
+    group_memberships = list(person.group_memberships.all())
+
     combine = request.GET.get('combine', '0') != '0'
 
-    if lexicographical:
-        functionaries = person.functionaries_ordered_by_date
-        group_memberships = person.group_memberships_ordered_by_date
-    else:
-        functionaries = person.functionaries_ordered_by_name
-        group_memberships = person.group_memberships_ordered_by_name
+    # Order the items differently depending on if they will be combined or not
+    ordering = [('date', False), ('name', False)] if combine else [('name', False), ('date', True)]
+    for by, reverse in ordering:
+        Functionary.order_by(functionaries, by, reverse)
+        GroupMembership.order_by(group_memberships, by, reverse)
 
     if combine:
         functionary_duration_strings = create_functionary_duration_strings(functionaries)
@@ -62,11 +68,11 @@ def profile(request, member_id):
         functionary_duration_strings = [(f.functionarytype, f.duration_string) for f in functionaries]
         group_type_duration_strings = [(gm.group.grouptype, gm.group.duration_string) for gm in group_memberships]
 
-
     return render(request, 'profile.html', {
         **_get_base_context(request),
         'show_all': person.username == request.user.username or person.showContactInformation(),
         'person': person,
+        'combined': combine,
         'functionary_duration_strings': functionary_duration_strings,
         'group_type_duration_strings': group_type_duration_strings,
         'decoration_ownerships': person.decoration_ownerships_ordered,
