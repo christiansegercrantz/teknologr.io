@@ -478,14 +478,6 @@ class FunctionaryTypeManager(models.Manager):
         )
         return get_object_or_404(queryset, id=functionary_type_id)
 
-    @classmethod
-    def order_by(cls, functionarytypes_list, by, reverse=False):
-        if by == 'name':
-            key = lambda ft: strxfrm(ft.name)
-        else:
-            return
-        functionarytypes_list.sort(key=key, reverse=reverse)
-
 class FunctionaryType(SuperClass):
     objects = FunctionaryTypeManager()
     name = models.CharField(max_length=64, blank=False, null=False, unique=True)
@@ -500,6 +492,14 @@ class FunctionaryType(SuperClass):
         Functionary.order_by(l, 'member')
         Functionary.order_by(l, 'date', True)
         return l
+
+    @classmethod
+    def order_by(cls, functionarytypes_list, by, reverse=False):
+        if by == 'name':
+            key = lambda ft: strxfrm(ft.name)
+        else:
+            return
+        functionarytypes_list.sort(key=key, reverse=reverse)
 
 
 class MemberTypeManager(models.Manager):
