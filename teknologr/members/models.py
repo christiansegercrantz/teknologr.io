@@ -174,14 +174,28 @@ class Member(SuperClass):
         return l
 
     @property
-    def functionaries_ordered(self):
+    def functionaries_ordered_by_date(self):
         l = list(self.functionaries.all())
-        l.sort(key=lambda f: (f.begin_date, f.end_date), reverse=True)
         l.sort(key=lambda f: strxfrm(f.functionarytype.name))
+        l.sort(key=lambda f: (f.begin_date, f.end_date), reverse=True)
         return l
 
     @property
-    def group_memberships_ordered(self):
+    def functionaries_ordered_by_name(self):
+        l = list(self.functionaries.all())
+        Functionary.order_by_date(l, False)
+        Functionary.order_by_name(l, True)
+        return l
+
+    @property
+    def group_memberships_ordered_by_date(self):
+        l = list(self.group_memberships.all())
+        l.sort(key=lambda gm: strxfrm(gm.group.grouptype.name))
+        l.sort(key=lambda gm: (gm.group.begin_date, gm.group.end_date), reverse=True)
+        return l
+
+    @property
+    def group_memberships_ordered_by_name(self):
         l = list(self.group_memberships.all())
         l.sort(key=lambda gm: (gm.group.begin_date, gm.group.end_date), reverse=True)
         l.sort(key=lambda gm: strxfrm(gm.group.grouptype.name))
@@ -381,6 +395,14 @@ class Functionary(SuperClass):
 
     def __str__(self):
         return "{0}: {1} - {2}, {3}".format(self.functionarytype, self.begin_date, self.end_date, self.member)
+
+    @classmethod
+    def order_by_name(cls, functionaries_list, ascending=True):
+        functionaries_list.sort(key=lambda f: strxfrm(f.functionarytype.name), reverse=~ascending)
+
+    @classmethod
+    def order_by_date(cls, functionaries_list, ascending=True):
+        functionaries_list.sort(key=lambda f: (f.begin_date, f.end_date), reverse=~ascending)
 
 class FunctionaryTypeManager(models.Manager):
     def get_queryset(self):

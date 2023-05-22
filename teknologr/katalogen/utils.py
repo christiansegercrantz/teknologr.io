@@ -34,7 +34,8 @@ def create_functionary_duration_strings(functionaries):
     for f in functionaries:
         d = add_to_durations(d, f.functionarytype, f.begin_date, f.end_date)
 
-    return date_pairs_to_duration_strings(d)
+    d = date_pairs_to_duration_strings(d)
+    return [(key, value) for key, value in d.items()]
 
 
 def create_group_type_duration_strings(group_memberships):
@@ -43,4 +44,5 @@ def create_group_type_duration_strings(group_memberships):
         g = gm.group
         d = add_to_durations(d, g.grouptype, g.begin_date, g.end_date)
 
-    return date_pairs_to_duration_strings(d)
+    d = date_pairs_to_duration_strings(d)
+    return [(key, value) for key, value in d.items()]

@@ -45,8 +45,23 @@ def search(request):
 def profile(request, member_id):
     person = Member.objects.get_prefetched_or_404(member_id)
 
-    functionary_duration_strings = create_functionary_duration_strings(person.functionaries_ordered)
-    group_type_duration_strings = create_group_type_duration_strings(person.group_memberships_ordered)
+    lexicographical = request.GET.get('lexicographical', '0') != '0'
+    combine = request.GET.get('combine', '0') != '0'
+
+    if lexicographical:
+        functionaries = person.functionaries_ordered_by_date
+        group_memberships = person.group_memberships_ordered_by_date
+    else:
+        functionaries = person.functionaries_ordered_by_name
+        group_memberships = person.group_memberships_ordered_by_name
+
+    if combine:
+        functionary_duration_strings = create_functionary_duration_strings(functionaries)
+        group_type_duration_strings = create_group_type_duration_strings(group_memberships)
+    else:
+        functionary_duration_strings = [(f.functionarytype, f.duration_string) for f in functionaries]
+        group_type_duration_strings = [(gm.group.grouptype, gm.group.duration_string) for gm in group_memberships]
+
 
     return render(request, 'profile.html', {
         **_get_base_context(request),
