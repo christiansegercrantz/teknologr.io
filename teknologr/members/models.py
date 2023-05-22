@@ -4,8 +4,10 @@ from django.db import models
 from django.db.models import Q, Prefetch, Count
 from django_countries.fields import CountryField
 from django.shortcuts import get_object_or_404
-from locale import strxfrm
+from locale import strxfrm, strcoll
+from operator import attrgetter
 from katalogen.utils import *
+from members.utils import *
 
 
 class SuperClass(models.Model):
@@ -169,36 +171,22 @@ class Member(SuperClass):
     @property
     def decoration_ownerships_ordered(self):
         l = list(self.decoration_ownerships.all())
-        l.sort(key=lambda do: strxfrm(do.decoration.name))
-        l.sort(key=lambda do: do.acquired, reverse=True)
+        DecorationOwnership.order_by(l, 'name')
+        DecorationOwnership.order_by(l, 'date', True)
         return l
 
     @property
-    def functionaries_ordered_by_date(self):
+    def functionaries_ordered(self):
         l = list(self.functionaries.all())
-        l.sort(key=lambda f: strxfrm(f.functionarytype.name))
-        l.sort(key=lambda f: (f.begin_date, f.end_date), reverse=True)
+        Functionary.order_by(l, 'name')
+        Functionary.order_by(l, 'date', True)
         return l
 
     @property
-    def functionaries_ordered_by_name(self):
-        l = list(self.functionaries.all())
-        Functionary.order_by_date(l, False)
-        Functionary.order_by_name(l, True)
-        return l
-
-    @property
-    def group_memberships_ordered_by_date(self):
+    def group_memberships_ordered(self):
         l = list(self.group_memberships.all())
-        l.sort(key=lambda gm: strxfrm(gm.group.grouptype.name))
-        l.sort(key=lambda gm: (gm.group.begin_date, gm.group.end_date), reverse=True)
-        return l
-
-    @property
-    def group_memberships_ordered_by_name(self):
-        l = list(self.group_memberships.all())
-        l.sort(key=lambda gm: (gm.group.begin_date, gm.group.end_date), reverse=True)
-        l.sort(key=lambda gm: strxfrm(gm.group.grouptype.name))
+        GroupMembership.order_by(l, 'name')
+        GroupMembership.order_by(l, 'date', True)
         return l
 
     @property
@@ -209,6 +197,14 @@ class Member(SuperClass):
     def group_type_duration_strings(self):
         return create_group_type_duration_strings(self.group_memberships_ordered)
 
+    @classmethod
+    def order_by(cls, members_list, by, reverse=False):
+        if by == 'name':
+            key = lambda m: (strxfrm(m.surname), strxfrm(m.given_names))
+        else:
+            return
+        members_list.sort(key=key, reverse=reverse)
+
 
 class DecorationOwnershipManager(models.Manager):
     def year(self, year):
@@ -216,7 +212,8 @@ class DecorationOwnershipManager(models.Manager):
 
     def year_ordered(self, year):
         l = list(self.year(year))
-        l.sort(key=lambda do: (strxfrm(do.decoration.name), strxfrm(do.member.surname), strxfrm(do.member.given_names)))
+        DecorationOwnership.order_by(l, 'member')
+        DecorationOwnership.order_by(l, 'name')
         return l
 
 class DecorationOwnership(SuperClass):
@@ -228,6 +225,18 @@ class DecorationOwnership(SuperClass):
     def __str__(self):
         return "%s - %s" % (self.decoration.name, self.member.full_name)
 
+    @classmethod
+    def order_by(cls, ownerships_list, by, reverse=False):
+        if by == 'date':
+            key = attrgetter('acquired')
+        elif by == 'name':
+            key = lambda do: strxfrm(do.decoration.name)
+        elif by == 'member':
+            key = lambda do: (strxfrm(do.member.surname), strxfrm(do.member.given_names))
+        else:
+            return
+        ownerships_list.sort(key=key, reverse=reverse)
+
 
 class DecorationManager(models.Manager):
     def get_queryset(self):
@@ -235,7 +244,7 @@ class DecorationManager(models.Manager):
 
     def all_ordered(self):
         l = list(self.get_queryset())
-        l.sort(key=lambda d: strxfrm(d.name))
+        Decoration.order_by(l, 'name')
         return l
 
     def get_prefetched_or_404(self, decoration_id):
@@ -260,10 +269,17 @@ class Decoration(SuperClass):
     @property
     def ownerships_ordered(self):
         l = list(self.ownerships.all())
-        l.sort(key=lambda do: (strxfrm(do.member.surname), strxfrm(do.member.given_names)))
-        l.sort(key=lambda do: do.acquired, reverse=True)
+        DecorationOwnership.order_by(l, 'member')
+        DecorationOwnership.order_by(l, 'date', True)
         return l
 
+    @classmethod
+    def order_by(cls, decorations_list, by, reverse=False):
+        if by == 'name':
+            key = lambda d: strxfrm(d.name)
+        else:
+            return
+        decorations_list.sort(key=key, reverse=reverse)
 
 class GroupMembership(SuperClass):
     member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="group_memberships")
@@ -271,6 +287,18 @@ class GroupMembership(SuperClass):
 
     class Meta:
         unique_together = (("member", "group"),)
+
+    @classmethod
+    def order_by(cls, memberships_list, by, reverse=False):
+        if by == 'date':
+            key = attrgetter('group.begin_date', 'group.end_date')
+        elif by == 'name':
+            key = lambda gm: strxfrm(gm.group.grouptype.name)
+        elif by == 'member':
+            key = lambda gm: (strxfrm(gm.member.surname), strxfrm(gm.member.given_names))
+        else:
+            return
+        memberships_list.sort(key=key, reverse=reverse)
 
 
 class GroupManager(models.Manager):
@@ -290,7 +318,7 @@ class GroupManager(models.Manager):
         queryset = self.year(year)
         gm_counts = queryset.aggregate(total=Count('memberships__member__id'), unique=Count('memberships__member__id', distinct=True))
         l = list(queryset)
-        l.sort(key=lambda g: strxfrm(g.grouptype.name))
+        Group.order_by(l, 'name')
         return l, gm_counts['total'], gm_counts['unique']
 
 class Group(SuperClass):
@@ -309,8 +337,18 @@ class Group(SuperClass):
     @property
     def memberships_ordered(self):
         l = list(self.memberships.all())
-        l.sort(key=lambda gm: (strxfrm(gm.member.surname), strxfrm(gm.member.given_names)))
+        GroupMembership.order_by(l, 'member')
         return l
+
+    @classmethod
+    def order_by(cls, groups_list, by, reverse=False):
+        if by == 'date':
+            key = attrgetter('begin_date', 'end_date')
+        elif by == 'name':
+            key = lambda g: strxfrm(g.grouptype.name)
+        else:
+            return
+        groups_list.sort(key=key, reverse=reverse)
 
 class GroupTypeManager(models.Manager):
     def get_queryset(self):
@@ -323,7 +361,7 @@ class GroupTypeManager(models.Manager):
 
     def all_ordered(self):
         l = list(self.get_queryset())
-        l.sort(key=lambda gt: strxfrm(gt.name))
+        GroupType.order_by(l, 'name')
         return l
 
     def get_prefetched_or_404(self, group_type_id):
@@ -350,8 +388,16 @@ class GroupType(SuperClass):
     @property
     def groups_ordered(self):
         l = list(self.groups.all())
-        l. sort(key=lambda g: g.begin_date, reverse=True)
+        Group.order_by(l, 'date', True)
         return l
+
+    @classmethod
+    def order_by(cls, grouptypes_list, by, reverse=False):
+        if by == 'name':
+            key = lambda gt: strxfrm(gt.name)
+        else:
+            return
+        grouptypes_list.sort(key=key, reverse=reverse)
 
 
 class FunctionaryManager(models.Manager):
@@ -362,7 +408,8 @@ class FunctionaryManager(models.Manager):
         queryset = self.year(year)
         unique_count = queryset.aggregate(count=Count('member__id', distinct=True))['count']
         l = list(queryset)
-        l.sort(key=lambda f: (strxfrm(f.functionarytype.name), strxfrm(f.member.surname), strxfrm(f.member.given_names)))
+        Functionary.order_by(l, 'member')
+        Functionary.order_by(l, 'name')
         return l, unique_count
 
 class Functionary(SuperClass):
@@ -397,12 +444,16 @@ class Functionary(SuperClass):
         return "{0}: {1} - {2}, {3}".format(self.functionarytype, self.begin_date, self.end_date, self.member)
 
     @classmethod
-    def order_by_name(cls, functionaries_list, ascending=True):
-        functionaries_list.sort(key=lambda f: strxfrm(f.functionarytype.name), reverse=~ascending)
-
-    @classmethod
-    def order_by_date(cls, functionaries_list, ascending=True):
-        functionaries_list.sort(key=lambda f: (f.begin_date, f.end_date), reverse=~ascending)
+    def order_by(cls, functionaries_list, by, reverse=False):
+        if by == 'date':
+            key = attrgetter('begin_date', 'end_date')
+        elif by == 'name':
+            key =  lambda f: strxfrm(f.functionarytype.name)
+        elif by == 'member':
+            key = lambda f: (strxfrm(f.member.surname), strxfrm(f.member.given_names))
+        else:
+            return
+        functionaries_list.sort(key=key, reverse=reverse)
 
 class FunctionaryTypeManager(models.Manager):
     def get_queryset(self):
@@ -413,7 +464,7 @@ class FunctionaryTypeManager(models.Manager):
 
     def all_ordered(self):
         l = list(self.get_queryset())
-        l.sort(key=lambda ft: strxfrm(ft.name))
+        FunctionaryType.order_by(l, 'name')
         return l
 
     def get_prefetched_or_404(self, functionary_type_id):
@@ -427,6 +478,14 @@ class FunctionaryTypeManager(models.Manager):
         )
         return get_object_or_404(queryset, id=functionary_type_id)
 
+    @classmethod
+    def order_by(cls, functionarytypes_list, by, reverse=False):
+        if by == 'name':
+            key = lambda ft: strxfrm(ft.name)
+        else:
+            return
+        functionarytypes_list.sort(key=key, reverse=reverse)
+
 class FunctionaryType(SuperClass):
     objects = FunctionaryTypeManager()
     name = models.CharField(max_length=64, blank=False, null=False, unique=True)
@@ -438,8 +497,8 @@ class FunctionaryType(SuperClass):
     @property
     def functionaries_ordered(self):
         l = list(self.functionaries.all())
-        l.sort(key=lambda f: (strxfrm(f.member.surname), strxfrm(f.member.given_names)))
-        l.sort(key=lambda f: (f.begin_date, f.end_date), reverse=True)
+        Functionary.order_by(l, 'member')
+        Functionary.order_by(l, 'date', True)
         return l
 
 
@@ -452,7 +511,7 @@ class MemberTypeManager(models.Manager):
 
     def ordinary_members_begin_year_sorted(self, year):
         l = list(self.ordinary_members_begin_year(year))
-        l.sort(key=lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names)))
+        MemberType.order_by(l, 'member')
         return l
 
     def stalms_begin_year(self, year):
@@ -460,7 +519,7 @@ class MemberTypeManager(models.Manager):
 
     def stalms_begin_year_sorted(self, year):
         l = list(self.stalms_begin_year(year))
-        l.sort(key=lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names)))
+        MemberType.order_by(l, 'member')
         return l
 
 
@@ -488,3 +547,11 @@ class MemberType(SuperClass):
         return "{0}: {1}-{2}".format(
             self.get_type_display(), self.begin_date, (self.end_date if self.end_date else ">")
             )
+
+    @classmethod
+    def order_by(cls, membertypes_list, by, reverse=False):
+        if by == 'member':
+            key = lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names))
+        else:
+            return
+        membertypes_list.sort(key=key, reverse=reverse)

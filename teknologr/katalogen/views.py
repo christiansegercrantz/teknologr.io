@@ -33,7 +33,7 @@ def search(request):
            reduce(and_, (Q(given_names__icontains=q) | Q(surname__icontains=q) for q in query_list))
         )
         result = list(result)
-        result.sort(key=lambda m: (strxfrm(m.surname), strxfrm(m.given_names)))
+        Member.order_by(result, 'name')
 
     return render(request, 'browse.html', {
         **_get_base_context(request),
@@ -77,7 +77,7 @@ def profile(request, member_id):
 def startswith(request, letter):
     members = Member.objects.filter(Q(surname__istartswith=letter.upper()) | Q(surname__istartswith=letter.lower()))
     members = list(members)
-    members.sort(key=lambda m: (strxfrm(m.surname), strxfrm(m.given_names)))
+    Member.order_by(members, 'name')
 
     return render(request, 'browse.html', {
         **_get_base_context(request),

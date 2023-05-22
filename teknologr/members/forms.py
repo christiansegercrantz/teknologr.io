@@ -168,10 +168,10 @@ class GroupMembershipForm(BSModelForm):
         if member_id:
             queryset = queryset.exclude(id__in=GroupMembership.objects.filter(member=member_id).values('group'))
 
-        queryset = list(queryset)
-        queryset.sort(key=lambda g: g.begin_date)
-        queryset.sort(key=lambda g: strxfrm(g.grouptype.name))
-        self.fields['group'].choices += [(g.id, str(g)) for g in queryset]
+        groups = list(queryset)
+        Group.order_by(groups, 'date')
+        Group.order_by(groups, 'name')
+        self.fields['group'].choices += [(g.id, str(g)) for g in groups]
 
 
 class MemberTypeForm(BSModelForm):
