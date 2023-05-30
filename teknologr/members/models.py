@@ -169,21 +169,21 @@ class Member(SuperClass):
         return self.allow_publish_info and self.isValidMember() and not self.dead
 
     @property
-    def decoration_ownerships_ordered(self):
+    def decoration_ownerships_by_date(self):
         l = list(self.decoration_ownerships.all())
         DecorationOwnership.order_by(l, 'name')
         DecorationOwnership.order_by(l, 'date', True)
         return l
 
     @property
-    def functionaries_ordered(self):
+    def functionaries_by_date(self):
         l = list(self.functionaries.all())
         Functionary.order_by(l, 'name')
         Functionary.order_by(l, 'date', True)
         return l
 
     @property
-    def group_memberships_ordered(self):
+    def group_memberships_by_date(self):
         l = list(self.group_memberships.all())
         GroupMembership.order_by(l, 'name')
         GroupMembership.order_by(l, 'date', True)
@@ -242,7 +242,7 @@ class DecorationManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().annotate(count=Count('ownerships'))
 
-    def all_ordered(self):
+    def all_by_name(self):
         l = list(self.get_queryset())
         Decoration.order_by(l, 'name')
         return l
@@ -267,7 +267,7 @@ class Decoration(SuperClass):
         return self.name
 
     @property
-    def ownerships_ordered(self):
+    def ownerships_by_date(self):
         l = list(self.ownerships.all())
         DecorationOwnership.order_by(l, 'member')
         DecorationOwnership.order_by(l, 'date', True)
@@ -291,7 +291,7 @@ class GroupMembership(SuperClass):
     @classmethod
     def order_by(cls, memberships_list, by, reverse=False):
         if by == 'date':
-            key = attrgetter('group.begin_date', 'group.end_date')
+            key = attrgetter('group.end_date', 'group.begin_date')
         elif by == 'name':
             key = lambda gm: strxfrm(gm.group.grouptype.name)
         elif by == 'member':
@@ -335,7 +335,7 @@ class Group(SuperClass):
         return create_duration_string(self.begin_date, self.end_date)
 
     @property
-    def memberships_ordered(self):
+    def memberships_by_member(self):
         l = list(self.memberships.all())
         GroupMembership.order_by(l, 'member')
         return l
@@ -343,7 +343,7 @@ class Group(SuperClass):
     @classmethod
     def order_by(cls, groups_list, by, reverse=False):
         if by == 'date':
-            key = attrgetter('begin_date', 'end_date')
+            key = attrgetter('end_date', 'begin_date')
         elif by == 'name':
             key = lambda g: strxfrm(g.grouptype.name)
         else:
@@ -359,7 +359,7 @@ class GroupTypeManager(models.Manager):
             count_members_unique=Count('groups__memberships__member', distinct=True),
         )
 
-    def all_ordered(self):
+    def all_by_name(self):
         l = list(self.get_queryset())
         GroupType.order_by(l, 'name')
         return l
@@ -386,7 +386,7 @@ class GroupType(SuperClass):
         return self.name
 
     @property
-    def groups_ordered(self):
+    def groups_by_date(self):
         l = list(self.groups.all())
         Group.order_by(l, 'date', True)
         return l
@@ -446,7 +446,7 @@ class Functionary(SuperClass):
     @classmethod
     def order_by(cls, functionaries_list, by, reverse=False):
         if by == 'date':
-            key = attrgetter('begin_date', 'end_date')
+            key = attrgetter('end_date', 'begin_date')
         elif by == 'name':
             key =  lambda f: strxfrm(f.functionarytype.name)
         elif by == 'member':
@@ -462,7 +462,7 @@ class FunctionaryTypeManager(models.Manager):
         count_unique=Count('functionaries__member', distinct=True),
     )
 
-    def all_ordered(self):
+    def all_by_name(self):
         l = list(self.get_queryset())
         FunctionaryType.order_by(l, 'name')
         return l
@@ -487,7 +487,7 @@ class FunctionaryType(SuperClass):
         return self.name
 
     @property
-    def functionaries_ordered(self):
+    def functionaries_by_date(self):
         l = list(self.functionaries.all())
         Functionary.order_by(l, 'member')
         Functionary.order_by(l, 'date', True)
@@ -509,7 +509,7 @@ class MemberTypeManager(models.Manager):
     def ordinary_members_begin_year(self, year):
         return self.begin_year(year).filter(type='OM')
 
-    def ordinary_members_begin_year_sorted(self, year):
+    def ordinary_members_begin_year_ordered(self, year):
         l = list(self.ordinary_members_begin_year(year))
         MemberType.order_by(l, 'member')
         return l
@@ -517,7 +517,7 @@ class MemberTypeManager(models.Manager):
     def stalms_begin_year(self, year):
         return self.begin_year(year).filter(type='ST')
 
-    def stalms_begin_year_sorted(self, year):
+    def stalms_begin_year_ordered(self, year):
         l = list(self.stalms_begin_year(year))
         MemberType.order_by(l, 'member')
         return l
@@ -550,7 +550,11 @@ class MemberType(SuperClass):
 
     @classmethod
     def order_by(cls, membertypes_list, by, reverse=False):
-        if by == 'member':
+        if by == 'begin_date':
+            key = lambda mt: mt.begin_date
+        elif by == 'end_date':
+            key = lambda mt: mt.end_date or datetime.date(9999, 12, 31)
+        elif by == 'member':
             key = lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names))
         else:
             return

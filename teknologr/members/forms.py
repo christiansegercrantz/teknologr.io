@@ -70,7 +70,7 @@ class FunctionaryForm(BSModelForm):
     end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
 
     # Could use ModelChoiceField, but that does not allow for sorting queryset manually
-    functionarytype = ChoiceField(choices=[(None, '---------')] + [(ft.id, ft.name) for ft in FunctionaryType.objects.all_ordered()])
+    functionarytype = ChoiceField(choices=[(None, '---------')] + [(ft.id, ft.name) for ft in FunctionaryType.objects.all_by_name()])
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
@@ -107,7 +107,7 @@ class DecorationOwnershipForm(BSModelForm):
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
 
     # Could use ModelChoiceField, but that does not allow for sorting queryset manually
-    decoration = ChoiceField(choices=[(None, '---------')] + [(d.id, d.name) for d in Decoration.objects.all_ordered()])
+    decoration = ChoiceField(choices=[(None, '---------')] + [(d.id, d.name) for d in Decoration.objects.all_by_name()])
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'

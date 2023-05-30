@@ -75,7 +75,7 @@ def profile(request, member_id):
         'combined': combine,
         'functionary_duration_strings': functionary_duration_strings,
         'group_type_duration_strings': group_type_duration_strings,
-        'decoration_ownerships': person.decoration_ownerships_ordered,
+        'decoration_ownerships': person.decoration_ownerships_by_date,
     })
 
 
@@ -103,14 +103,14 @@ def decorations(request):
     #  - Date of first/latest?
     return render(request, 'decorations.html', {
         **_get_base_context(request),
-        'decorations': Decoration.objects.all_ordered(),
+        'decorations': Decoration.objects.all_by_name(),
     })
 
 
 @login_required
 def decoration(request, decoration_id):
     decoration = Decoration.objects.get_prefetched_or_404(decoration_id)
-    decoration_ownerships = decoration.ownerships_ordered
+    decoration_ownerships = decoration.ownerships_by_date
 
     return render(request, 'decoration_ownerships.html', {
         **_get_base_context(request),
@@ -125,7 +125,7 @@ def functionary_types(request):
     #  - Date of first/latest?
     return render(request, 'functionary_types.html', {
         **_get_base_context(request),
-        'functionary_types': FunctionaryType.objects.all_ordered(),
+        'functionary_types': FunctionaryType.objects.all_by_name(),
     })
 
 
@@ -136,7 +136,7 @@ def functionary_type(request, functionary_type_id):
     return render(request, 'functionaries.html', {
         **_get_base_context(request),
         'functionary_type': functionary_type,
-        'functionaries': functionary_type.functionaries_ordered,
+        'functionaries': functionary_type.functionaries_by_date,
     })
 
 
@@ -146,7 +146,7 @@ def group_types(request):
     #  - Date of first/latest?
     return render(request, 'group_types.html', {
         **_get_base_context(request),
-        'group_types': GroupType.objects.all_ordered(),
+        'group_types': GroupType.objects.all_by_name(),
     })
 
 
@@ -159,7 +159,7 @@ def group_type(request, group_type_id):
     return render(request, 'groups.html', {
         **_get_base_context(request),
         'group_type': group_type,
-        'groups': group_type.groups_ordered,
+        'groups': group_type.groups_by_date,
     })
 
 
@@ -245,6 +245,6 @@ def year(request, year):
         'groups': groups,
         'group_memberships_total': group_memberships_total,
         'group_memberships_unique': group_memberships_unique,
-        'member_types_ordinary': MemberType.objects.ordinary_members_begin_year_sorted(year),
-        'member_types_stalm': MemberType.objects.stalms_begin_year_sorted(year),
+        'member_types_ordinary': MemberType.objects.ordinary_members_begin_year_ordered(year),
+        'member_types_stalm': MemberType.objects.stalms_begin_year_ordered(year),
     })

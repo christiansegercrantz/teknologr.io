@@ -26,15 +26,15 @@ def set_side_context(context, category, active_obj=None):
     elif category == 'grouptypes':
         side['sname'] = 'grupp'
         side['form'] = GroupTypeForm(auto_id="gtmodal_%s")
-        side['objects'] = GroupType.objects.all_ordered()
+        side['objects'] = GroupType.objects.all_by_name()
     elif category == 'functionarytypes':
         side['sname'] = 'post'
         side['form'] = FunctionaryTypeForm(auto_id="ftmodal_%s")
-        side['objects'] = FunctionaryType.objects.all_ordered()
+        side['objects'] = FunctionaryType.objects.all_by_name()
     elif category == 'decorations':
         side['sname'] = 'betygelse'
         side['form'] = DecorationForm(auto_id="dmodal_%s")
-        side['objects'] = Decoration.objects.all_ordered()
+        side['objects'] = Decoration.objects.all_by_name()
     elif category == 'applicants':
         side['sname'] = 'ansökning'
         side['objects'] = Applicant.objects.order_by('-created_at')
@@ -94,15 +94,15 @@ def member(request, member_id):
     context['full_name'] = member
 
     # Get decorations
-    context['decoration_ownerships'] = member.decoration_ownerships_ordered
+    context['decoration_ownerships'] = member.decoration_ownerships_by_date
     context['add_do_form'] = DecorationOwnershipForm(initial={'member': member_id})
 
     # Get functionary positions
-    context['functionaries'] = member.functionaries_ordered
+    context['functionaries'] = member.functionaries_by_date
     context['add_f_form'] = FunctionaryForm(initial={'member': member_id})
 
     # Get groups
-    context['group_memberships'] = member.group_memberships_ordered
+    context['group_memberships'] = member.group_memberships_by_date
     context['add_gm_form'] = GroupMembershipForm(initial={'member': member_id})
 
     # Get membertypes
@@ -151,7 +151,7 @@ def group_type(request, grouptype_id, group_id=None):
 
     grouptype = GroupType.objects.get_prefetched_or_404(grouptype_id)
     context['grouptype'] = grouptype
-    context['groups'] = grouptype.groups_ordered
+    context['groups'] = grouptype.groups_by_date
 
     context['edit_gt_form'] = GroupTypeForm(instance=grouptype)
     context['add_g_form'] = GroupForm(initial={"grouptype": grouptype_id})
@@ -163,7 +163,7 @@ def group_type(request, grouptype_id, group_id=None):
             raise Http404('No Group matches the given query.')
 
         context['group'] = group
-        context['groupmembers'] = group.memberships_ordered
+        context['groupmembers'] = group.memberships_by_member
 
         context['edit_g_form'] = GroupForm(instance=group)
         context['add_gm_form'] = GroupMembershipForm(initial={"group": group_id})
@@ -186,7 +186,7 @@ def functionary_type(request, functionarytype_id):
 
     functionarytype = FunctionaryType.objects.get_prefetched_or_404(functionarytype_id)
     context['functionary_type'] = functionarytype
-    context['functionaries'] = functionarytype.functionaries_ordered
+    context['functionaries'] = functionarytype.functionaries_by_date
 
     context['edit_ft_form'] = FunctionaryTypeForm(instance=functionarytype)
     context['add_f_form'] = FunctionaryForm(initial={"functionarytype": functionarytype_id})
@@ -215,7 +215,7 @@ def decoration(request, decoration_id):
 
     decoration = Decoration.objects.get_prefetched_or_404(decoration_id)
     context['decoration'] = decoration
-    context['decoration_ownerships'] = decoration.ownerships_ordered
+    context['decoration_ownerships'] = decoration.ownerships_by_date
 
     context['edit_d_form'] = DecorationForm(instance=decoration)
     context['add_do_form'] = DecorationOwnershipForm(initial={"decoration": decoration_id})
