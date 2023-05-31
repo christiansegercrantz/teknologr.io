@@ -10,3 +10,7 @@
 .admin-link {
     color: black;
 }
+
+.order-by {
+    cursor: pointer;
+}
