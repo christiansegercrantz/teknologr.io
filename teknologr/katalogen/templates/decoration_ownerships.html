@@ -15,15 +15,15 @@
     <table class="table table-sm table-striped">
       <thead>
         <tr>
-          <th><span class="order-by attributes">Namn</span></th>
-          <th><span class="order-by attributes dates">Datum</span></th>
+          <th><span class="order-by attribute">Namn</span></th>
+          <th><span class="order-by attribute">Datum</span></th>
         </tr>
       </thead>
       <tbody>
         {% for do in decoration_ownerships %}
           <tr>
-            <td order-data-1="{{ do.member.surname }}" order-data-2="{{ do.member.given_names }}"><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.name }}</a></td>
-            <td order-data-1="{{ do.acquired|date:'c' }}">{{ do.acquired }}</td>
+            <td order-data="{{ do.member.surname }} {{ do.member.given_names }}"><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.name }}</a></td>
+            <td order-data="{{ do.acquired|date:'c' }}">{{ do.acquired }}</td>
           </tr>
         {% endfor %}
       </tbody>

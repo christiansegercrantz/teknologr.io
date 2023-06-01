@@ -43,14 +43,14 @@
       <thead>
         <tr>
           <th><span class="order-by">Betygelser år {{ year }}</span></th>
-          <th><span class="order-by attributes">Namn</span></th>
+          <th><span class="order-by attribute">Namn</span></th>
         </tr>
       </thead>
       <tbody>
         {% for do in decoration_ownerships %}
           <tr>
             <td><a href="{% url 'katalogen:decoration' do.decoration.id %}">{{ do.decoration.name }}</a></td>
-            <td order-data-1="{{ do.member.surname }}" order-data-2="{{ do.member.given_names }}"><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.full_preferred_name }}</a></td>
+            <td order-data="{{ do.member.surname }} {{ do.member.given_names }}"><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.full_preferred_name }}</a></td>
           </tr>
         {% endfor %}
       </tbody>
@@ -59,14 +59,14 @@
       <thead>
         <tr>
           <th><span class="order-by">Poster år {{ year }}</span></th>
-          <th><span class="order-by attributes">Namn</span></th>
+          <th><span class="order-by attribute">Namn</span></th>
         </tr>
       </thead>
       <tbody>
         {% for f in functionaries %}
           <tr>
             <td><a href="{% url 'katalogen:functionary_type' f.functionarytype.id %}">{{ f.functionarytype.name }}{% if f.duration_string != year %} ({{ f.duration_string }}){% endif %}</a></td>
-            <td order-data-1="{{ f.member.surname }}" order-data-2="{{ f.member.given_names }}"><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.full_preferred_name }}</a></td>
+            <td order-data="{{ f.member.surname }} {{ f.member.given_names }}"><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.full_preferred_name }}</a></td>
           </tr>
         {% endfor %}
       </tbody>
@@ -96,15 +96,15 @@
       <!-- Ordinary members -->
       <thead>
         <tr>
-          <th><span class="order-by attributes">Nya ordinarie medlemmar år {{ year }}</span></th>
-          <th><span class="order-by attributes dates">Datum</span></th>
+          <th><span class="order-by attribute">Nya ordinarie medlemmar år {{ year }}</span></th>
+          <th><span class="order-by attribute">Datum</span></th>
         </tr>
       </thead>
       <tbody>
         {% for mt in member_types_ordinary %}
           <tr>
-            <td order-data-1="{{ mt.member.surname }}" order-data-2="{{ mt.member.given_names }}"><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
-            <td order-data-1="{{ mt.begin_date|date:'c' }}">{{ mt.begin_date }}</td>
+            <td order-data="{{ mt.member.surname }} {{ mt.member.given_names }}"><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
+            <td order-data="{{ mt.begin_date|date:'c' }}">{{ mt.begin_date }}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -112,15 +112,15 @@
       <!-- StÄlMs -->
       <thead>
         <tr>
-          <th><span class="order-by attributes">Nya ständiga äldre medlemmar år {{ year }}</span></th>
-          <th><span class="order-by attributes dates">Datum</span></th>
+          <th><span class="order-by attribute">Nya ständiga äldre medlemmar år {{ year }}</span></th>
+          <th><span class="order-by attribute">Datum</span></th>
         </tr>
       </thead>
       <tbody>
         {% for mt in member_types_stalm %}
           <tr>
-            <td order-data-1="{{ mt.member.surname }}" order-data-2="{{ mt.member.given_names }}"><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
-            <td order-data-1="{{ mt.begin_date|date:'c' }}">{{ mt.begin_date }}</td>
+            <td order-data="{{ mt.member.surname }} {{ mt.member.given_names }}"><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
+            <td order-data="{{ mt.begin_date|date:'c' }}">{{ mt.begin_date }}</td>
           </tr>
         {% endfor %}
       </tbody>

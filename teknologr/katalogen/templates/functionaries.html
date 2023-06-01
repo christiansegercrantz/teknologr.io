@@ -14,15 +14,15 @@
     <table class="table table-sm table-striped">
       <thead>
         <tr>
-          <th><span class="order-by attributes">Namn</span></th>
-          <th><span class="order-by attributes dates">Datum</span></th>
+          <th><span class="order-by attribute">Namn</span></th>
+          <th><span class="order-by attribute">Datum</span></th>
         </tr>
       </thead>
       <tbody>
         {% for f in functionaries %}
           <tr>
-            <td order-data-1="{{ f.member.surname }}" order-data-2="{{ f.member.given_names }}"><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.name }}</a></td>
-            <td order-data-1="{{ f.end_date|date:'c' }}" order-data-2="{{ f.begin_date|date:'c' }}">{{ f.duration_string }}</td>
+            <td order-data="{{ f.member.surname }} {{ f.member.given_names }}"><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.name }}</a></td>
+            <td order-data="{{ f.end_date|date:'c' }}{{ f.begin_date|date:'c' }}">{{ f.duration_string }}</td>
           </tr>
         {% endfor %}
       </tbody>
