@@ -8,41 +8,39 @@ def create_duration_string(begin, end):
     return f'{date_format(begin)} - {date_format(end)}'
 
 
-def date_pairs_to_duration_strings(dict_of_pairs):
-    for key, pairs in dict_of_pairs.items():
-        dict_of_pairs[key] = ', '.join([create_duration_string(*pair) for pair in pairs])
-    return dict_of_pairs
+def durations_to_strings(dict_of_date_pairs):
+    a = []
+    for key, pairs in dict_of_date_pairs.items():
+        a.append((key, ', '.join([create_duration_string(*pair) for pair in pairs])))
+    return a
 
 
-def add_to_durations(durations_dict, key, begin, end):
-    if key not in durations_dict:
-        durations_dict[key] = [[begin, end]]
-        return durations_dict
+def add_to_durations(durations, key, begin, end):
+    if key not in durations:
+        durations[key] = [[begin, end]]
+        return durations
 
-    durations = durations_dict[key]
-    last = durations[-1]
+    pairs = durations[key]
+    last = pairs[-1]
     if begin <= last[1] + datetime.timedelta(days=1):
         last[1] = end
     else:
-        durations.append([begin, end])
-    durations_dict[key] = durations
-    return durations_dict
+        pairs.append([begin, end])
+    durations[key] = pairs
 
 
 def create_functionary_duration_strings(functionaries):
-    d = {}
+    durations = {}
     for f in functionaries:
-        d = add_to_durations(d, f.functionarytype, f.begin_date, f.end_date)
+        add_to_durations(durations, f.functionarytype, f.begin_date, f.end_date)
 
-    d = date_pairs_to_duration_strings(d)
-    return [(key, value) for key, value in d.items()]
+    return durations_to_strings(durations)
 
 
 def create_group_type_duration_strings(group_memberships):
-    d = {}
+    durations = {}
     for gm in group_memberships:
         g = gm.group
-        d = add_to_durations(d, g.grouptype, g.begin_date, g.end_date)
+        add_to_durations(durations, g.grouptype, g.begin_date, g.end_date)
 
-    d = date_pairs_to_duration_strings(d)
-    return [(key, value) for key, value in d.items()]
+    return durations_to_strings(durations)

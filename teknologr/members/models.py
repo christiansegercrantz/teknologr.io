@@ -189,14 +189,6 @@ class Member(SuperClass):
         GroupMembership.order_by(l, 'date', True)
         return l
 
-    @property
-    def functionary_duration_strings(self):
-        return create_functionary_duration_strings(self.functionaries_ordered)
-
-    @property
-    def group_type_duration_strings(self):
-        return create_group_type_duration_strings(self.group_memberships_ordered)
-
     @classmethod
     def order_by(cls, members_list, by, reverse=False):
         if by == 'name':
