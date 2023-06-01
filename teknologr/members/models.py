@@ -401,6 +401,7 @@ class FunctionaryManager(models.Manager):
         unique_count = queryset.aggregate(count=Count('member__id', distinct=True))['count']
         l = list(queryset)
         Functionary.order_by(l, 'member')
+        Functionary.order_by(l, 'date')
         Functionary.order_by(l, 'name')
         return l, unique_count
 
