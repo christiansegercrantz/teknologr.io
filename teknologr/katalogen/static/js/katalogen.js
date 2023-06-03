@@ -25,29 +25,70 @@ const sortTable = ({ tbody, column, reverse, from_attribute }) => {
     rows.appendTo(tbody);
 }
 
+/**
+ * Apply the correct sorting icon to a column header, and automatically reset the previous icon. Also store the icon, if active, so that it can be used to deduce the currently ordered column later.
+ *
+ * This needs to take into account that there can be several tables/tbodys on same page, each with their own active column/icon, so therefore the active icon is stored in the tbody.
+ */
+const handleIcon = (tbody, icon, active, reversed) => {
+    icon.removeClass();
+    icon.addClass("fa fa-2xs");
+
+    if (!active) return icon.addClass("fa-sort");
+
+    // Reset the previously active icon if there is one
+    const activeIcon = getActiveIcon(tbody);
+    if (activeIcon && activeIcon !== icon) handleIcon(tbody, activeIcon);
+
+    icon.addClass(reversed ? "fa-sort-down reversed" : "fa-sort-up");
+    setActiveIcon(tbody, icon);
+}
+const setActiveIcon = (tbody, icon) => $(tbody).data("active-icon", icon);
+const getActiveIcon = (tbody) => $(tbody).data("active-icon");
+
 
 $(document).ready(() => {
     /**
-     * Setup tables to be sortable by listening for clicks on '.order-by' columns. The order is reversed if the same column is clicked twice in a row. The data location and method of comparison can be changed by adding the classes 'attributes' and 'dates'.
+     * Setup tables to be sortable by listening for clicks on columns with the 'order-by' class. If only the header text should be clickable the class can be added to a <span> element instead of to the <th> element.
+     *
+     * The order is reversed if the same column is clicked twice in a row. Also, the order is preserved between columns, meaning that reversing the order on one column means that the first click on any other column will also result in a reversed order.
+     *
+     * Icons are also added beside each header that are sortable, and changes depending on which column is sorted.
+     *
+     * The initial order can be given by using the 'default-order' or 'default-order-reversed' class on the header in question.
+     *
+     * The data location and method of comparison can be changed by adding the classes 'attributes' and 'dates'.
      */
     $(".order-by").each((_, e) => {
         const tbody = $(e).closest("thead").next("tbody");
         if (!tbody) return;
 
+        // Get info for sorting
         const column = $(e).closest("th").index().toString();
+        const from_attribute = $(e).hasClass("attribute");
+
+        // Create an icon for this header
+        const icon = $("<i></i>");
+        icon.css("padding-left", "4px");
+        const b = $(e).hasClass("default-order-reversed");
+        handleIcon(tbody, icon, b || $(e).hasClass("default-order"), b);
+        $(e).append(icon);
 
         e.onclick = () => {
-            const by = tbody.attr("order-by");
-            let reverse = Boolean(tbody.attr("order-reverse"));
-            if (by === column) reverse = !reverse;
+            // Let's use the icons to also figure out the currently sorted column and order
+            const activeIcon = getActiveIcon(tbody);
+            let reverse = activeIcon?.hasClass("reversed");
+            if (activeIcon === icon) reverse = !reverse;
+
             sortTable({
                 tbody,
                 column,
                 reverse,
-                from_attribute: $(e).hasClass("attribute"),
+                from_attribute,
             });
-            tbody.attr("order-by", column);
-            tbody.attr("order-reverse", reverse ? "1" : "");
+
+            // Set the icon for this header (which will also reset the icon for hte previous header)
+            handleIcon(tbody, icon, true, reverse);
         }
     });
 });
