@@ -31,7 +31,9 @@ def search(request):
     if query_list:
         result = Member.objects.filter(
            reduce(and_, (Q(given_names__icontains=q) | Q(surname__icontains=q) for q in query_list))
-        ).order_by('surname', 'given_names')
+        )
+        result = list(result)
+        Member.order_by(result, 'name')
 
     return render(request, 'browse.html', {
         **_get_base_context(request),
@@ -41,26 +43,51 @@ def search(request):
 
 @login_required
 def profile(request, member_id):
-    person = get_member_prefetched_and_ordered(member_id)
+    """
+    View the public profile of a user. All details will be shown if the user allows it, or if this is the user's own profile.
 
-    functionary_duration_strings = create_functionary_duration_strings(person.functionaries.all())
-    group_type_duration_strings = create_group_type_duration_strings(person.group_memberships.all())
+    URL query parameters available:
+     - combine=<0/1>: Whether or not to combine the same Functionaries and GroupMemberships into a single row. The ordering will switch to lexicographical instead of reversed date as well.
+    """
+    person = Member.objects.get_prefetched_or_404(member_id)
+    functionaries = list(person.functionaries.all())
+    group_memberships = list(person.group_memberships.all())
+
+    combine = request.GET.get('combine', '0') != '0'
+
+    # Order the items differently depending on if they will be combined or not
+    ordering = [('date', False), ('name', False)] if combine else [('name', False), ('date', True)]
+    for by, reverse in ordering:
+        Functionary.order_by(functionaries, by, reverse)
+        GroupMembership.order_by(group_memberships, by, reverse)
+
+    if combine:
+        functionary_duration_strings = create_functionary_duration_strings(functionaries)
+        group_type_duration_strings = create_group_type_duration_strings(group_memberships)
+    else:
+        functionary_duration_strings = [(f.functionarytype, f.duration_string) for f in functionaries]
+        group_type_duration_strings = [(gm.group.grouptype, gm.group.duration_string) for gm in group_memberships]
 
     return render(request, 'profile.html', {
         **_get_base_context(request),
         'show_all': person.username == request.user.username or person.showContactInformation(),
         'person': person,
+        'combined': combine,
         'functionary_duration_strings': functionary_duration_strings,
         'group_type_duration_strings': group_type_duration_strings,
-        'decoration_ownerships': person.decoration_ownerships.all(),
+        'decoration_ownerships': person.decoration_ownerships_by_date,
     })
 
 
 @login_required
 def startswith(request, letter):
+    members = Member.objects.filter(Q(surname__istartswith=letter.upper()) | Q(surname__istartswith=letter.lower()))
+    members = list(members)
+    Member.order_by(members, 'name')
+
     return render(request, 'browse.html', {
         **_get_base_context(request),
-        'persons': Member.objects.filter(surname__istartswith=letter).order_by('surname', 'given_names'),
+        'persons': members,
     })
 
 
@@ -76,14 +103,14 @@ def decorations(request):
     #  - Date of first/latest?
     return render(request, 'decorations.html', {
         **_get_base_context(request),
-        'decorations': get_decorations_ordered_and_annotated()
+        'decorations': Decoration.objects.all_by_name(),
     })
 
 
 @login_required
 def decoration(request, decoration_id):
-    decoration = get_decoration_prefetched_and_ordered(decoration_id)
-    decoration_ownerships = decoration.ownerships.all()
+    decoration = Decoration.objects.get_prefetched_or_404(decoration_id)
+    decoration_ownerships = decoration.ownerships_by_date
 
     return render(request, 'decoration_ownerships.html', {
         **_get_base_context(request),
@@ -98,23 +125,18 @@ def functionary_types(request):
     #  - Date of first/latest?
     return render(request, 'functionary_types.html', {
         **_get_base_context(request),
-        'functionary_types': get_functionary_types_ordered_and_annotated(),
+        'functionary_types': FunctionaryType.objects.all_by_name(),
     })
 
 
 @login_required
 def functionary_type(request, functionary_type_id):
-    functionary_type = get_functionary_type_prefetched_and_ordered(functionary_type_id)
-    functionaries = functionary_type.functionaries.all()
-
-    # Add date interval string to all functionaries
-    for f in functionaries:
-        f.duration_string = create_duration_string(f.begin_date, f.end_date)
+    functionary_type = FunctionaryType.objects.get_prefetched_or_404(functionary_type_id)
 
     return render(request, 'functionaries.html', {
         **_get_base_context(request),
         'functionary_type': functionary_type,
-        'functionaries': functionaries,
+        'functionaries': functionary_type.functionaries_by_date,
     })
 
 
@@ -124,25 +146,20 @@ def group_types(request):
     #  - Date of first/latest?
     return render(request, 'group_types.html', {
         **_get_base_context(request),
-        'group_types': get_group_types_ordered_and_annotated(),
+        'group_types': GroupType.objects.all_by_name(),
     })
 
 
 @login_required
 def group_type(request, group_type_id):
-    group_type = get_group_type_prefetched_and_ordered(group_type_id)
+    group_type = GroupType.objects.get_prefetched_or_404(group_type_id)
 
     # Do not want to display empty groups here, but filtering that in the template instead of the query
-    groups = group_type.groups.all()
-
-    # Add date interval string to all groups
-    for g in groups:
-        g.duration_string = create_duration_string(g.begin_date, g.end_date)
 
     return render(request, 'groups.html', {
         **_get_base_context(request),
         'group_type': group_type,
-        'groups': groups,
+        'groups': group_type.groups_by_date,
     })
 
 
@@ -201,54 +218,33 @@ def years(request):
 def year(request, year):
     '''
     This could be enhanced, but curretnly it is done with 10 queries:
-      1. SELECT DecortaionOwnership WHERE correct_year
+      1. SELECT Functionary WHERE correct_year => COUNT
       2. SELECT Functionary WHERE correct_year
-      3. group_ids, group_type_ids = SELECT Group WHERE correct_year
-      4. SELECT GroupMemebership WHERE group__id IN group_ids
-      5. SELECT GroupType WHERE id IN group_type_ids
-      6. SELECT MemberType WHERE correct_year AND type="OM"
-      7. SELECT MemberType WHERE correct_year AND type="ST"
-      8. SELECT GroupMemebership WHERE correct_year => COUNT
-      9. COUNT DISTINCT over ^
-      10. SELECT Functionary WHERE correct_year => COUNT
+      3. SELECT GroupMemebership WHERE correct_year => COUNT
+      4. COUNT DISTINCT over ^
+      5. group_ids, group_type_ids = SELECT Group WHERE correct_year
+      6. SELECT GroupMemebership WHERE group__id IN group_ids
+      7. SELECT GroupType WHERE id IN group_type_ids
+      8. SELECT DecortaionOwnership WHERE correct_year
+      9. SELECT MemberType WHERE correct_year AND type="OM"
+      10. SELECT MemberType WHERE correct_year AND type="ST"
     '''
-    first_day = datetime.date(int(year), 1, 1)
-    last_day = datetime.date(int(year), 12, 31)
-
-    # Get all decoration ownerships for the year
-    decoration_ownerships = DecorationOwnership.objects.select_related('member', 'decoration').filter(acquired__year=year).order_by('decoration__name', 'member__surname', 'member__given_names')
 
     # Get all functionaries for the year
-    functionaries = Functionary.objects.select_related('member', 'functionarytype').filter(begin_date__lte=last_day, end_date__gte=first_day).order_by('functionarytype__name', 'member__surname', 'member__given_names')
-    for f in functionaries:
-        f.duration_string = create_duration_string(f.begin_date, f.end_date)
+    functionaries, functionaries_unique_count = Functionary.objects.year_ordered_and_unique(year)
 
     # Get all groups and group memberships for the year
-    groups = Group.objects.prefetch_related(
-        Prefetch(
-            'memberships',
-            queryset=GroupMembership.objects.select_related('member').order_by('member__surname', 'member__given_names')
-        ),
-        'grouptype'
-    ).annotate(num_members=Count('memberships', distinct=True)).filter(begin_date__lte=last_day, end_date__gte=first_day, num_members__gt=0).order_by('grouptype__name')
-    for g in groups:
-        g.duration_string = create_duration_string(g.begin_date, g.end_date)
-
-    # Count the number of total and unique group memebers
-    gm_counts = groups.aggregate(total=Count('memberships__member__id'), unique=Count('memberships__member__id', distinct=True))
-
-    # Get all new members for the year
-    member_types = MemberType.objects.select_related('member').filter(begin_date__year=year).order_by('member__surname', 'member__given_names')
+    groups, group_memberships_total, group_memberships_unique = Group.objects.year_ordered_and_counts(year)
 
     return render(request, 'year.html', {
         **_get_base_context(request),
         'year': year,
-        'decoration_ownerships': decoration_ownerships,
+        'decoration_ownerships': DecorationOwnership.objects.year_ordered(year),
         'functionaries': functionaries,
-        'functionaries_unique_count': functionaries.aggregate(count=Count('member__id', distinct=True))['count'],
+        'functionaries_unique_count': functionaries_unique_count,
         'groups': groups,
-        'group_memberships_total': gm_counts['total'],
-        'group_memberships_unique': gm_counts['unique'],
-        'member_types_ordinary': member_types.filter(type='OM'),
-        'member_types_stalm': member_types.filter(type='ST'),
+        'group_memberships_total': group_memberships_total,
+        'group_memberships_unique': group_memberships_unique,
+        'member_types_ordinary': MemberType.objects.ordinary_members_begin_year_ordered(year),
+        'member_types_stalm': MemberType.objects.stalms_begin_year_ordered(year),
     })

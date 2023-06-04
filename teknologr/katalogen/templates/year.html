@@ -37,41 +37,38 @@
           <td>Nya ständiga äldre medlemmar</td>
           <td>{{ member_types_stalm|length }}</td>
         </tr>
-        <tr><td></td><td></td></tr>
       </tbody>
 
       <!-- Decorations -->
       <thead>
         <tr>
-          <th>Betygelser år {{ year }}</th>
-          <th>Namn</th>
+          <th><span class="order-by default-order">Betygelser år {{ year }}</span></th>
+          <th><span class="order-by attribute">Namn</span></th>
         </tr>
       </thead>
       <tbody>
         {% for do in decoration_ownerships %}
           <tr>
             <td><a href="{% url 'katalogen:decoration' do.decoration.id %}">{{ do.decoration.name }}</a></td>
-            <td><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.full_preferred_name }}</a></td>
+            <td order-data="{{ do.member.surname }} {{ do.member.given_names }}"><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.full_preferred_name }}</a></td>
           </tr>
         {% endfor %}
-        <tr><td></td><td></td></tr>
       </tbody>
 
       <!-- Functionaries -->
       <thead>
         <tr>
-          <th>Postinnehavare år {{ year }}</th>
-          <th>Namn</th>
+          <th><span class="order-by attribute default-order">Poster år {{ year }}</span></th>
+          <th><span class="order-by attribute">Namn</span></th>
         </tr>
       </thead>
       <tbody>
         {% for f in functionaries %}
           <tr>
-            <td><a href="{% url 'katalogen:functionary_type' f.functionarytype.id %}">{{ f.functionarytype.name }}{% if f.duration_string != year %} ({{ f.duration_string }}){% endif %}</a></td>
-            <td><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.full_preferred_name }}</a></td>
+            <td order-data="{{ f.functionarytype.name }} {{ f.end_date|date:'c' }}{{ f.begin_date|date:'c' }}"><a href="{% url 'katalogen:functionary_type' f.functionarytype.id %}">{{ f.functionarytype.name }}{% if f.duration_string != year %} ({{ f.duration_string }}){% endif %}</a></td>
+            <td order-data="{{ f.member.surname }} {{ f.member.given_names }}"><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.full_preferred_name }}</a></td>
           </tr>
         {% endfor %}
-        <tr><td></td><td></td></tr>
       </tbody>
 
       <!-- Groups -->
@@ -87,48 +84,45 @@
             <td><a href="{% url 'katalogen:group_type' g.grouptype.id %}">{{ g.grouptype.name }}{% if g.duration_string != year %} ({{ g.duration_string }}){% endif %}</a></td>
             <td><i>{{ g.num_members }} {% if g.num_members == 1 %}medlem{% else %}medlemmar{% endif %}</i></td>
           </tr>
-          {% for gm in g.memberships.all %}
+          {% for gm in g.memberships_by_member %}
             <tr>
               <td></td>
               <td><a href="{% url 'katalogen:profile' gm.member.id %}">{{ gm.member.full_preferred_name }}</a></td>
             </tr>
           {% endfor %}
         {% endfor %}
-        <tr><td></td><td></td></tr>
       </tbody>
 
       <!-- Ordinary members -->
       <thead>
         <tr>
-          <th>Nya ordinarie medlemmar år {{ year }}</th>
-          <th>Datum</th>
+          <th><span class="order-by attribute default-order">Nya ordinarie medlemmar år {{ year }}</span></th>
+          <th><span class="order-by attribute">Datum</span></th>
         </tr>
       </thead>
       <tbody>
         {% for mt in member_types_ordinary %}
           <tr>
-            <td><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
-            <td>{{ mt.begin_date }}</td>
+            <td order-data="{{ mt.member.surname }} {{ mt.member.given_names }}"><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
+            <td order-data="{{ mt.begin_date|date:'c' }}">{{ mt.begin_date }}</td>
           </tr>
         {% endfor %}
-        <tr><td></td><td></td></tr>
       </tbody>
 
       <!-- StÄlMs -->
       <thead>
         <tr>
-          <th>Nya ständiga äldre medlemmar år {{ year }}</th>
-          <th>Datum</th>
+          <th><span class="order-by attribute default-order">Nya ständiga äldre medlemmar år {{ year }}</span></th>
+          <th><span class="order-by attribute">Datum</span></th>
         </tr>
       </thead>
       <tbody>
         {% for mt in member_types_stalm %}
           <tr>
-            <td><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
-            <td>{{ mt.begin_date }}</td>
+            <td order-data="{{ mt.member.surname }} {{ mt.member.given_names }}"><a href="{% url 'katalogen:profile' mt.member.id %}">{{ mt.member.full_preferred_name }}</a></td>
+            <td order-data="{{ mt.begin_date|date:'c' }}">{{ mt.begin_date }}</td>
           </tr>
         {% endfor %}
-        <tr><td></td><td></td></tr>
       </tbody>
     </table>
   </div>
