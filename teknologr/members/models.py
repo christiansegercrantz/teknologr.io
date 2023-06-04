@@ -100,15 +100,14 @@ class Member(SuperClass):
     def __str__(self):
         return self.full_name
 
-    def _get_full_address(self):
+    @property
+    def full_address(self):
         country = 'Finland'
         if self.country.name:
             country = str(self.country.name)
-        address_parts = [self.street_address, self.city, country]
-        if self.postal_code:
-            address_parts.insert(1, self.postal_code)
-        return ", ".join(address_parts)
-        # return "%s, %s, %s, %s" % ()
+        city = f'{self.postal_code} {self.city}'.strip()
+        address_parts = [self.street_address, city, country]
+        return ", ".join([s for s in address_parts if s])
 
     def save(self, *args, **kwargs):
         if not self.username:

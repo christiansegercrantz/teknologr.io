@@ -43,7 +43,7 @@ class MemberModelTest(TestCase):
             postal_code="02150",
             city="Esbo",
         )
-        self.assertEquals("Otsvängen 22, 02150, Esbo, Finland", member._get_full_address())
+        self.assertEquals("Otsvängen 22, 02150 Esbo, Finland", member.full_address)
 
     def test_foreign_address(self):
         member = Member(
@@ -54,7 +54,15 @@ class MemberModelTest(TestCase):
             city="Williemstad",
             country="CW"
         )
-        self.assertEquals("Dr. Martin Luther King Boulevard #78, Williemstad, Curaçao", member._get_full_address())
+        self.assertEquals("Dr. Martin Luther King Boulevard #78, Williemstad, Curaçao", member.full_address)
+
+    def test_incomplete_address(self):
+        member = Member(
+            given_names="Svatta",
+            surname="Teknolog",
+            street_address="Otsvängen 22",
+        )
+        self.assertEquals("Otsvängen 22, Finland", member.full_address)
 
     def test_member_type(self):
         member = Member(
