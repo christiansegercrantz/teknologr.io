@@ -77,6 +77,48 @@ class Member(SuperClass):
         # Store original email so we can check if it has changed on save
         self._original_email = self.email
 
+    '''
+    Names are complicated...
+    - Given names (or first names)
+        * Mandatory
+        * Can be one or many
+    - Preferred name
+        * Not mandatory
+        * If present, must be one of the given names (but that restriction is not currently implemented)
+        * If empty, it is assumed that the first given name is the preferred name
+    - Surname
+        * Mandatory
+        * Can be one or many
+        * Can include prefixes such as 'von' or 'af' that need to be taken into consideration when sorting is applied. For example, 'von Numers' should be sorted by 'N', not 'V'.
+
+    Members can choose to not have their information public, meaning that at least contact information such as email, phone number and addresses should be hidden to normal users, but does this also apply to for example middle names ? If one don't want thier middle names to be shown they could just request them to be removed, since we don't really need them for anything else than for uniquely identifying people with the same first and last names. But on the other hand we don't really want people actually removing their middle name since the amount of duplicate names is not negligible, not that I think anyone actually has a problem revealing their middle names... The compromise would be to write the non-preferred given names as initials, such as 'Kalle C J Anka' or 'K-G Kalle M Anka'.
+
+    So there need to be at least 4 different name methods/properties:
+    - full_name 
+        = '<given_names> <surname>'
+    - full_name_with_initials
+        = '<preferred_name> <remaining given_name initials> <surname>'
+    - full_name_for_sorting
+        = '<surname with removed prefix> <given_names>'
+    - full_name_with_initials_for_sorting
+        = '<surname with removed prefix> <preferred_name> <remaining given_name initials>'
+    '''
+
+    def get_preferred_name(self):
+        return self.preferred_name or self.given_names.split()[0]
+
+    def get_given_names_with_initials(self):
+        preferred_name = self.get_preferred_name()
+        names = [n if n == preferred_name else n[0] for n in self.given_names.split()]
+        return " ".join(names)
+
+    def get_surname_without_prefixes(self):
+        # Surname prefixes such as 'von' or 'af' should always be written out, but is usually not considered when sorting names alphabethically. There are even surnames with more than one prefix. For example, 'von der Leyen' should be sorted by 'L'.
+
+        # Let's assume the prefixes in question are always written with lowercase, and that everything written in all lowercase are prefixes...
+        surname = self.surname
+        return surname.lstrip('abcdefghijklmnopqrstuvwxyzåäö ') or surname.split()[-1]
+
     def _get_full_name(self):
         return "%s %s" % (self.given_names, self.surname)
 
