@@ -40,11 +40,13 @@ class Applicant(models.Model):
     # FORM METADATA
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def _get_full_name(self):
-        return '{} {}'.format(self.given_names, self.surname)
+    @property
+    def full_name(self):
+        return f'{self.given_names} {self.surname}'
 
-    full_name = property(_get_full_name)
-    name = property(_get_full_name)
+    @property
+    def name(self):
+        return self.full_name
 
     def __str__(self):
         return '{} {}: {}'.format(self.given_names, self.surname, self.student_id)

@@ -34,15 +34,14 @@ class LDAPAccountManager:
         # Everything has to be byte string because why the fuck not?
         attrs = {}
         attrs['uid'] = [username.encode('utf-8')]
-        attrs['cn'] = [member.full_preferred_name.encode('utf-8')]
+        attrs['cn'] = [member.common_name.encode('utf-8')]
         homedir = '/rhome/%s' % username
         attrs['homeDirectory'] = [homedir.encode('utf-8')]
         attrs['uidNumber'] = [str(uidnumber).encode('utf-8')]
         attrs['mailHost'] = [b'smtp.ayy.fi']
         attrs['gidNumber'] = [b'1000']
         attrs['sn'] = [member.surname.encode('utf-8')]
-        given_name = member.preferred_name if member.preferred_name else member.given_names.split()[0]
-        attrs['givenName'] = [given_name.encode('utf-8')]
+        attrs['givenName'] = [member.get_preferred_name().encode('utf-8')]
         attrs['loginShell'] = [b'/bin/bash']
         attrs['objectClass'] = [
             b'kerberosSecurityObject',

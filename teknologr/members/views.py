@@ -91,7 +91,7 @@ def member(request, member_id):
     context['programmes'].sort(key=lambda p: strxfrm(p))
 
     context['form'] = form
-    context['full_name'] = member
+    context['full_name'] = member.full_name
 
     # Get decorations
     context['decoration_ownerships'] = member.decoration_ownerships_by_date

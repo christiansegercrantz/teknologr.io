@@ -4,9 +4,9 @@
 <div class="container-fluid">
   <h1 class="page-header">
     {% if is_staff %}
-      <a class="admin-link" href="{% url 'admin:member' person.id %}">{{ person.full_name }}</a>
+      <a class="admin-link" href="{% url 'admin:member' person.id %}">{{ person.public_full_name }}</a>
     {% else %}
-      {{ person.full_name }}
+      {{ person.public_full_name }}
     {% endif %}
   </h1>
   <div class="row">

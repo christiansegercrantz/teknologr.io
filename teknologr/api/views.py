@@ -560,7 +560,7 @@ def dump_active(request):
         })
         content.append({
             'position': '',
-            'member': func.member._get_full_preferred_name()
+            'member': func.member.common_name
         })
 
     # Groups
@@ -576,7 +576,7 @@ def dump_active(request):
         })
         content.extend([{
             'position': '',
-            'member': m._get_full_preferred_name()
+            'member': m.common_name
         } for m in members])
 
     dumpname = 'filename="activedump_{}.csv"'.format(datetime.today().date())
@@ -769,7 +769,7 @@ def dump_studentbladet(request):
     recipients = [m for m in recipients if m.isValidMember()]
 
     content = [{
-        'name': recipient._get_full_name(),
+        'name': recipient.full_name,
         'street_address': recipient.street_address,
         'postal_code': recipient.postal_code,
         'city': recipient.city,

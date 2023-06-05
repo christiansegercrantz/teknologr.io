@@ -22,7 +22,7 @@
       <tbody>
         {% for do in decoration_ownerships %}
           <tr>
-            <td order-data="{{ do.member.surname }} {{ do.member.given_names }}"><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.name }}</a></td>
+            <td order-data="{{ do.member.surname }} {{ do.member.given_names }}"><a href="{% url 'katalogen:profile' do.member.id %}">{{ do.member.public_full_name }}</a></td>
             <td order-data="{{ do.acquired|date:'c' }}">{{ do.acquired }}</td>
           </tr>
         {% endfor %}

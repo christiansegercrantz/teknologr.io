@@ -119,12 +119,24 @@ class Member(SuperClass):
         surname = self.surname
         return surname.lstrip('abcdefghijklmnopqrstuvwxyzåäö ') or surname.split()[-1]
 
-    def _get_full_name(self):
-        return "%s %s" % (self.given_names, self.surname)
+    # Used for the side bar among other things
+    @property
+    def name(self):
+        return self.full_name
 
-    def _get_full_preferred_name(self):
-        first_name = self.preferred_name if self.preferred_name else self.given_names.split()[0]
-        return "%s %s" % (first_name, self.surname)
+    @property
+    def common_name(self):
+        return f'{self.get_preferred_name()} {self.surname}'
+
+    @property
+    def full_name(self):
+        return f'{self.given_names} {self.surname}'
+
+    @property
+    def public_full_name(self):
+        if self.showContactInformation():
+            return self.full_name
+        return f'{self.get_given_names_with_initials()} {self.surname}'
 
     def _get_most_recent_member_type_name(self):
         member_type = self.getMostRecentMemberType()
@@ -134,13 +146,10 @@ class Member(SuperClass):
         else:
             return ""
 
-    full_name = property(_get_full_name)
-    name = property(_get_full_name)
-    full_preferred_name = property(_get_full_preferred_name)
     current_member_type = property(_get_most_recent_member_type_name)
 
     def __str__(self):
-        return self.full_name
+        return self.public_full_name
 
     @property
     def full_address(self):
@@ -256,7 +265,7 @@ class DecorationOwnership(SuperClass):
     acquired = models.DateField()
 
     def __str__(self):
-        return "%s - %s" % (self.decoration.name, self.member.full_name)
+        return "%s - %s" % (self.decoration.name, self.member)
 
     @classmethod
     def order_by(cls, ownerships_list, by, reverse=False):
