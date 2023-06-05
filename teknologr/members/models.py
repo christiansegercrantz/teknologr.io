@@ -138,6 +138,16 @@ class Member(SuperClass):
             return self.full_name
         return f'{self.get_given_names_with_initials()} {self.surname}'
 
+    @property
+    def full_name_for_sorting(self):
+        return f'{self.get_surname_without_prefixes()}, {self.given_names}'
+
+    @property
+    def public_full_name_for_sorting(self):
+        if self.showContactInformation():
+            return self.full_name_for_sorting
+        return f'{self.get_surname_without_prefixes()}, {self.get_given_names_with_initials()}'
+
     def _get_most_recent_member_type_name(self):
         member_type = self.getMostRecentMemberType()
 
@@ -242,7 +252,7 @@ class Member(SuperClass):
     @classmethod
     def order_by(cls, members_list, by, reverse=False):
         if by == 'name':
-            key = lambda m: (strxfrm(m.surname), strxfrm(m.given_names))
+            key = lambda m: strxfrm(m.full_name_for_sorting)
         else:
             return
         members_list.sort(key=key, reverse=reverse)
@@ -274,7 +284,7 @@ class DecorationOwnership(SuperClass):
         elif by == 'name':
             key = lambda do: strxfrm(do.decoration.name)
         elif by == 'member':
-            key = lambda do: (strxfrm(do.member.surname), strxfrm(do.member.given_names))
+            key = lambda do: strxfrm(do.member.full_name_for_sorting)
         else:
             return
         ownerships_list.sort(key=key, reverse=reverse)
@@ -337,7 +347,7 @@ class GroupMembership(SuperClass):
         elif by == 'name':
             key = lambda gm: strxfrm(gm.group.grouptype.name)
         elif by == 'member':
-            key = lambda gm: (strxfrm(gm.member.surname), strxfrm(gm.member.given_names))
+            key = lambda gm: strxfrm(gm.member.full_name_for_sorting)
         else:
             return
         memberships_list.sort(key=key, reverse=reverse)
@@ -493,7 +503,7 @@ class Functionary(SuperClass):
         elif by == 'name':
             key =  lambda f: strxfrm(f.functionarytype.name)
         elif by == 'member':
-            key = lambda f: (strxfrm(f.member.surname), strxfrm(f.member.given_names))
+            key = lambda f: strxfrm(f.member.full_name_for_sorting)
         else:
             return
         functionaries_list.sort(key=key, reverse=reverse)
@@ -598,7 +608,7 @@ class MemberType(SuperClass):
         elif by == 'end_date':
             key = lambda mt: mt.end_date or datetime.date(9999, 12, 31)
         elif by == 'member':
-            key = lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names))
+            key = lambda mt: strxfrm(mt.member.full_name_for_sorting)
         else:
             return
         membertypes_list.sort(key=key, reverse=reverse)
