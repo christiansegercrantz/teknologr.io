@@ -77,6 +77,9 @@ class Member(SuperClass):
         # Store original email so we can check if it has changed on save
         self._original_email = self.email
 
+    def __str__(self):
+        return self.public_full_name
+
     '''
     Names are complicated...
     - Given names (or first names)
@@ -148,18 +151,14 @@ class Member(SuperClass):
             return self.full_name_for_sorting
         return f'{self.get_surname_without_prefixes()}, {self.get_given_names_with_initials()}'
 
-    def _get_most_recent_member_type_name(self):
+    @property
+    def current_member_type(self):
         member_type = self.getMostRecentMemberType()
 
         if member_type:
             return member_type.get_type_display()
         else:
             return ""
-
-    current_member_type = property(_get_most_recent_member_type_name)
-
-    def __str__(self):
-        return self.public_full_name
 
     @property
     def full_address(self):
@@ -275,7 +274,7 @@ class DecorationOwnership(SuperClass):
     acquired = models.DateField()
 
     def __str__(self):
-        return "%s - %s" % (self.decoration.name, self.member)
+        return f'{self.decoration.name} - {self.member}'
 
     @classmethod
     def order_by(cls, ownerships_list, by, reverse=False):
@@ -380,7 +379,7 @@ class Group(SuperClass):
     end_date = models.DateField()
 
     def __str__(self):
-        return "{0}: {1} - {2}".format(self.grouptype.name, self.begin_date, self.end_date)
+        return f'{self.grouptype}: {self.begin_date} - {self.end_date}'
 
     @property
     def duration_string(self):
@@ -472,29 +471,15 @@ class Functionary(SuperClass):
     begin_date = models.DateField()
     end_date = models.DateField()
 
-    @property
-    def duration_string(self):
-        return create_duration_string(self.begin_date, self.end_date)
-
-    def _get_str_member(self):
-        return "{0} - {1}: {2}".format(self.begin_date, self.end_date, self.member)
-
-    def _get_str_type(self):
-        return "{0}: {1} - {2}".format(self.functionarytype, self.begin_date, self.end_date)
-
-    str_member = property(_get_str_member)
-    str_type = property(_get_str_type)
-
-    def _get_funcationary_type_id(self):
-        return self.functionarytype.id
-
-    functionary_type_id = property(_get_funcationary_type_id)
-
     class Meta:
         unique_together = (("member", "functionarytype", "begin_date", "end_date"),)
 
     def __str__(self):
-        return "{0}: {1} - {2}, {3}".format(self.functionarytype, self.begin_date, self.end_date, self.member)
+        return f'{self.functionarytype}: {self.begin_date} - {self.end_date}, {self.member}'
+
+    @property
+    def duration_string(self):
+        return create_duration_string(self.begin_date, self.end_date)
 
     @classmethod
     def order_by(cls, functionaries_list, by, reverse=False):

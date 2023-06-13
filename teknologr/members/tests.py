@@ -101,9 +101,9 @@ class MemberTest(TestCase):
         self.assertEquals('Otsvängen 22, Finland', self.member3.full_address)
 
     def test_str(self):
-        self.assertIn('Tester', str(self.member1))
-        self.assertIn('Tester', str(self.member2))
-        self.assertIn('Tester', str(self.member3))
+        self.assertEqual('Foo B B Tester', str(self.member1))
+        self.assertEqual('Foo Bar Baz Tester', str(self.member2))
+        self.assertEqual('F B Baz von der Tester', str(self.member3))
 
     def test_member_type(self):
         member = Member(given_names='Svatta', surname='Teknolog')
@@ -175,69 +175,57 @@ class DecorationOwnerShipTest(TestCase):
     def setUp(self):
         member = Member.objects.create(given_names='Foo Bar', preferred_name='Foo', surname='Tester')
         decoration = Decoration.objects.create(name='Test Decoration')
-        DecorationOwnership.objects.create(member=member, decoration=decoration, acquired=datetime.date.today())
+        self.ownership = DecorationOwnership.objects.create(member=member, decoration=decoration, acquired=datetime.date.today())
 
     def test_str(self):
-        dec_ownership = DecorationOwnership.objects.get(pk=1)
-        self.assertIn('Test Decoration', str(dec_ownership))
-        self.assertIn('Tester', str(dec_ownership))
+        self.assertEqual('Test Decoration - Foo B Tester', str(self.ownership))
 
 
 class DecorationTest(TestCase):
-    def setUp(self):
-        Decoration.objects.create(name='Test Decoration')
-
     def test_str(self):
-        decoration = Decoration.objects.get(pk=1)
-        self.assertIn('Test Decoration', str(decoration))
+        name = 'My decoration'
+        decoration = Decoration.objects.create(name=name)
+        self.assertEqual(name, str(decoration))
 
 
 class GroupTest(TestCase):
     def setUp(self):
         group_type = GroupType.objects.create(name='Group Type')
-        Group.objects.create(grouptype=group_type,
-                             begin_date=datetime.date(2016, 11, 6), end_date=datetime.date(2016, 11, 8))
+        self.group = Group.objects.create(
+            grouptype=group_type,
+            begin_date=datetime.date(2016, 11, 6),
+            end_date=datetime.date(2016, 11, 8),
+        )
 
     def test_str(self):
-        group = Group.objects.get(pk=1)
-        self.assertIn('Group Type', str(group))
+        self.assertEqual('Group Type: 2016-11-06 - 2016-11-08', str(self.group))
+
 
 
 class GroupTypeTest(TestCase):
-    def setUp(self):
-        GroupType.objects.create(name='Group Type')
-
     def test_str(self):
-        group_type = GroupType.objects.get(name='Group Type')
-        self.assertIn('Group Type', str(group_type))
+        name = 'My group type'
+        group_type = GroupType.objects.create(name=name)
+        self.assertEqual(name, str(group_type))
 
 
 class FunctionaryTest(TestCase):
     def setUp(self):
-        func_type = FunctionaryType.objects.create(name='Functionary Type')
+        functionary_type = FunctionaryType.objects.create(name='Functionary Type')
         member = Member.objects.create(given_names='Foo Bar', preferred_name='Foo', surname='Tester')
-        Functionary.objects.create(functionarytype=func_type,
-                                   member=member, begin_date=datetime.date(2016, 11, 4),
-                                   end_date=datetime.date(2016, 11, 6))
-
-    def test_get_str_member(self):
-        func = Functionary.objects.get(pk=1)
-        self.assertIn('Tester', func._get_str_member())
-
-    def test_get_str_type(self):
-        func = Functionary.objects.get(pk=1)
-        self.assertIn('Functionary Type', func._get_str_type())
+        self.functionary = Functionary.objects.create(
+            functionarytype=functionary_type,
+            member=member,
+            begin_date=datetime.date(2016, 11, 4),
+            end_date=datetime.date(2016, 11, 6),
+        )
 
     def test_str(self):
-        func = Functionary.objects.get(pk=1)
-        self.assertIn('Tester', str(func))
-        self.assertIn('Functionary Type', str(func))
+        self.assertEqual('Functionary Type: 2016-11-04 - 2016-11-06, Foo B Tester', str(self.functionary))
 
 
 class FunctionaryTypeTest(TestCase):
-    def setUp(self):
-        FunctionaryType.objects.create(name='Functionary Type')
-
     def test_str(self):
-        func_type = FunctionaryType.objects.get(name='Functionary Type')
-        self.assertIn('Functionary Type', str(func_type))
+        name = 'My functionary type'
+        functionary_type = FunctionaryType.objects.create(name=name)
+        self.assertEqual(name, str(functionary_type))
