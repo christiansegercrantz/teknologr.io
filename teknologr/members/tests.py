@@ -160,12 +160,12 @@ class MemberTest(TestCase):
         self.assertEquals('Ordinarie Medlem', member.current_member_type)
         self.assertTrue(member.isValidMember())
 
-        self.assertEquals('Ordinarie Medlem: 2012-09-27->', str(om))
+        self.assertEquals('Ordinarie Medlem: 2012-09-27 ->', str(om))
 
         # Wappen kom, phuxen är inte mera phux!
         ph.end_date = datetime.date(2012, 4, 30)
         ph.save()
-        self.assertEquals('Phux: 2012-09-01-2012-04-30', str(ph))
+        self.assertEquals('Phux: 2012-09-01 - 2012-04-30', str(ph))
         self.assertFalse(member.shouldBeStalm())
 
         # Our person became JuniorStÄlM :O
@@ -176,7 +176,7 @@ class MemberTest(TestCase):
         # Our person is now finished with his/her studies
         om.end_date = datetime.date(2019, 4, 30)
         om.save()
-        self.assertEquals('Ordinarie Medlem: 2012-09-27-2019-04-30', str(om))
+        self.assertEquals('Ordinarie Medlem: 2012-09-27 - 2019-04-30', str(om))
 
         # member type should be nothing ('') now
         self.assertEquals('', member.current_member_type)
@@ -368,6 +368,8 @@ class GroupOrderTest(BaseTest):
         group_type = GroupType.objects.get(pk=1)
         groups = [Group.objects.create(grouptype=group_type, begin_date=begin_date, end_date=end_date) for [begin_date, end_date] in shuffle(self.test_date_pairs)]
 
+        self.assertEquals(len(self.test_date_pairs), len(groups))
+
         Functionary.order_by(groups, 'date')
         i = 0
         for [begin_date, end_date] in self.test_date_pairs:
@@ -481,6 +483,8 @@ class FunctionaryOrderTest(BaseTest):
         functionary_type = FunctionaryType.objects.get(pk=1)
         functionaries = [Functionary.objects.create(member=member, functionarytype=functionary_type, begin_date=begin_date, end_date=end_date) for [begin_date, end_date] in shuffle(self.test_date_pairs)]
 
+        self.assertEquals(len(self.test_date_pairs), len(functionaries))
+
         Functionary.order_by(functionaries, 'date')
         i = 0
         for [begin_date, end_date] in self.test_date_pairs:
@@ -495,7 +499,7 @@ class FunctionaryTypeTest(BaseTest):
         functionary_type = FunctionaryType.objects.create(name=name)
         self.assertEqual(name, str(functionary_type))
 
-    def test_order_by(self):
+    def test_order_by_name(self):
         for name in shuffle(self.test_names):
             FunctionaryType.objects.create(name=name)
 
@@ -506,3 +510,62 @@ class FunctionaryTypeTest(BaseTest):
 
         for i, name in enumerate(self.test_names):
             self.assertEqual(name, functionary_types[i].name)
+
+
+class MemberTypeTest(BaseTest):
+    def setUp(self):
+        member = Member.objects.create(given_names='Foo Bar', preferred_name='Foo', surname='Tester')
+        self.member_type1 = MemberType.objects.create(
+            type='OM',
+            member=member,
+            begin_date=datetime.date(2023, 1, 1),
+            end_date=datetime.date(2023, 6, 14),
+        )
+        self.member_type2 = MemberType.objects.create(
+            type='OM',
+            member=member,
+            begin_date=datetime.date(2023, 6, 14),
+        )
+
+    def test_str(self):
+        self.assertEqual('Ordinarie Medlem: 2023-01-01 - 2023-06-14', str(self.member_type1))
+        self.assertEqual('Ordinarie Medlem: 2023-06-14 ->', str(self.member_type2))
+
+
+class MemberTypeOrderTest(BaseTest):
+    def setUp(self):
+        for name in shuffle(self.test_names):
+            member = Member.objects.create(given_names=name, surname=name)
+            for date in shuffle(self.test_dates):
+                MemberType.objects.create(
+                    member=member,
+                    begin_date=date,
+                    end_date=date + datetime.timedelta(days=1),
+                )
+
+        self.member_types = list(MemberType.objects.all())
+        self.assertEquals(len(self.test_names)*len(self.test_dates), len(self.member_types))
+
+    def test_order_by_member(self):
+        MemberType.order_by(self.member_types, 'member')
+        i = 0
+        for name in self.test_names:
+            for _ in self.test_dates:
+                self.assertEqual(name, self.member_types[i].member.surname)
+                i += 1
+
+    def test_order_by_begin_date(self):
+        MemberType.order_by(self.member_types, 'begin_date')
+        i = 0
+        for date in self.test_dates:
+            for _ in self.test_names:
+                self.assertEqual(date, self.member_types[i].begin_date)
+                i += 1
+
+    def test_order_by_end_date(self):
+        MemberType.order_by(self.member_types, 'end_date')
+        i = 0
+        for date in self.test_dates:
+            for _ in self.test_names:
+                self.assertEqual(date, self.member_types[i].begin_date)
+                i += 1
