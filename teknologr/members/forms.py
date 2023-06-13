@@ -130,6 +130,9 @@ class GroupForm(BSModelForm):
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
 
+    # Could use ModelChoiceField, but that does not allow for sorting queryset manually
+    grouptype = ChoiceField(choices=[(None, '---------')] + [(gt.id, gt.name) for gt in GroupType.objects.all_by_name()])
+
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
         kwargs.setdefault('auto_id', 'gform_%s')
