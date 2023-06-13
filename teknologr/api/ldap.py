@@ -117,8 +117,8 @@ class LDAPAccountManager:
         import codecs
         import hashlib
         return codecs.encode(
-                hashlib.new('md4', password.encode('utf-16le')).digest(), 'hex_codec'
-            ).decode('utf-8').upper()
+            hashlib.new('md4', password.encode('utf-16le')).digest(), 'hex_codec'
+        ).decode('utf-8').upper()
 
     def hash_user_password(self, password):
         import random

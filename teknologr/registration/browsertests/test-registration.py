@@ -60,7 +60,7 @@ class RegistrationTest(LiveServerTestCase):
         degree_programme.select_by_value(chosen_programme)
         # We have to set the hidden input field manually as Django won't serve staticfiles in development
         self.driver.execute_script(
-                'document.getElementById("id_degree_programme").value = "{}"'.format(chosen_programme))
+            'document.getElementById("id_degree_programme").value = "{}"'.format(chosen_programme))
 
         # Simlarly to above, we have to set the value of the required field
         mother_tongue.click()

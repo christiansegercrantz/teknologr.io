@@ -37,6 +37,7 @@ class MemberManager(models.Manager):
         )
         return get_object_or_404(queryset, id=member_id)
 
+
 class Member(SuperClass):
     objects = MemberManager()
 
@@ -97,7 +98,7 @@ class Member(SuperClass):
     Members can choose to not have their information public, meaning that at least contact information such as email, phone number and addresses should be hidden to normal users, but does this also apply to for example middle names ? If one don't want thier middle names to be shown they could just request them to be removed, since we don't really need them for anything else than for uniquely identifying people with the same first and last names. But on the other hand we don't really want people actually removing their middle name since the amount of duplicate names is not negligible, not that I think anyone actually has a problem revealing their middle names... The compromise would be to write the non-preferred given names as initials, such as 'Kalle C J Anka' or 'K-G Kalle M Anka'.
 
     So there need to be at least 4 different name methods/properties:
-    - full_name 
+    - full_name
         = '<given_names> <surname>'
     - full_name_with_initials
         = '<preferred_name> <remaining given_name initials> <surname>'
@@ -288,7 +289,6 @@ class DecorationOwnership(SuperClass):
             return
         ownerships_list.sort(key=key, reverse=reverse)
 
-
 class DecorationManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().annotate(count=Count('ownerships'))
@@ -331,6 +331,7 @@ class Decoration(SuperClass):
         else:
             return
         decorations_list.sort(key=key, reverse=reverse)
+
 
 class GroupMembership(SuperClass):
     member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="group_memberships")
@@ -486,7 +487,7 @@ class Functionary(SuperClass):
         if by == 'date':
             key = attrgetter('end_date', 'begin_date')
         elif by == 'name':
-            key =  lambda f: strxfrm(f.functionarytype.name)
+            key = lambda f: strxfrm(f.functionarytype.name)
         elif by == 'member':
             key = lambda f: strxfrm(f.member.full_name_for_sorting)
         else:
@@ -496,9 +497,9 @@ class Functionary(SuperClass):
 class FunctionaryTypeManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().annotate(
-        count=Count('functionaries'),
-        count_unique=Count('functionaries__member', distinct=True),
-    )
+            count=Count('functionaries'),
+            count_unique=Count('functionaries__member', distinct=True),
+        )
 
     def all_by_name(self):
         l = list(self.get_queryset())
@@ -560,7 +561,6 @@ class MemberTypeManager(models.Manager):
         MemberType.order_by(l, 'member')
         return l
 
-
 class MemberType(SuperClass):
     objects = MemberTypeManager()
     TYPES = (
@@ -582,9 +582,7 @@ class MemberType(SuperClass):
     type = models.CharField(max_length=2, choices=TYPES, default="PH")
 
     def __str__(self):
-        return "{0}: {1}-{2}".format(
-            self.get_type_display(), self.begin_date, (self.end_date if self.end_date else ">")
-            )
+        return f'{self.get_type_display()}: {self.begin_date}-{self.end_date if self.end_date else ">"}'
 
     @classmethod
     def order_by(cls, membertypes_list, by, reverse=False):

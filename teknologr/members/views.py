@@ -84,9 +84,9 @@ def member(request, member_id):
         form = MemberForm(instance=member)
 
     context['programmes'] = [
-            programme
-            for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
-            for programme in programmes
+        programme
+        for school, programmes in DEGREE_PROGRAMME_CHOICES.items()
+        for programme in programmes
     ]
     context['programmes'].sort(key=lambda p: strxfrm(p))
 
