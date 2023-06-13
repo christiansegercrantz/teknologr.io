@@ -95,17 +95,19 @@ class Member(SuperClass):
         * Can be one or many
         * Can include prefixes such as 'von' or 'af' that need to be taken into consideration when sorting is applied. For example, 'von Numers' should be sorted by 'N', not 'V'.
 
-    Members can choose to not have their information public, meaning that at least contact information such as email, phone number and addresses should be hidden to normal users, but does this also apply to for example middle names ? If one don't want thier middle names to be shown they could just request them to be removed, since we don't really need them for anything else than for uniquely identifying people with the same first and last names. But on the other hand we don't really want people actually removing their middle name since the amount of duplicate names is not negligible, not that I think anyone actually has a problem revealing their middle names... The compromise would be to write the non-preferred given names as initials, such as 'Kalle C J Anka' or 'K-G Kalle M Anka'.
+    Members can choose to not have their information public, meaning that at least contact information such as email, phone number and addresses should be hidden to normal users, but does this also apply to for example middle names? We use middle names for uniquely identifying people with the same first and last names, and the amount of duplicate names is not negligible. I don't think anyone actually has a problem revealing their middle names, but I'm not 100% sure about that... The compromise would be to write the non-preferred given names as initials, such as 'Kalle C J Anka' or 'K-G Kalle M Anka'.
 
-    So there need to be at least 4 different name methods/properties:
-    - full_name
+    So there need to be at least 5 different name methods/properties:
+    - common_name
+        = '<preferred_name> <surname>'
+    - full_name or name
         = '<given_names> <surname>'
-    - full_name_with_initials
-        = '<preferred_name> <remaining given_name initials> <surname>'
+    - public_full_name
+        = '<preferred_name> <remaining given_names initials> <surname>'
     - full_name_for_sorting
         = '<surname with removed prefix> <given_names>'
-    - full_name_with_initials_for_sorting
-        = '<surname with removed prefix> <preferred_name> <remaining given_name initials>'
+    - public_full_name_for_sorting
+        = '<surname with removed prefix> <preferred_name> <remaining given_names initials>'
     '''
 
     def get_preferred_name(self):
