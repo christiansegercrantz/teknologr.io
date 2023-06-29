@@ -81,8 +81,13 @@ def profile(request, member_id):
 
 @login_required
 def startswith(request, letter):
-    members = Member.objects.filter(Q(surname__istartswith=letter.upper()) | Q(surname__istartswith=letter.lower()))
-    members = list(members)
+    # Surname prefixes should be ignored
+
+    # All filtering could be done here on the Python side, but letting the database pre-filter the members is probably more effective
+    members = Member.objects.filter(Q(surname__istartswith=letter) | Q(surname__icontains=f' {letter}'))
+
+    # Checking the surname without prefix
+    members = [m for m in list(members) if m.get_surname_without_prefixes()[0].upper() == letter.upper()]
     Member.order_by(members, 'name')
 
     return render(request, 'browse.html', {
