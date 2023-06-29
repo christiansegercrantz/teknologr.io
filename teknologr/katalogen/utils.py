@@ -1,5 +1,5 @@
 import datetime
-from django.utils.formats import date_format 
+from django.utils.formats import date_format
 
 
 def create_duration_string(begin, end):

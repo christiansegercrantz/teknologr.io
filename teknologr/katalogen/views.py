@@ -30,7 +30,7 @@ def search(request):
 
     if query_list:
         result = Member.objects.filter(
-           reduce(and_, (Q(given_names__icontains=q) | Q(surname__icontains=q) for q in query_list))
+            reduce(and_, (Q(given_names__icontains=q) | Q(surname__icontains=q) for q in query_list))
         )
         result = list(result)
         Member.order_by(result, 'name')
@@ -93,7 +93,7 @@ def startswith(request, letter):
 
 @login_required
 def myprofile(request):
-    person = get_object_or_404(Member,  username=request.user.username)
+    person = get_object_or_404(Member, username=request.user.username)
     return redirect('katalogen:profile', person.id)
 
 
@@ -176,7 +176,7 @@ def years(request):
 
     def add(obj, key, count_key=None):
         date = obj['year']
-        if date == None:
+        if date is None:
             return
 
         y = date.year

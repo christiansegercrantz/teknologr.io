@@ -37,6 +37,7 @@ class MemberManager(models.Manager):
         )
         return get_object_or_404(queryset, id=member_id)
 
+
 class Member(SuperClass):
     objects = MemberManager()
 
@@ -77,14 +78,84 @@ class Member(SuperClass):
         # Store original email so we can check if it has changed on save
         self._original_email = self.email
 
-    def _get_full_name(self):
-        return "%s %s" % (self.given_names, self.surname)
+    def __str__(self):
+        return self.public_full_name
 
-    def _get_full_preferred_name(self):
-        first_name = self.preferred_name if self.preferred_name else self.given_names.split()[0]
-        return "%s %s" % (first_name, self.surname)
+    '''
+    Names are complicated...
+    - Given names (or first names)
+        * Mandatory
+        * Can be one or many
+    - Preferred name
+        * Not mandatory
+        * If present, must be one of the given names (but that restriction is not currently implemented)
+        * If empty, it is assumed that the first given name is the preferred name
+    - Surname
+        * Mandatory
+        * Can be one or many
+        * Can include prefixes such as 'von' or 'af' that need to be taken into consideration when sorting is applied. For example, 'von Numers' should be sorted by 'N', not 'V'.
 
-    def _get_most_recent_member_type_name(self):
+    Members can choose to not have their information public, meaning that at least contact information such as email, phone number and addresses should be hidden to normal users, but does this also apply to for example middle names? We use middle names for uniquely identifying people with the same first and last names, and the amount of duplicate names is not negligible. I don't think anyone actually has a problem revealing their middle names, but I'm not 100% sure about that... The compromise would be to write the non-preferred given names as initials, such as 'Kalle C J Anka' or 'K-G Kalle M Anka'.
+
+    So there need to be at least 5 different name methods/properties:
+    - common_name
+        = '<preferred_name> <surname>'
+    - full_name or name
+        = '<given_names> <surname>'
+    - public_full_name
+        = '<preferred_name> <remaining given_names initials> <surname>'
+    - full_name_for_sorting
+        = '<surname with removed prefix> <given_names>'
+    - public_full_name_for_sorting
+        = '<surname with removed prefix> <preferred_name> <remaining given_names initials>'
+    '''
+
+    def get_preferred_name(self):
+        return self.preferred_name or self.given_names.split()[0]
+
+    def get_given_names_with_initials(self):
+        preferred_name = self.get_preferred_name()
+        names = [n if n == preferred_name else n[0] for n in self.given_names.split()]
+        return " ".join(names)
+
+    def get_surname_without_prefixes(self):
+        # Surname prefixes such as 'von' or 'af' should always be written out, but is usually not considered when sorting names alphabethically. There are even surnames with more than one prefix. For example, 'von der Leyen' should be sorted by 'L'.
+
+        # Let's assume the prefixes in question are always written with lowercase, and that everything written in all lowercase are prefixes...
+        surname = self.surname
+        return surname.lstrip('abcdefghijklmnopqrstuvwxyzåäö ') or surname.split()[-1]
+
+    # Used for the side bar among other things
+    @property
+    def name(self):
+        return self.full_name
+
+    @property
+    def common_name(self):
+        return f'{self.get_preferred_name()} {self.surname}'
+
+    @property
+    def full_name(self):
+        return f'{self.given_names} {self.surname}'
+
+    @property
+    def public_full_name(self):
+        if self.showContactInformation():
+            return self.full_name
+        return f'{self.get_given_names_with_initials()} {self.surname}'
+
+    @property
+    def full_name_for_sorting(self):
+        return f'{self.get_surname_without_prefixes()}, {self.given_names}'
+
+    @property
+    def public_full_name_for_sorting(self):
+        if self.showContactInformation():
+            return self.full_name_for_sorting
+        return f'{self.get_surname_without_prefixes()}, {self.get_given_names_with_initials()}'
+
+    @property
+    def current_member_type(self):
         member_type = self.getMostRecentMemberType()
 
         if member_type:
@@ -92,23 +163,14 @@ class Member(SuperClass):
         else:
             return ""
 
-    full_name = property(_get_full_name)
-    name = property(_get_full_name)
-    full_preferred_name = property(_get_full_preferred_name)
-    current_member_type = property(_get_most_recent_member_type_name)
-
-    def __str__(self):
-        return self.full_name
-
-    def _get_full_address(self):
+    @property
+    def full_address(self):
         country = 'Finland'
         if self.country.name:
             country = str(self.country.name)
-        address_parts = [self.street_address, self.city, country]
-        if self.postal_code:
-            address_parts.insert(1, self.postal_code)
-        return ", ".join(address_parts)
-        # return "%s, %s, %s, %s" % ()
+        city = f'{self.postal_code} {self.city}'.strip()
+        address_parts = [self.street_address, city, country]
+        return ", ".join([s for s in address_parts if s])
 
     def save(self, *args, **kwargs):
         if not self.username:
@@ -192,7 +254,7 @@ class Member(SuperClass):
     @classmethod
     def order_by(cls, members_list, by, reverse=False):
         if by == 'name':
-            key = lambda m: (strxfrm(m.surname), strxfrm(m.given_names))
+            key = lambda m: strxfrm(m.full_name_for_sorting)
         else:
             return
         members_list.sort(key=key, reverse=reverse)
@@ -215,7 +277,7 @@ class DecorationOwnership(SuperClass):
     acquired = models.DateField()
 
     def __str__(self):
-        return "%s - %s" % (self.decoration.name, self.member.full_name)
+        return f'{self.decoration.name} - {self.member}'
 
     @classmethod
     def order_by(cls, ownerships_list, by, reverse=False):
@@ -224,11 +286,10 @@ class DecorationOwnership(SuperClass):
         elif by == 'name':
             key = lambda do: strxfrm(do.decoration.name)
         elif by == 'member':
-            key = lambda do: (strxfrm(do.member.surname), strxfrm(do.member.given_names))
+            key = lambda do: strxfrm(do.member.full_name_for_sorting)
         else:
             return
         ownerships_list.sort(key=key, reverse=reverse)
-
 
 class DecorationManager(models.Manager):
     def get_queryset(self):
@@ -273,6 +334,7 @@ class Decoration(SuperClass):
             return
         decorations_list.sort(key=key, reverse=reverse)
 
+
 class GroupMembership(SuperClass):
     member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="group_memberships")
     group = models.ForeignKey("Group", on_delete=models.CASCADE, related_name="memberships")
@@ -287,7 +349,7 @@ class GroupMembership(SuperClass):
         elif by == 'name':
             key = lambda gm: strxfrm(gm.group.grouptype.name)
         elif by == 'member':
-            key = lambda gm: (strxfrm(gm.member.surname), strxfrm(gm.member.given_names))
+            key = lambda gm: strxfrm(gm.member.full_name_for_sorting)
         else:
             return
         memberships_list.sort(key=key, reverse=reverse)
@@ -320,7 +382,7 @@ class Group(SuperClass):
     end_date = models.DateField()
 
     def __str__(self):
-        return "{0}: {1} - {2}".format(self.grouptype.name, self.begin_date, self.end_date)
+        return f'{self.grouptype}: {self.begin_date} - {self.end_date}'
 
     @property
     def duration_string(self):
@@ -412,38 +474,24 @@ class Functionary(SuperClass):
     begin_date = models.DateField()
     end_date = models.DateField()
 
-    @property
-    def duration_string(self):
-        return create_duration_string(self.begin_date, self.end_date)
-
-    def _get_str_member(self):
-        return "{0} - {1}: {2}".format(self.begin_date, self.end_date, self.member)
-
-    def _get_str_type(self):
-        return "{0}: {1} - {2}".format(self.functionarytype, self.begin_date, self.end_date)
-
-    str_member = property(_get_str_member)
-    str_type = property(_get_str_type)
-
-    def _get_funcationary_type_id(self):
-        return self.functionarytype.id
-
-    functionary_type_id = property(_get_funcationary_type_id)
-
     class Meta:
         unique_together = (("member", "functionarytype", "begin_date", "end_date"),)
 
     def __str__(self):
-        return "{0}: {1} - {2}, {3}".format(self.functionarytype, self.begin_date, self.end_date, self.member)
+        return f'{self.functionarytype}: {self.begin_date} - {self.end_date}, {self.member}'
+
+    @property
+    def duration_string(self):
+        return create_duration_string(self.begin_date, self.end_date)
 
     @classmethod
     def order_by(cls, functionaries_list, by, reverse=False):
         if by == 'date':
             key = attrgetter('end_date', 'begin_date')
         elif by == 'name':
-            key =  lambda f: strxfrm(f.functionarytype.name)
+            key = lambda f: strxfrm(f.functionarytype.name)
         elif by == 'member':
-            key = lambda f: (strxfrm(f.member.surname), strxfrm(f.member.given_names))
+            key = lambda f: strxfrm(f.member.full_name_for_sorting)
         else:
             return
         functionaries_list.sort(key=key, reverse=reverse)
@@ -451,9 +499,9 @@ class Functionary(SuperClass):
 class FunctionaryTypeManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().annotate(
-        count=Count('functionaries'),
-        count_unique=Count('functionaries__member', distinct=True),
-    )
+            count=Count('functionaries'),
+            count_unique=Count('functionaries__member', distinct=True),
+        )
 
     def all_by_name(self):
         l = list(self.get_queryset())
@@ -515,7 +563,6 @@ class MemberTypeManager(models.Manager):
         MemberType.order_by(l, 'member')
         return l
 
-
 class MemberType(SuperClass):
     objects = MemberTypeManager()
     TYPES = (
@@ -537,9 +584,9 @@ class MemberType(SuperClass):
     type = models.CharField(max_length=2, choices=TYPES, default="PH")
 
     def __str__(self):
-        return "{0}: {1}-{2}".format(
-            self.get_type_display(), self.begin_date, (self.end_date if self.end_date else ">")
-            )
+        s = f'{self.get_type_display()}: {self.begin_date} -'
+        s += f' {self.end_date}' if self.end_date else '>'
+        return s
 
     @classmethod
     def order_by(cls, membertypes_list, by, reverse=False):
@@ -548,7 +595,7 @@ class MemberType(SuperClass):
         elif by == 'end_date':
             key = lambda mt: mt.end_date or datetime.date(9999, 12, 31)
         elif by == 'member':
-            key = lambda mt: (strxfrm(mt.member.surname), strxfrm(mt.member.given_names))
+            key = lambda mt: strxfrm(mt.member.full_name_for_sorting)
         else:
             return
         membertypes_list.sort(key=key, reverse=reverse)

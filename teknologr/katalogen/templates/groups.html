@@ -35,7 +35,7 @@
           {% for gm in g.memberships_by_member %}
             <tr>
               <td></td>
-              <td><a href="{% url 'katalogen:profile' gm.member.id %}">{{ gm.member.name }}</a></td>
+              <td><a href="{% url 'katalogen:profile' gm.member.id %}">{{ gm.member.public_full_name }}</a></td>
             </tr>
           {% endfor %}
           {% endif %}

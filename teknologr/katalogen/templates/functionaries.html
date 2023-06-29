@@ -21,7 +21,7 @@
       <tbody>
         {% for f in functionaries %}
           <tr>
-            <td order-data="{{ f.member.surname }} {{ f.member.given_names }}"><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.name }}</a></td>
+            <td order-data="{{ f.member.public_full_name_for_sorting }}"><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.public_full_name }}</a></td>
             <td order-data="{{ f.end_date|date:'c' }}{{ f.begin_date|date:'c' }}">{{ f.duration_string }}</td>
           </tr>
         {% endfor %}

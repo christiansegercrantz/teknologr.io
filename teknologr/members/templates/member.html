@@ -258,7 +258,7 @@
                   <i class="far fa-edit edit-f-button text-info" role="button" title="Editera postinnehav" data-id="{{ f.id }}"></i>
                   <i class="fas fa-times delete-f-button text-danger" role="button" title="Radera postinnehav" data-id="{{ f.id }}"></i>
                 </td>
-                <td><a href="{% url 'admin:functionary_type' f.functionary_type_id %}">{{ f.functionarytype.name }}</a></td>
+                <td><a href="{% url 'admin:functionary_type' f.functionarytype.id %}">{{ f.functionarytype.name }}</a></td>
                 <td>{{ f.begin_date }}</td>
                 <td>{{ f.end_date }}</td>
               </tr>

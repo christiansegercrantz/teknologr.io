@@ -49,13 +49,13 @@ class RegistrationForm(forms.ModelForm):
         programmes.append(('extra', 'ÖVRIG'))
 
         self.fields['degree_programme_options'] = forms.ChoiceField(
-                choices=programmes,
-                label=degree_programme_label,
-                widget=forms.widgets.Select(attrs={'id': 'id_degree_programme_options'}))
+            choices=programmes,
+            label=degree_programme_label,
+            widget=forms.widgets.Select(attrs={'id': 'id_degree_programme_options'}))
 
         self.fields['degree_programme'] = forms.CharField(
-                label=MEMBERSHIP_FORM_LABELS['degree_programme'],
-                widget=forms.widgets.TextInput(attrs={'placeholder': degree_programme_label}))
+            label=MEMBERSHIP_FORM_LABELS['degree_programme'],
+            widget=forms.widgets.TextInput(attrs={'placeholder': degree_programme_label}))
 
     def clean(self):
         cleaned_data = super().clean()
@@ -63,16 +63,16 @@ class RegistrationForm(forms.ModelForm):
 
         if enrolment_year and enrolment_year > datetime.now().year:
             raise forms.ValidationError(
-                    _('Enrolment year is larger than current year: %(enrolment_year)d'),
-                    code='invalid',
-                    params={'enrolment_year': enrolment_year}
+                _('Enrolment year is larger than current year: %(enrolment_year)d'),
+                code='invalid',
+                params={'enrolment_year': enrolment_year}
             )
 
         # Check if the username is taken if one was provided in the application
         username = cleaned_data.get('username')
         if username and Member.objects.filter(username=username).exists():
             raise forms.ValidationError(
-                    'Username is already taken: %(username)s',
-                    code='invalid',
-                    params={'username': username}
+                'Username is already taken: %(username)s',
+                code='invalid',
+                params={'username': username}
             )

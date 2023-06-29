@@ -305,7 +305,7 @@ class ApplicantMembershipView(APIView):
         new_member.username = None
 
         # Keep track of the applicant username for the LDAP account creation
-        username = applicant.username 
+        username = applicant.username
 
         # Fix needed fields
         degree_programme = applicant.degree_programme.split('_')
@@ -487,10 +487,10 @@ def dump_htk(request, member_id=None):
 
     dumpname = 'filename="HTKdump_{}.json'.format(datetime.today().date())
     return Response(
-            data,
-            status=200,
-            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-        )
+        data,
+        status=200,
+        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+    )
 
 
 # CSV-render class
@@ -503,12 +503,12 @@ class ModulenRenderer(csv_renderer.CSVRenderer):
 @renderer_classes((ModulenRenderer,))
 def dump_modulen(request):
     recipients = Member.objects.exclude(
-            postal_code='02150'
-        ).exclude(
-            dead=True
-        ).filter(
-            subscribed_to_modulen=True
-        )
+        postal_code='02150'
+    ).exclude(
+        dead=True
+    ).filter(
+        subscribed_to_modulen=True
+    )
 
     # NOTE: DISTINCT ON is a postgresql feature, this feature will not work with other databases
     # Installing pandas to do this seemed like a waste since we currently run postgres in prod anyway // Jonas
@@ -525,14 +525,14 @@ def dump_modulen(request):
         'postal_code': recipient.postal_code,
         'city': recipient.city,
         'country': recipient.country
-        } for recipient in recipients]
+    } for recipient in recipients]
 
     dumpname = 'filename="modulendump_{}.csv"'.format(datetime.today().date())
     return Response(
-            content,
-            status=200,
-            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-        )
+        content,
+        status=200,
+        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+    )
 
 
 class ActiveRenderer(csv_renderer.CSVRenderer):
@@ -560,7 +560,7 @@ def dump_active(request):
         })
         content.append({
             'position': '',
-            'member': func.member._get_full_preferred_name()
+            'member': func.member.common_name
         })
 
     # Groups
@@ -576,15 +576,15 @@ def dump_active(request):
         })
         content.extend([{
             'position': '',
-            'member': m._get_full_preferred_name()
+            'member': m.common_name
         } for m in members])
 
     dumpname = 'filename="activedump_{}.csv"'.format(datetime.today().date())
     return Response(
-            content,
-            status=200,
-            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-        )
+        content,
+        status=200,
+        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+    )
 
 
 class FullRenderer(csv_renderer.CSVRenderer):
@@ -634,10 +634,10 @@ def dump_full(request):
 
     dumpname = 'filename="fulldump_{}.csv"'.format(datetime.today().date())
     return Response(
-            content,
-            status=200,
-            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-        )
+        content,
+        status=200,
+        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+    )
 
 
 class ArskRenderer(csv_renderer.CSVRenderer):
@@ -653,11 +653,11 @@ def dump_arsk(request):
     current_year = datetime.now().year
 
     counsel_ids = [
-            10,  # Affärsrådet (AR)
-            9,   # Finansrådet (FR)
-            12,  # De Äldres Råd (DÄR)
-            44,  # Fastighets Rådet (FaR)
-            19,  # Kontinuitets Rådet (KonRad)
+        10,  # Affärsrådet (AR)
+        9,   # Finansrådet (FR)
+        12,  # De Äldres Råd (DÄR)
+        44,  # Fastighets Rådet (FaR)
+        19,  # Kontinuitets Rådet (KonRad)
     ]
     styrelse_id = 2  # Styrelsen
     honor_id = 3  # Hedersmedlemmar
@@ -705,10 +705,10 @@ def dump_arsk(request):
 
     dumpname = 'filename="arskdump_{}.csv"'.format(datetime.today().date())
     return Response(
-            content,
-            status=200,
-            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-        )
+        content,
+        status=200,
+        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+    )
 
 
 class RegEmailRenderer(csv_renderer.CSVRenderer):
@@ -730,10 +730,10 @@ def dump_reg_emails(request):
 
     dumpname = 'filename="regEmailDump_{}.csv"'.format(datetime.today().date())
     return Response(
-            content,
-            status=200,
-            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-        )
+        content,
+        status=200,
+        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+    )
 
 
 class ApplicantLanguagesRenderer(csv_renderer.CSVRenderer):
@@ -750,10 +750,10 @@ def dump_applicant_languages(request):
 
     dumpname = 'filename="applicantLanguages_{}.csv"'.format(datetime.today().date())
     return Response(
-            content,
-            status=200,
-            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-        )
+        content,
+        status=200,
+        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+    )
 
 
 # CSV-render class
@@ -769,16 +769,16 @@ def dump_studentbladet(request):
     recipients = [m for m in recipients if m.isValidMember()]
 
     content = [{
-        'name': recipient._get_full_name(),
+        'name': recipient.full_name,
         'street_address': recipient.street_address,
         'postal_code': recipient.postal_code,
         'city': recipient.city,
         'country': recipient.country
-        } for recipient in recipients]
+    } for recipient in recipients]
 
     dumpname = 'filename="studentbladetdump_{}.csv"'.format(datetime.today().date())
     return Response(
-            content,
-            status=200,
-            headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-        )
+        content,
+        status=200,
+        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
+    )

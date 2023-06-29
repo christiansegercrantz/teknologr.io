@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import locale
 from getenv import env
 import dj_database_url
 
@@ -27,7 +28,13 @@ TEST_PEP8_DIRS = [os.path.dirname(PROJECT_DIR), ]
 
 # PEP8
 TEST_PEP8_EXCLUDE = ['migrations', ]  # Exclude this paths from tests
-TEST_PEP8_IGNORE = []  # Ignore this tests (E501 is line length)
+TEST_PEP8_IGNORE = [
+    'E226', # Whitespace around arithmetic operators
+    'E261', # Spaces before inline comments
+    'E302', # Blank lines
+    'E501', # Line lengths
+    'E731', # Lambda expression assignments
+]
 TEST_PEP8_CONFIG_FILE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
     'setup.cfg')
@@ -172,7 +179,6 @@ USE_L10N = True
 USE_TZ = True
 
 # Set the desired locale for string sorting
-import locale
 locale.setlocale(locale.LC_COLLATE, 'sv_FI.utf8')
 # The sort order still depends on which method is used:
 #  - order_by as is:                A a Ä Å Ö ä å ö (case sensitive and does not understand ÅÄÖ)
