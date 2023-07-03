@@ -69,8 +69,16 @@ class FunctionaryForm(BSModelForm):
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
 
-    # Could use ModelChoiceField, but that does not allow for sorting queryset manually
-    functionarytype = ChoiceField(choices=[(None, '---------')] + [(ft.id, ft.name) for ft in FunctionaryType.objects.all_by_name()])
+    def get_functionarytype_choices():
+        '''
+        Function for getting the FunctionaryType choices dynamically, since the list will not be updated as expected otherwise.
+
+        Using ModelChoiceField would also solve the problem, but that does not allow for sorting the queryset manually.
+        '''
+        return [(None, '---------')] + [(ft.id, ft.name) for ft in FunctionaryType.objects.all_by_name()]
+
+    functionarytype = ChoiceField(choices=get_functionarytype_choices)
+
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
@@ -106,8 +114,16 @@ class DecorationOwnershipForm(BSModelForm):
     acquired = DateField(widget=DateInput(attrs={'type': 'date'}))
     member = AutoCompleteSelectMultipleField('member', required=True, help_text=None)
 
-    # Could use ModelChoiceField, but that does not allow for sorting queryset manually
-    decoration = ChoiceField(choices=[(None, '---------')] + [(d.id, d.name) for d in Decoration.objects.all_by_name()])
+    def get_decoration_choices():
+        '''
+        Function for getting the Decoration choices dynamically, since the list will not be updated as expected otherwise.
+
+        Using ModelChoiceField would also solve the problem, but that does not allow for sorting the queryset manually.
+        '''
+        return [(None, '---------')] + [(d.id, d.name) for d in Decoration.objects.all_by_name()]
+
+    decoration = ChoiceField(choices=get_decoration_choices)
+
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
@@ -130,8 +146,16 @@ class GroupForm(BSModelForm):
     begin_date = DateField(widget=DateInput(attrs={'type': 'date'}))
     end_date = DateField(widget=DateInput(attrs={'type': 'date'}))
 
-    # Could use ModelChoiceField, but that does not allow for sorting queryset manually
-    grouptype = ChoiceField(choices=[(None, '---------')] + [(gt.id, gt.name) for gt in GroupType.objects.all_by_name()])
+    def get_grouptype_choices():
+        '''
+        Function for getting the GroupType choices dynamically, since the list will not be updated as expected otherwise.
+
+        Using ModelChoiceField would also solve the problem, but that does not allow for sorting the queryset manually.
+        '''
+        return [(None, '---------')] + [(gt.id, gt.name) for gt in GroupType.objects.all_by_name()]
+
+    grouptype = ChoiceField(choices=get_grouptype_choices)
+
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
