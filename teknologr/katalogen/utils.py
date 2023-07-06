@@ -1,5 +1,24 @@
 import datetime
+from functools import total_ordering
 from django.utils.formats import date_format
+
+@total_ordering
+class Duration:
+    def __init__(self, begin_date, end_date):
+        self.begin_date = begin_date
+        self.end_date = end_date
+
+    def __str__(self):
+        return create_duration_string(self.begin_date, self.end_date)
+
+    def __repr__(self):
+        return str(self)
+
+    def __eq__(self, other):
+        return (self.end_date, self.begin_date) == (other.end_date, other.begin_date)
+
+    def __lt__(self, other):
+        return (self.end_date, self.begin_date) < (other.end_date, other.begin_date)
 
 
 def create_duration_string(begin, end):

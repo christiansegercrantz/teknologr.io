@@ -385,8 +385,8 @@ class Group(SuperClass):
         return f'{self.grouptype}: {self.begin_date} - {self.end_date}'
 
     @property
-    def duration_string(self):
-        return create_duration_string(self.begin_date, self.end_date)
+    def duration(self):
+        return Duration(self.begin_date, self.end_date)
 
     @property
     def memberships_by_member(self):
@@ -481,8 +481,8 @@ class Functionary(SuperClass):
         return f'{self.functionarytype}: {self.begin_date} - {self.end_date}, {self.member}'
 
     @property
-    def duration_string(self):
-        return create_duration_string(self.begin_date, self.end_date)
+    def duration(self):
+        return Duration(self.begin_date, self.end_date)
 
     @classmethod
     def order_by(cls, functionaries_list, by, reverse=False):
