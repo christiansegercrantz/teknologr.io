@@ -28,5 +28,30 @@ class CreateDurationsStringTest(TestCase):
         self.assertEqual('1 januari 1998 - 7 juli 2001', create_duration_string(self.d1, self.d5))
         self.assertEqual('7 juli 2001 - 31 december 2002', create_duration_string(self.d5, self.d6))
 
+class SimplifyDurationsTest(TestCase):
+    def test_not_overlapping(self):
+        dur1 = Duration(date(2000, 1, 1), date(2000, 1, 30))
+        dur2 = Duration(date(2000, 2, 1), date(2000, 2, 28))
+        self.assertEqual([dur1, dur2], simplify_durations([dur1, dur2]))
+        self.assertEqual([dur1, dur2], simplify_durations([dur2, dur1]))
 
-# Create your tests here.
+    def test_sequetial(self):
+        dur1 = Duration(date(2000, 1, 1), date(2000, 1, 31))
+        dur2 = Duration(date(2000, 2, 1), date(2000, 2, 28))
+        dur3 = Duration(date(2000, 1, 1), date(2000, 2, 28))
+        self.assertEqual([dur3], simplify_durations([dur1, dur2]))
+        self.assertEqual([dur3], simplify_durations([dur2, dur1]))
+
+    def test_overlapping(self):
+        dur1 = Duration(date(2000, 1, 1), date(2000, 2, 28))
+        dur2 = Duration(date(2000, 2, 1), date(2000, 3, 31))
+        dur3 = Duration(date(2000, 1, 1), date(2000, 3, 31))
+        self.assertEqual([dur3], simplify_durations([dur1, dur2]))
+        self.assertEqual([dur3], simplify_durations([dur2, dur1]))
+
+    def test_containing(self):
+        dur1 = Duration(date(2000, 1, 1), date(2000, 3, 31))
+        dur2 = Duration(date(2000, 2, 1), date(2000, 2, 28))
+        dur3 = Duration(date(2000, 1, 1), date(2000, 3, 31))
+        self.assertEqual([dur3], simplify_durations([dur1, dur2]))
+        self.assertEqual([dur3], simplify_durations([dur2, dur1]))

@@ -1,4 +1,5 @@
 import datetime
+from operator import attrgetter
 from functools import total_ordering
 from django.utils.formats import date_format
 
@@ -43,6 +44,24 @@ def create_duration_string(begin, end):
     if begin.day != end.day:
         return f'{begin.day}-{e}'
     return b
+
+def simplify_durations(durations):
+    '''
+    The parameter is a list of durations. Overlapping durations will be simplified into a single duration.
+
+    Returns a list of simplified durations.
+    '''
+    durations.sort(key=attrgetter('begin_date'))
+
+    simplified = [durations[0]]
+    for next in durations[1:]:
+        last = simplified[-1]
+        if next.begin_date > last.end_date + datetime.timedelta(days=1):
+            simplified.append(next)
+        elif next.end_date > last.end_date:
+            last.end_date = next.end_date
+
+    return simplified
 
 def durations_to_strings(dict_of_date_pairs):
     a = []
