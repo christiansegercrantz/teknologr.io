@@ -28,6 +28,25 @@ class CreateDurationsStringTest(TestCase):
         self.assertEqual('1 januari 1998 - 7 juli 2001', create_duration_string(self.d1, self.d5))
         self.assertEqual('7 juli 2001 - 31 december 2002', create_duration_string(self.d5, self.d6))
 
+    def test_create_duration_strings_by_key(self):
+        result = create_duration_strings_by_key([
+            (9, Duration(date(2000, 1, 1), date(2000, 12, 31))),
+            (1, Duration(date(2000, 1, 1), date(2000, 1, 31))),
+            (1, Duration(date(2000, 3, 1), date(2000, 3, 31))),
+            (1, Duration(date(2000, 5, 1), date(2000, 5, 31))),
+            (1, Duration(date(2000, 7, 1), date(2000, 7, 31))),
+            (1, Duration(date(2000, 9, 1), date(2000, 9, 30))),
+            (8, Duration(date(2000, 1, 1), date(2000, 12, 31))),
+
+            (1, Duration(date(2000, 1, 5), date(2000, 1, 6))),
+            (1, Duration(date(2000, 3, 7), date(2000, 7, 7))),
+        ])
+        self.assertEqual([
+            (9, '2000'),
+            (1, '1-31 januari 2000, 1 mars - 31 juli 2000, 1-30 september 2000'),
+            (8, '2000'),
+        ], result)
+
 class SimplifyDurationsTest(TestCase):
     def test_not_overlapping(self):
         dur1 = Duration(date(2000, 1, 1), date(2000, 1, 30))

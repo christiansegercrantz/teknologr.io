@@ -21,6 +21,25 @@ class Duration:
     def __lt__(self, other):
         return (self.end_date, self.begin_date) < (other.end_date, other.begin_date)
 
+class DurationsHelper:
+    def __init__(self, items):
+        self.__dict = {}
+        for key, duration in items:
+            self.add(key, duration)
+
+    def add(self, key, new_duration):
+        if key not in self.__dict:
+            self.__dict[key] = []
+        self.__dict[key].append(new_duration)
+
+    def simplify(self):
+        for key, durations in self.__dict.items():
+            self.__dict[key] = simplify_durations(durations)
+        return self
+
+    def items(self):
+        return self.__dict.items()
+
 
 def create_duration_string(begin, end):
     '''
@@ -63,39 +82,11 @@ def simplify_durations(durations):
 
     return simplified
 
-def durations_to_strings(dict_of_date_pairs):
-    a = []
-    for key, pairs in dict_of_date_pairs.items():
-        a.append((key, ', '.join([create_duration_string(*pair) for pair in pairs])))
-    return a
+def create_duration_strings_by_key(items):
+    '''
+    The parameter is a list of (key, duration) pairs. All durations with the same key will be combined into one string.
 
-
-def add_to_durations(durations, key, begin, end):
-    if key not in durations:
-        durations[key] = [[begin, end]]
-        return durations
-
-    pairs = durations[key]
-    last = pairs[-1]
-    if begin <= last[1] + datetime.timedelta(days=1):
-        last[1] = end
-    else:
-        pairs.append([begin, end])
-    durations[key] = pairs
-
-
-def create_functionary_duration_strings(functionaries):
-    durations = {}
-    for f in functionaries:
-        add_to_durations(durations, f.functionarytype, f.begin_date, f.end_date)
-
-    return durations_to_strings(durations)
-
-
-def create_group_type_duration_strings(group_memberships):
-    durations = {}
-    for gm in group_memberships:
-        g = gm.group
-        add_to_durations(durations, g.grouptype, g.begin_date, g.end_date)
-
-    return durations_to_strings(durations)
+    Returns a list of (key, string) pairs.
+    '''
+    items = DurationsHelper(items).simplify().items()
+    return [(key, ', '.join([str(d) for d in durations])) for key, durations in items]
