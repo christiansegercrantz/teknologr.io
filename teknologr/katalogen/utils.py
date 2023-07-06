@@ -22,10 +22,27 @@ class Duration:
 
 
 def create_duration_string(begin, end):
+    '''
+    Turn a date interval into a string, where the dates are simplified as much as possible. These rules are followed:
+     - A.B.YYYY - A.B.YYYY   -> 'A BB YYYY'
+     - A.B.YYYY - C.B.YYYY   -> 'A-C BB YYYY'
+     - A.B.YYYY - C.D.YYYY   -> 'A BB - C DD YYYY'
+     - 1.1.YYYY - 31.12.YYYY -> 'YYYY'
+     - 1.1.YYYY - 31.12.ZZZZ -> 'YYYY-ZZZZ'
+    '''
     if begin.month == 1 and begin.day == 1 and end.month == 12 and end.day == 31:
         return f'{begin.year}' if begin.year == end.year else f'{begin.year}-{end.year}'
-    return f'{date_format(begin)} - {date_format(end)}'
 
+    b = date_format(begin)
+    e = date_format(end)
+    if begin.year != end.year:
+        return f'{b} - {e}'
+    if begin.month != end.month:
+        i = b.rfind(' ')
+        return f'{b[:i]} - {e}'
+    if begin.day != end.day:
+        return f'{begin.day}-{e}'
+    return b
 
 def durations_to_strings(dict_of_date_pairs):
     a = []

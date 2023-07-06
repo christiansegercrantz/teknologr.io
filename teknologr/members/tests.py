@@ -329,8 +329,8 @@ class GroupTest(TestCase):
         self.assertEqual('Group Type: 2022-01-01 - 2024-12-31', str(self.group4))
 
     def test_duration(self):
-        self.assertEqual('1 januari 2023 - 14 juni 2023', str(self.group1.duration))
-        self.assertEqual('14 juni 2023 - 31 december 2023', str(self.group2.duration))
+        self.assertEqual('1 januari - 14 juni 2023', str(self.group1.duration))
+        self.assertEqual('14 juni - 31 december 2023', str(self.group2.duration))
         self.assertEqual('2023', str(self.group3.duration))
         self.assertEqual('2022-2024', str(self.group4.duration))
 
@@ -433,8 +433,8 @@ class FunctionaryTest(BaseTest):
         self.assertEqual('Functionary Type: 2022-01-01 - 2024-12-31, Foo B Tester', str(self.functionary4))
 
     def test_duration(self):
-        self.assertEqual('1 januari 2023 - 14 juni 2023', str(self.functionary1.duration))
-        self.assertEqual('14 juni 2023 - 31 december 2023', str(self.functionary2.duration))
+        self.assertEqual('1 januari - 14 juni 2023', str(self.functionary1.duration))
+        self.assertEqual('14 juni - 31 december 2023', str(self.functionary2.duration))
         self.assertEqual('2023', str(self.functionary3.duration))
         self.assertEqual('2022-2024', str(self.functionary4.duration))
 
