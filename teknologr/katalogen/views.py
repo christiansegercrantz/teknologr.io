@@ -56,17 +56,17 @@ def profile(request, member_id):
     combine = request.GET.get('combine', '0') != '0'
 
     # Order the items differently depending on if they will be combined or not
-    ordering = [('date', False), ('name', False)] if combine else [('name', False), ('date', True)]
+    ordering = [('name', False)] if combine else [('name', False), ('date', True)]
     for by, reverse in ordering:
         Functionary.order_by(functionaries, by, reverse)
         GroupMembership.order_by(group_memberships, by, reverse)
 
+    functionary_duration_strings = [(f.functionarytype, f.duration) for f in functionaries]
+    group_type_duration_strings = [(gm.group.grouptype, gm.group.duration) for gm in group_memberships]
+
     if combine:
-        functionary_duration_strings = create_functionary_duration_strings(functionaries)
-        group_type_duration_strings = create_group_type_duration_strings(group_memberships)
-    else:
-        functionary_duration_strings = [(f.functionarytype, f.duration_string) for f in functionaries]
-        group_type_duration_strings = [(gm.group.grouptype, gm.group.duration_string) for gm in group_memberships]
+        functionary_duration_strings = create_duration_strings_by_key(functionary_duration_strings)
+        group_type_duration_strings = create_duration_strings_by_key(group_type_duration_strings)
 
     return render(request, 'profile.html', {
         **_get_base_context(request),
@@ -136,12 +136,29 @@ def functionary_types(request):
 
 @login_required
 def functionary_type(request, functionary_type_id):
+    """
+    List all Functionaries of a certain FunctionaryType. The functionaries will be ordered in reverse date order by default.
+
+    URL query parameters available:
+     - combine=<0/1>: Whether or not to combine overlapping Functionaries of the same Member into a single row.
+    """
     functionary_type = FunctionaryType.objects.get_prefetched_or_404(functionary_type_id)
+    functionaries = list(functionary_type.functionaries.all())
+
+    functionary_duration_strings = [(f.member, f.duration) for f in functionaries]
+
+    combine = request.GET.get('combine', '0') != '0'
+    if combine:
+        functionary_duration_strings = simplify_durations_by_key(functionary_duration_strings)
+
+    # Sort the pairs by date and member name by default
+    functionary_duration_strings.sort(key=lambda pair: (pair[1], pair[0].full_name_for_sorting), reverse=True)
 
     return render(request, 'functionaries.html', {
         **_get_base_context(request),
         'functionary_type': functionary_type,
-        'functionaries': functionary_type.functionaries_by_date,
+        'functionary_duration_strings': functionary_duration_strings,
+        'combined': combine,
     })
 
 

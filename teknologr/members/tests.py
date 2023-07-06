@@ -328,11 +328,11 @@ class GroupTest(TestCase):
         self.assertEqual('Group Type: 2023-01-01 - 2023-12-31', str(self.group3))
         self.assertEqual('Group Type: 2022-01-01 - 2024-12-31', str(self.group4))
 
-    def test_duration_string(self):
-        self.assertEqual('1 januari 2023 - 14 juni 2023', self.group1.duration_string)
-        self.assertEqual('14 juni 2023 - 31 december 2023', self.group2.duration_string)
-        self.assertEqual('2023', self.group3.duration_string)
-        self.assertEqual('2022-2024', self.group4.duration_string)
+    def test_duration(self):
+        self.assertEqual('1 januari - 14 juni 2023', str(self.group1.duration))
+        self.assertEqual('14 juni - 31 december 2023', str(self.group2.duration))
+        self.assertEqual('2023', str(self.group3.duration))
+        self.assertEqual('2022-2024', str(self.group4.duration))
 
 class GroupOrderTest(BaseTest):
     def setUp(self):
@@ -432,11 +432,11 @@ class FunctionaryTest(BaseTest):
         self.assertEqual('Functionary Type: 2023-01-01 - 2023-12-31, Foo B Tester', str(self.functionary3))
         self.assertEqual('Functionary Type: 2022-01-01 - 2024-12-31, Foo B Tester', str(self.functionary4))
 
-    def test_duration_string(self):
-        self.assertEqual('1 januari 2023 - 14 juni 2023', self.functionary1.duration_string)
-        self.assertEqual('14 juni 2023 - 31 december 2023', self.functionary2.duration_string)
-        self.assertEqual('2023', self.functionary3.duration_string)
-        self.assertEqual('2022-2024', self.functionary4.duration_string)
+    def test_duration(self):
+        self.assertEqual('1 januari - 14 juni 2023', str(self.functionary1.duration))
+        self.assertEqual('14 juni - 31 december 2023', str(self.functionary2.duration))
+        self.assertEqual('2023', str(self.functionary3.duration))
+        self.assertEqual('2022-2024', str(self.functionary4.duration))
 
 class FunctionaryOrderTest(BaseTest):
     def setUp(self):

@@ -14,15 +14,22 @@
     <table class="table table-sm table-striped">
       <thead>
         <tr>
-          <th><span class="order-by attribute">Namn</span></th>
+          <th>
+            <span class="order-by attribute">Namn</span>
+            {% if combined %}
+            <a class="fas fa-expand-arrows-alt" href="?" title="Splittra kombinerade poster"></a>
+            {% else %}
+            <a class="fas fa-compress-arrows-alt" href="?combine=1" title="Kombinera sammanhängande mandat av poster hos samma person"></a>
+            {% endif %}
+          </th>
           <th><span class="order-by attribute default-order-reversed">Datum</span></th>
         </tr>
       </thead>
       <tbody>
-        {% for f in functionaries %}
+        {% for member, duration in functionary_duration_strings %}
           <tr>
-            <td order-data="{{ f.member.public_full_name_for_sorting }}"><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.public_full_name }}</a></td>
-            <td order-data="{{ f.end_date|date:'c' }}{{ f.begin_date|date:'c' }}">{{ f.duration_string }}</td>
+            <td order-data="{{ member.public_full_name_for_sorting }}"><a href="{% url 'katalogen:profile' member.id %}">{{ member.public_full_name }}</a></td>
+            <td order-data="{{ duration.to_sort_string }}">{{ duration }}</td>
           </tr>
         {% endfor %}
       </tbody>

@@ -25,9 +25,9 @@
           <tr>
             <td><b>
               {% if is_staff %}
-                <a class="admin-link" href="{% url 'admin:group' group_type.id g.id %}">{{ g.duration_string }}</a>
+                <a class="admin-link" href="{% url 'admin:group' group_type.id g.id %}">{{ g.duration }}</a>
               {% else %}
-                {{ g.duration_string }}
+                {{ g.duration }}
               {% endif %}
             </b></td>
             <td><i>{{ g.num_members }} {% if g.num_members == 1 %}medlem{% else %}medlemmar{% endif %}</i></td>
