@@ -14,7 +14,14 @@
     <table class="table table-sm table-striped">
       <thead>
         <tr>
-          <th><span class="order-by attribute">Namn</span></th>
+          <th>
+            <span class="order-by attribute">Namn</span>
+            {% if combined %}
+            <a class="fas fa-expand-arrows-alt" href="?" title="Splittra kombinerade poster"></a>
+            {% else %}
+            <a class="fas fa-compress-arrows-alt" href="?combine=1" title="Kombinera sammanhängande mandat av poster hos samma person"></a>
+            {% endif %}
+          </th>
           <th><span class="order-by attribute default-order-reversed">Datum</span></th>
         </tr>
       </thead>
