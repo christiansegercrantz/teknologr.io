@@ -251,5 +251,26 @@ $(document).ready(function () {
 	 */
 	$("[id$='-modal']").on("shown.bs.modal", function() {
 		$(this).find("form :input:visible:first").focus();
-	  })
+	})
+
+	/**
+	 * Make it as easy as possible to set a date interval to be a full year. The default date interval is '1.1.YYYY' - '31.12.YYYY', where YYYY is the current year. The idea is that changing the year in the begin_date should automatically change the end_date year too, since one year intervals are by far the most common.
+	 */
+	$("[id$=form_begin_date]").change(function () {
+		const begin_element = $(this);
+		const begin_value = begin_element.val();
+
+		// Continue only if the begin_date is (still) January 1
+		if (!begin_value?.endsWith("-01-01")) return;
+
+		// Find the end_date input element
+		const end_id = begin_element.attr("id").replace("begin", "end");
+		const end_element = $(`#${end_id}`);
+
+		// Continue only if the end_date is (still) December 31
+		if (!end_element.val()?.endsWith("-12-31")) return;
+
+		// Set the end_date year equal to the begin_date year
+		end_element.val(`${begin_value.split("-")[0]}-12-31`);
+	});
 });
