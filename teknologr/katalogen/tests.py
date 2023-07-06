@@ -74,3 +74,6 @@ class SimplifyDurationsTest(TestCase):
         dur3 = Duration(date(2000, 1, 1), date(2000, 3, 31))
         self.assertEqual([dur3], simplify_durations([dur1, dur2]))
         self.assertEqual([dur3], simplify_durations([dur2, dur1]))
+
+    def test_empty(self):
+        self.assertEqual([], simplify_durations([]))

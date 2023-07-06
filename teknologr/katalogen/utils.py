@@ -76,6 +76,9 @@ def simplify_durations(durations):
 
     Returns a list of simplified durations.
     '''
+    if not len(durations):
+        return []
+
     durations.sort(key=attrgetter('begin_date'))
 
     simplified = [durations[0]]
