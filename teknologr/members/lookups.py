@@ -1,16 +1,14 @@
 from ajax_select import register, LookupChannel
-from members.models import *
+from members.models import Member
 from registration.models import Applicant
 from api.utils import findMembers, findApplicants
 
 
 @register('member')
 class MemberLookup(LookupChannel):
-
     model = Member
 
     def get_query(self, q, request):
-
         members = findMembers(q)
         return members
 
@@ -20,7 +18,8 @@ class MemberLookup(LookupChannel):
 
     def format_match(self, obj):
         """ (HTML) formatted item for display in the dropdown """
-        return obj.full_name
+        preferred_name = obj.get_preferred_name()
+        return f'{obj.given_names.replace(preferred_name, f"<u>{preferred_name}</u>", 1)} {obj.surname}'
 
     def format_item_display(self, obj):
         """ (HTML) formatted item for displaying item in the selected deck area """
@@ -29,7 +28,6 @@ class MemberLookup(LookupChannel):
 
 @register('applicant')
 class ApplicantLookup(LookupChannel):
-
     model = Applicant
 
     def get_query(self, q, request):
