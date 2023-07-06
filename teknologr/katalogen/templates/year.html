@@ -65,7 +65,7 @@
       <tbody>
         {% for f in functionaries %}
           <tr>
-            <td order-data="{{ f.functionarytype.name }} {{ f.end_date|date:'c' }}{{ f.begin_date|date:'c' }}"><a href="{% url 'katalogen:functionary_type' f.functionarytype.id %}">{{ f.functionarytype.name }}{% if f.duration_string != year %} ({{ f.duration_string }}){% endif %}</a></td>
+            <td order-data="{{ f.functionarytype.name }} {{ f.duration.to_sort_string }}"><a href="{% url 'katalogen:functionary_type' f.functionarytype.id %}">{{ f.functionarytype.name }}{% if f.duration.to_string != year %} ({{ f.duration.to_string }}){% endif %}</a></td>
             <td order-data="{{ f.member.public_full_name_for_sorting }}"><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.public_full_name }}</a></td>
           </tr>
         {% endfor %}
@@ -81,7 +81,7 @@
       <tbody>
         {% for g in groups %}
           <tr>
-            <td><a href="{% url 'katalogen:group_type' g.grouptype.id %}">{{ g.grouptype.name }}{% if g.duration_string != year %} ({{ g.duration_string }}){% endif %}</a></td>
+            <td><a href="{% url 'katalogen:group_type' g.grouptype.id %}">{{ g.grouptype.name }}{% if g.duration.to_string != year %} ({{ g.duration.to_string }}){% endif %}</a></td>
             <td><i>{{ g.num_members }} {% if g.num_members == 1 %}medlem{% else %}medlemmar{% endif %}</i></td>
           </tr>
           {% for gm in g.memberships_by_member %}

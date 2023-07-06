@@ -29,7 +29,7 @@
         {% for member, duration in functionary_duration_strings %}
           <tr>
             <td order-data="{{ member.public_full_name_for_sorting }}"><a href="{% url 'katalogen:profile' member.id %}">{{ member.public_full_name }}</a></td>
-            <td order-data="{{ duration.end_date|date:'c' }}{{ duration.begin_date|date:'c' }}">{{ duration }}</td>
+            <td order-data="{{ duration.to_sort_string }}">{{ duration }}</td>
           </tr>
         {% endfor %}
       </tbody>

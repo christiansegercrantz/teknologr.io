@@ -21,6 +21,12 @@ class Duration:
     def __lt__(self, other):
         return (self.end_date, self.begin_date) < (other.end_date, other.begin_date)
 
+    def to_string(self):
+        return str(self)
+
+    def to_sort_string(self):
+        return f'{self.end_date.isoformat()}{self.begin_date.isoformat()}'
+
 class DurationsHelper:
     def __init__(self, items):
         self.__dict = {}
