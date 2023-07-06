@@ -19,10 +19,10 @@
         </tr>
       </thead>
       <tbody>
-        {% for f in functionaries %}
+        {% for member, duration in functionary_duration_strings %}
           <tr>
-            <td order-data="{{ f.member.public_full_name_for_sorting }}"><a href="{% url 'katalogen:profile' f.member.id %}">{{ f.member.public_full_name }}</a></td>
-            <td order-data="{{ f.end_date|date:'c' }}{{ f.begin_date|date:'c' }}">{{ f.duration_string }}</td>
+            <td order-data="{{ member.public_full_name_for_sorting }}"><a href="{% url 'katalogen:profile' member.id %}">{{ member.public_full_name }}</a></td>
+            <td order-data="{{ duration.end_date|date:'c' }}{{ duration.begin_date|date:'c' }}">{{ duration }}</td>
           </tr>
         {% endfor %}
       </tbody>

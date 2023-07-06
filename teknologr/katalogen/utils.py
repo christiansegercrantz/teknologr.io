@@ -82,6 +82,19 @@ def simplify_durations(durations):
 
     return simplified
 
+def simplify_durations_by_key(items):
+    '''
+    The parameter is a list of (key, duration) pairs. Durations with the same key that follows eachother will be simplified into a single duration.
+
+    Returns a list of (key, duration) pairs.
+    '''
+    items = DurationsHelper(items).simplify().items()
+    res = []
+    for key, durations in items:
+        for duration in durations:
+            res.append((key, duration))
+    return res
+
 def create_duration_strings_by_key(items):
     '''
     The parameter is a list of (key, duration) pairs. All durations with the same key will be combined into one string.
