@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.db import connection
 from django.db.models import Q
 from django.db.utils import IntegrityError
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from api.serializers import *
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, renderer_classes
@@ -18,33 +18,66 @@ from api.mailutils import mailNewPassword, mailNewAccount
 from collections import defaultdict
 from datetime import datetime
 
-# Create your views here.
-
 # ViewSets define the view behavior.
+
+class APIPermissions(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Do not allow anything for un-authenticated users
+        if not request.user.is_authenticated:
+            return False
+
+        # Allow everything for superusers and staff
+        if request.user.is_staff:
+            return True
+
+        # Allow safe methods for the rest
+        return request.method in permissions.SAFE_METHODS
+
+class BaseModelViewSet(viewsets.ModelViewSet):
+    # Use custom permissions
+    permission_classes = (APIPermissions, )
+
+    # def show_form_for_method(self, view, method, request, obj):
+    #     ''' Hide all HTML forms in the API '''
+    #     return False
+
 
 # Members
 
-
-class MemberViewSet(viewsets.ModelViewSet):
+class MemberViewSet(BaseModelViewSet):
     queryset = Member.objects.all()
-    serializer_class = MemberSerializer
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return MemberSerializerFull
+        return MemberSerializerPartial
 
 
-# Groups
+# GroupTypes, Groups and GroupMemberships
 
-class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-
-
-class GroupTypeViewSet(viewsets.ModelViewSet):
+class GroupTypeViewSet(BaseModelViewSet):
     queryset = GroupType.objects.all()
-    serializer_class = GroupTypeSerializer
 
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return GroupTypeSerializerFull
+        return GroupTypeSerializerPartial
 
-class GroupMembershipViewSet(viewsets.ModelViewSet):
+class GroupViewSet(BaseModelViewSet):
+    queryset = Group.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return GroupSerializerFull
+        return GroupSerializerPartial
+
+class GroupMembershipViewSet(BaseModelViewSet):
     queryset = GroupMembership.objects.all()
-    serializer_class = GroupMembershipSerializer
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return GroupMembershipSerializerFull
+        return GroupMembershipSerializerPartial
 
 
 def getMultiSelectValues(request, key):
@@ -116,28 +149,42 @@ def multi_decoration_ownerships_save(request):
     return Response(status=200)
 
 
-# Functionaries
+# FunctionaryTypes and Functionaries
 
-class FunctionaryViewSet(viewsets.ModelViewSet):
-    queryset = Functionary.objects.all()
-    serializer_class = FunctionarySerializer
-
-
-class FunctionaryTypeViewSet(viewsets.ModelViewSet):
+class FunctionaryTypeViewSet(BaseModelViewSet):
     queryset = FunctionaryType.objects.all()
-    serializer_class = FunctionaryTypeSerializer
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return FunctionaryTypeSerializerFull
+        return FunctionaryTypeSerializerPartial
+
+class FunctionaryViewSet(BaseModelViewSet):
+    queryset = Functionary.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return FunctionarySerializerFull
+        return FunctionarySerializerPartial
 
 
-# Decorations
+# Decorations and DecorationOwnerships
 
-class DecorationViewSet(viewsets.ModelViewSet):
+class DecorationViewSet(BaseModelViewSet):
     queryset = Decoration.objects.all()
-    serializer_class = DecorationSerializer
 
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return DecorationSerializerFull
+        return DecorationSerializerPartial
 
-class DecorationOwnershipViewSet(viewsets.ModelViewSet):
+class DecorationOwnershipViewSet(BaseModelViewSet):
     queryset = DecorationOwnership.objects.all()
-    serializer_class = DecorationOwnershipSerializer
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return DecorationOwnershipSerializerFull
+        return DecorationOwnershipSerializerPartial
 
 
 # MemberTypes

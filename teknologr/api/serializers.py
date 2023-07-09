@@ -12,64 +12,105 @@ class SerializableCountryField(serializers.ChoiceField):
 
 # Serializers define the API representation.
 
+
 # Members
 
-
-class MemberSerializer(serializers.ModelSerializer):
+class MemberSerializerFull(serializers.ModelSerializer):
     country = SerializableCountryField(allow_blank=True, choices=Countries(), required=False)
-    nationality = SerializableCountryField(allow_blank=True, choices=Countries(), required=False)
 
     class Meta:
         model = Member
         fields = '__all__'
 
-
-# Groups
-
-class GroupSerializer(serializers.ModelSerializer):
+class MemberSerializerPartial(serializers.ModelSerializer):
     class Meta:
-        model = Group
-        fields = '__all__'
+        model = Member
+        fields = ('id', 'country', 'given_names', 'preferred_name', 'surname', 'street_address', 'postal_code', 'city', 'phone', 'email', 'degree_programme', 'enrolment_year', 'graduated', 'graduated_year', )
+
+    def to_representation(self, obj):
+        # Get the original representation
+        data = super().to_representation(obj)
+
+        # Remove contact information if necessary
+        if not obj.showContactInformation():
+            for c in ['country', 'street_address', 'postal_code', 'city', 'phone', 'email']:
+                data.pop(c)
+
+        return data
 
 
-class GroupTypeSerializer(serializers.ModelSerializer):
+
+
+# GroupTypes, Groups and GroupMemberships
+
+class GroupTypeSerializerFull(serializers.ModelSerializer):
     class Meta:
         model = GroupType
         fields = '__all__'
+class GroupTypeSerializerPartial(serializers.ModelSerializer):
+    class Meta:
+        model = GroupType
+        fields = ('id', 'name', 'comment', )
 
+class GroupSerializerFull(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = '__all__'
+class GroupSerializerPartial(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('id', 'grouptype', 'begin_date', 'end_date', )
 
-class GroupMembershipSerializer(serializers.ModelSerializer):
+class GroupMembershipSerializerFull(serializers.ModelSerializer):
     class Meta:
         model = GroupMembership
         fields = '__all__'
-
-
-# Functionaries
-
-class FunctionarySerializer(serializers.ModelSerializer):
+class GroupMembershipSerializerPartial(serializers.ModelSerializer):
     class Meta:
-        model = Functionary
-        fields = '__all__'
+        model = GroupMembership
+        fields = ('id', 'group', 'member', )
 
 
-class FunctionaryTypeSerializer(serializers.ModelSerializer):
+# FunctionaryTypes and Functionaries
+
+class FunctionaryTypeSerializerFull(serializers.ModelSerializer):
     class Meta:
         model = FunctionaryType
         fields = '__all__'
+class FunctionaryTypeSerializerPartial(serializers.ModelSerializer):
+    class Meta:
+        model = FunctionaryType
+        fields = ('id', 'name', 'comment', )
+
+class FunctionarySerializerFull(serializers.ModelSerializer):
+    class Meta:
+        model = Functionary
+        fields = '__all__'
+class FunctionarySerializerPartial(serializers.ModelSerializer):
+    class Meta:
+        model = Functionary
+        fields = ('id', 'functionarytype', 'member', 'begin_date', 'end_date', )
 
 
-# Decorations
+# Decorations and DecorationOwnerships
 
-class DecorationSerializer(serializers.ModelSerializer):
+class DecorationSerializerFull(serializers.ModelSerializer):
     class Meta:
         model = Decoration
         fields = '__all__'
+class DecorationSerializerPartial(serializers.ModelSerializer):
+    class Meta:
+        model = Decoration
+        fields = ('id', 'name', 'comment', )
 
-
-class DecorationOwnershipSerializer(serializers.ModelSerializer):
+class DecorationOwnershipSerializerFull(serializers.ModelSerializer):
     class Meta:
         model = DecorationOwnership
         fields = '__all__'
+class DecorationOwnershipSerializerPartial(serializers.ModelSerializer):
+    class Meta:
+        model = DecorationOwnership
+        fields = ('id', 'decoration', 'member', 'acquired', )
 
 
 # MemberTypes
