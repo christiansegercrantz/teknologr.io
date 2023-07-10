@@ -31,10 +31,14 @@ class MemberSerializerPartial(serializers.ModelSerializer):
         # Get the original representation
         data = super().to_representation(obj)
 
-        # Remove contact information if necessary
+        # Modify Member data if necessary
         if not obj.showContactInformation():
+            # Remove contact information
             for c in ['country', 'street_address', 'postal_code', 'city', 'phone', 'email']:
                 data.pop(c)
+
+            # Convert given names to initials
+            data['given_names'] = obj.get_given_names_with_initials()
 
         return data
 

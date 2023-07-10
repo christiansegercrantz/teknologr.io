@@ -55,7 +55,7 @@ class BaseAPITest(APITestCase):
         )
         self.m3 = Member.objects.create(
             country='FI',
-            given_names='Test',
+            given_names='Test Holger Björn-Anders',
             preferred_name='Test',
             surname='von Teknolog',
             street_address='OK03',
@@ -99,7 +99,7 @@ class BaseAPITest(APITestCase):
 
     def get_one(self, obj):
         return self.client.get(f'{self.api_path}{obj.id}/')
-    
+
     def post(self):
         return self.client.post(self.api_path, self.post_data)
 
@@ -187,6 +187,11 @@ class MemberHiddenAPITest(BaseAPITest, GetOneMethodTests):
         self.columns_partial = ['id', 'given_names', 'preferred_name', 'surname', 'degree_programme', 'enrolment_year', 'graduated', 'graduated_year']
         self.columns_full = all_member_columns
 
+    def test_member_given_names_for_user(self):
+        self.login_user()
+        data = self.get_one(self.item).json()
+        self.assertEqual(data.get('given_names'), 'S Svakar')
+
 class MemberDeadAPITest(BaseAPITest, GetOneMethodTests):
     def setUp(self):
         super().setUp()
@@ -195,6 +200,11 @@ class MemberDeadAPITest(BaseAPITest, GetOneMethodTests):
         self.columns_partial = ['id', 'given_names', 'preferred_name', 'surname', 'degree_programme', 'enrolment_year', 'graduated', 'graduated_year']
         self.columns_full = all_member_columns
 
+    def test_member_given_names_for_user(self):
+        self.login_user()
+        data = self.get_one(self.item).json()
+        self.assertEqual(data.get('given_names'), 'S Svatta')
+
 class MemberNormalAPITest(BaseAPITest, GetOneMethodTests):
     def setUp(self):
         super().setUp()
@@ -202,6 +212,11 @@ class MemberNormalAPITest(BaseAPITest, GetOneMethodTests):
         self.item = self.m3
         self.columns_partial = ['id', 'given_names', 'preferred_name', 'surname', 'street_address', 'postal_code', 'city', 'country', 'phone', 'email', 'degree_programme', 'enrolment_year', 'graduated', 'graduated_year']
         self.columns_full = all_member_columns
+
+    def test_member_given_names_for_user(self):
+        self.login_user()
+        data = self.get_one(self.item).json()
+        self.assertEqual(data.get('given_names'), 'Test Holger Björn-Anders')
 
 
 # DECORATIONS
