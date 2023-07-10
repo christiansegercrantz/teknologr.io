@@ -67,7 +67,7 @@ class MemberTest(TestCase):
         # Surname with prefixes
         # Address is incomplete
         self.member3 = Member.objects.create(
-            given_names='Foo Bar Baz',
+            given_names='Foo-Bar Biz-Baz',
             preferred_name='Baz',
             surname='von der Tester',
             street_address='Otsvängen 22',
@@ -94,7 +94,7 @@ class MemberTest(TestCase):
     def test_get_given_names_with_initials(self):
         self.assertEqual(self.member1.get_given_names_with_initials(), 'Foo B B')
         self.assertEqual(self.member2.get_given_names_with_initials(), 'Foo B B')
-        self.assertEqual(self.member3.get_given_names_with_initials(), 'F B Baz')
+        self.assertEqual(self.member3.get_given_names_with_initials(), 'F-B Biz-Baz')
 
     def test_get_surname_without_prefixes(self):
         self.assertEqual(self.member1.get_surname_without_prefixes(), 'Tester')
@@ -104,27 +104,27 @@ class MemberTest(TestCase):
     def test_full_name(self):
         self.assertEqual(self.member1.full_name, 'Foo Bar Baz Tester')
         self.assertEqual(self.member2.full_name, 'Foo Bar Baz Tester')
-        self.assertEqual(self.member3.full_name, 'Foo Bar Baz von der Tester')
+        self.assertEqual(self.member3.full_name, 'Foo-Bar Biz-Baz von der Tester')
 
     def test_full_name_for_sorting(self):
         self.assertEqual(self.member1.full_name_for_sorting, 'Tester, Foo Bar Baz')
         self.assertEqual(self.member2.full_name_for_sorting, 'Tester, Foo Bar Baz')
-        self.assertEqual(self.member3.full_name_for_sorting, 'Tester, Foo Bar Baz')
+        self.assertEqual(self.member3.full_name_for_sorting, 'Tester, Foo-Bar Biz-Baz')
 
     def test_public_full_name(self):
         self.assertEqual(self.member1.public_full_name, 'Foo B B Tester')
         self.assertEqual(self.member2.public_full_name, 'Foo Bar Baz Tester')
-        self.assertEqual(self.member3.public_full_name, 'F B Baz von der Tester')
+        self.assertEqual(self.member3.public_full_name, 'F-B Biz-Baz von der Tester')
 
     def test_public_full_name_for_sorting(self):
         self.assertEqual(self.member1.public_full_name_for_sorting, 'Tester, Foo B B')
         self.assertEqual(self.member2.public_full_name_for_sorting, 'Tester, Foo Bar Baz')
-        self.assertEqual(self.member3.public_full_name_for_sorting, 'Tester, F B Baz')
+        self.assertEqual(self.member3.public_full_name_for_sorting, 'Tester, F-B Biz-Baz')
 
     def test_name(self):
         self.assertEqual(self.member1.name, 'Foo Bar Baz Tester')
         self.assertEqual(self.member2.name, 'Foo Bar Baz Tester')
-        self.assertEqual(self.member3.name, 'Foo Bar Baz von der Tester')
+        self.assertEqual(self.member3.name, 'Foo-Bar Biz-Baz von der Tester')
 
     def test_address(self):
         self.assertEquals('Otsvängen 22, 02150 Esbo, Finland', self.member1.full_address)
@@ -138,7 +138,7 @@ class MemberTest(TestCase):
     def test_str(self):
         self.assertEqual('Foo B B Tester', str(self.member1))
         self.assertEqual('Foo Bar Baz Tester', str(self.member2))
-        self.assertEqual('F B Baz von der Tester', str(self.member3))
+        self.assertEqual('F-B Biz-Baz von der Tester', str(self.member3))
 
     def test_member_type(self):
         member = Member(given_names='Svatta', surname='Teknolog')

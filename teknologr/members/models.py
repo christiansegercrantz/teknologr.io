@@ -114,8 +114,17 @@ class Member(SuperClass):
         return self.preferred_name or self.given_names.split()[0]
 
     def get_given_names_with_initials(self):
+        '''
+        All given names except the preferred one is converted to initials:
+         - _Foo_ Bar Baz -> Foo B B
+         - _Foo-Bar_ Baz -> Foo-Bar B
+         - Foo-_Bar_ Baz -> Foo-Bar B # XXX: Or is 'F-Bar B' better?
+         - _Foo_-Bar Baz -> Foo-Bar B # XXX: Or is 'Foo-B B' better?
+         - Foo Bar _Baz_ -> F B Baz
+         - Foo-Bar _Baz_ -> F-B Baz
+        '''
         preferred_name = self.get_preferred_name()
-        names = [n if n == preferred_name else n[0] for n in self.given_names.split()]
+        names = [n if preferred_name in n else '-'.join([nn[0] for nn in n.split('-')]) for n in self.given_names.split()]
         return " ".join(names)
 
     def get_surname_without_prefixes(self):
