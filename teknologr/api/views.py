@@ -3,7 +3,7 @@ from django.db import connection
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from rest_framework import viewsets, permissions
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from api.serializers import *
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, renderer_classes
@@ -64,8 +64,10 @@ class MemberSearchFilter(SearchFilter):
 
 class MemberViewSet(BaseModelViewSet):
     queryset = Member.objects.all()
-    filter_backends = (MemberSearchFilter, )
+    filter_backends = (MemberSearchFilter, OrderingFilter)
     search_fields = ('dummy', ) # The search box does not appear if this is removed
+    # XXX: Is there a way to dynamically change which fields can be ordered (depending on the requesting user)?
+    ordering_fields = ('id', 'preferred_name', 'surname', 'enrolment_year', 'graduated_year', )
 
     def get_serializer_class(self):
         if self.request.user.is_staff:
