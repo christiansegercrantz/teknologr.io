@@ -30,6 +30,7 @@ TEST_PEP8_DIRS = [os.path.dirname(PROJECT_DIR), ]
 TEST_PEP8_EXCLUDE = ['migrations', ]  # Exclude this paths from tests
 TEST_PEP8_IGNORE = [
     'E226', # Whitespace around arithmetic operators
+    'E266', # Leading amount of '#' in comment
     'E261', # Spaces before inline comments
     'E302', # Blank lines
     'E501', # Line lengths
