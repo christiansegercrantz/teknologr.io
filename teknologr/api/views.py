@@ -3,6 +3,7 @@ from django.db import connection
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from rest_framework import viewsets, permissions
+from rest_framework.filters import SearchFilter
 from api.serializers import *
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, renderer_classes
@@ -44,8 +45,27 @@ class BaseModelViewSet(viewsets.ModelViewSet):
 
 # Members
 
+class MemberSearchFilter(SearchFilter):
+    '''
+    A custom SearchFilter class for Members that restricts the searchable columns to non-staff.
+
+    XXX: It would be nice to have for example 'email' be searchable for everyone, but how to restrict the search to only those Members that allow their info to be published?
+    '''
+
+    def get_search_fields(self, view, request):
+        # By default only allow searching in a few 100% public fields
+        fields = ['preferred_name', 'surname']
+
+        # Staff get to search in a few more fields
+        if request.user.is_staff:
+            fields += ['given_names', 'email', 'comment']
+
+        return fields
+
 class MemberViewSet(BaseModelViewSet):
     queryset = Member.objects.all()
+    filter_backends = (MemberSearchFilter, )
+    search_fields = ('dummy', ) # The search box does not appear if this is removed
 
     def get_serializer_class(self):
         if self.request.user.is_staff:

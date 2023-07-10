@@ -218,6 +218,45 @@ class MemberNormalAPITest(BaseAPITest, GetOneMethodTests):
         data = self.get_one(self.item).json()
         self.assertEqual(data.get('given_names'), 'Test Holger Björn-Anders')
 
+class MemberSearchTest(BaseAPITest):
+    def setUp(self):
+        super().setUp()
+
+        # These Members should only be found by staff
+        Member.objects.create(
+            given_names='Sverker Svakar',
+            surname='von Teknolog',
+        )
+        Member.objects.create(
+            given_names='Test',
+            surname='von Teknolog',
+            email='test@svakar.fi',
+        )
+        Member.objects.create(
+            given_names='Test',
+            surname='von Teknolog',
+            comment='Svakar',
+        )
+
+    def search(self):
+        return self.client.get('/api/members/?search=Svakar')
+
+    def test_search_for_anonymous_users(self):
+        response = self.search()
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_search_for_user(self):
+        self.login_user()
+        response = self.search()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 1)
+
+    def test_search_for_superuser(self):
+        self.login_superuser()
+        response = self.search()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 4)
+
 
 # DECORATIONS
 
