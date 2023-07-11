@@ -237,6 +237,7 @@ class Member(SuperClass):
         return member_type_phux.begin_date.year if member_type_phux else None
 
     def showContactInformation(self):
+        return self.allow_publish_info and not self.dead
 
     @classmethod
     def get_show_info_Q(cls):
