@@ -237,7 +237,10 @@ class Member(SuperClass):
         return member_type_phux.begin_date.year if member_type_phux else None
 
     def showContactInformation(self):
-        return self.allow_publish_info and self.isValidMember() and not self.dead
+
+    @classmethod
+    def get_show_info_Q(cls):
+        return Q(allow_publish_info=True, dead=False)
 
     @property
     def decoration_ownerships_by_date(self):
