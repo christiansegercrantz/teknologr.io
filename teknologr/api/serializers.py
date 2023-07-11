@@ -23,6 +23,8 @@ class MemberSerializerFull(serializers.ModelSerializer):
         fields = '__all__'
 
 class MemberSerializerPartial(serializers.ModelSerializer):
+    country = SerializableCountryField(allow_blank=True, choices=Countries(), required=False)
+
     class Meta:
         model = Member
         fields = ('id', 'country', 'given_names', 'preferred_name', 'surname', 'street_address', 'postal_code', 'city', 'phone', 'email', 'degree_programme', 'enrolment_year', 'graduated', 'graduated_year', )
