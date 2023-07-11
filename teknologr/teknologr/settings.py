@@ -109,7 +109,7 @@ if not DEBUG:
             'file': {
                 'level': 'INFO',
                 'class': 'logging.FileHandler',
-                'filename': '/var/log/teknologr/info.log',
+                'filename': env('LOG_FILE', '/var/log/teknologr/info.log'),
             },
         },
         'loggers': {
