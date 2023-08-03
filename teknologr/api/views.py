@@ -46,8 +46,14 @@ class BaseModelViewSet(viewsets.ModelViewSet):
     #     ''' Hide all HTML forms in the API '''
     #     return False
 
+    def get_serializer_class(self):
+        if self.action in ['create', 'update']:
+            return self.serializer_classes['post']
+        if self.request.user.is_staff:
+            return self.serializer_classes['admin']
+        return self.serializer_classes['public']
 
-# Members
+
 
 class MemberSearchFilter(SearchFilter):
     '''
@@ -215,10 +221,11 @@ class MemberViewSet(BaseModelViewSet):
     # XXX: Is there a way to dynamically change which fields can be ordered (depending on the requesting user)?
     ordering_fields = ('id', 'preferred_name', 'surname', 'enrolment_year', 'graduated_year', )
 
-    def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return MemberSerializerFull
-        return MemberSerializerPartial
+    serializer_classes = {
+        'post': MemberSerializerAdmin,
+        'admin': MemberSerializerAdmin,
+        'public': MemberSerializerPublic,
+    }
 
 
 # GroupTypes, Groups and GroupMemberships
@@ -226,26 +233,29 @@ class MemberViewSet(BaseModelViewSet):
 class GroupTypeViewSet(BaseModelViewSet):
     queryset = GroupType.objects.all()
 
-    def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return GroupTypeSerializerFull
-        return GroupTypeSerializerPartial
+    serializer_classes = {
+        'post': GroupTypeSerializerFull,
+        'admin': GroupTypeSerializerFull,
+        'public': GroupTypeSerializerPublic,
+    }
 
 class GroupViewSet(BaseModelViewSet):
-    queryset = Group.objects.all()
+    queryset = Group.objects.select_related('grouptype')
 
-    def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return GroupSerializerFull
-        return GroupSerializerPartial
+    serializer_classes = {
+        'post': GroupSerializerFull,
+        'admin': GroupSerializerAdmin,
+        'public': GroupSerializerPublic,
+    }
 
 class GroupMembershipViewSet(BaseModelViewSet):
-    queryset = GroupMembership.objects.all()
+    queryset = GroupMembership.objects.select_related('group', 'group__grouptype', 'member')
 
-    def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return GroupMembershipSerializerFull
-        return GroupMembershipSerializerPartial
+    serializer_classes = {
+        'post': GroupMembershipSerializerFull,
+        'admin': GroupMembershipSerializerAdmin,
+        'public': GroupMembershipSerializerPublic,
+    }
 
 
 def getMultiSelectValues(request, key):
@@ -322,18 +332,20 @@ def multi_decoration_ownerships_save(request):
 class FunctionaryTypeViewSet(BaseModelViewSet):
     queryset = FunctionaryType.objects.all()
 
-    def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return FunctionaryTypeSerializerFull
-        return FunctionaryTypeSerializerPartial
+    serializer_classes = {
+        'post': FunctionaryTypeSerializerFull,
+        'admin': FunctionaryTypeSerializerFull,
+        'public': FunctionaryTypeSerializerPublic,
+    }
 
 class FunctionaryViewSet(BaseModelViewSet):
-    queryset = Functionary.objects.all()
+    queryset = Functionary.objects.select_related('functionarytype', 'member')
 
-    def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return FunctionarySerializerFull
-        return FunctionarySerializerPartial
+    serializer_classes = {
+        'post': FunctionarySerializerFull,
+        'admin': FunctionarySerializerAdmin,
+        'public': FunctionarySerializerPublic,
+    }
 
 
 # Decorations and DecorationOwnerships
@@ -341,18 +353,20 @@ class FunctionaryViewSet(BaseModelViewSet):
 class DecorationViewSet(BaseModelViewSet):
     queryset = Decoration.objects.all()
 
-    def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return DecorationSerializerFull
-        return DecorationSerializerPartial
+    serializer_classes = {
+        'post': DecorationSerializerFull,
+        'admin': DecorationSerializerFull,
+        'public': DecorationSerializerPublic,
+    }
 
 class DecorationOwnershipViewSet(BaseModelViewSet):
-    queryset = DecorationOwnership.objects.all()
+    queryset = DecorationOwnership.objects.select_related('decoration', 'member')
 
-    def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return DecorationOwnershipSerializerFull
-        return DecorationOwnershipSerializerPartial
+    serializer_classes = {
+        'post': DecorationOwnershipSerializerFull,
+        'admin': DecorationOwnershipSerializerAdmin,
+        'public': DecorationOwnershipSerializerPublic,
+    }
 
 
 # MemberTypes
