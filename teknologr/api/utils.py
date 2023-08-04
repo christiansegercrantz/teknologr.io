@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from django.db.models import Q
+from rest_framework.renderers import BrowsableAPIRenderer
 from members.models import Member
 from registration.models import Applicant
-from datetime import date
 
 
 def findMembers(query, count=50):
@@ -29,3 +29,17 @@ def findApplicants(query, count=50):
         return []
 
     return Applicant.objects.filter(*args).order_by('surname', 'given_names')[:count]
+
+class BrowsableAPIRendererWithoutForms(BrowsableAPIRenderer):
+    """ Custom renderer for the browsable API that hides the form. """
+
+    def get_context(self, *args, **kwargs):
+        ctx = super().get_context(*args, **kwargs)
+        ctx['display_edit_forms'] = False
+        return ctx
+
+    def show_form_for_method(self, view, method, request, obj):
+        return False
+
+    def get_rendered_html_form(self, data, view, method, request):
+        return ''

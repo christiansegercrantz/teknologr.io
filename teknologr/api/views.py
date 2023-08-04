@@ -40,10 +40,6 @@ class BaseModelViewSet(viewsets.ModelViewSet):
     # Use custom permissions
     permission_classes = (APIPermissions, )
 
-    # def show_form_for_method(self, view, method, request, obj):
-    #     ''' Hide all HTML forms in the API '''
-    #     return False
-
     def get_serializer_class(self):
         if self.action in ['create', 'update']:
             return self.serializer_classes['post']
