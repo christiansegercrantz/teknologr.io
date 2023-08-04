@@ -2,24 +2,25 @@ from django.shortcuts import get_object_or_404
 from django.db import connection
 from django.db.models import Q
 from django.db.utils import IntegrityError
+from django_filters import rest_framework as filters
 from rest_framework import viewsets, permissions
+from rest_framework.views import APIView
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework_csv import renderers as csv_renderer
+from ldap import LDAPError
+from collections import defaultdict
+from datetime import datetime
 from api.serializers import *
 from api.filters import *
-from rest_framework.views import APIView
-from rest_framework.decorators import api_view, renderer_classes
-from rest_framework.response import Response
+from api.ldap import LDAPAccountManager
+from api.bill import BILLAccountManager, BILLException
+from api.mailutils import mailNewPassword, mailNewAccount
 from members.models import GroupMembership, Member, Group
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
-from api.ldap import LDAPAccountManager
-from ldap import LDAPError
-from api.bill import BILLAccountManager, BILLException
-from rest_framework_csv import renderers as csv_renderer
-from django_filters import rest_framework as filters
-from api.mailutils import mailNewPassword, mailNewAccount
-from collections import defaultdict
-from datetime import datetime
+
 
 # ViewSets define the view behavior.
 
@@ -62,7 +63,7 @@ class MemberSearchFilter(SearchFilter):
 
         # Staff get to search in a few more fields
         if request.user.is_staff:
-            fields += ['given_names', 'email', 'comment']
+            fields += ['given_names', 'email', 'comment', 'username']
 
         return fields
 

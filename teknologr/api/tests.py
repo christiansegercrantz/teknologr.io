@@ -347,8 +347,8 @@ class DecorationsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, Post
         super().setUp()
         self.api_path = '/api/decorations/'
         self.item = self.d
-        self.columns_partial = { 'id': int, 'name': str, 'comment': str }
-        self.columns_full = { **self.columns_partial, 'created': str, 'modified': str }
+        self.columns_partial = {'id': int, 'name': str, 'comment': str}
+        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {'name': 'test'}
 
@@ -369,7 +369,7 @@ class DecorationMembershipsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodT
             },
             'acquired': str,
         }
-        self.columns_full = { **self.columns_partial, 'created': str, 'modified': str }
+        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {
             'decoration': self.d.id,
@@ -385,8 +385,8 @@ class FunctionaryTypesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests,
         super().setUp()
         self.api_path = '/api/functionarytypes/'
         self.item = self.ft
-        self.columns_partial = { 'id': int, 'name': str, 'comment': str }
-        self.columns_full = { **self.columns_partial, 'created': str, 'modified': str }
+        self.columns_partial = {'id': int, 'name': str, 'comment': str}
+        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {'name': 'test'}
 
@@ -408,7 +408,7 @@ class FunctionariesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, Po
             'begin_date': str,
             'end_date': str,
         }
-        self.columns_full = { **self.columns_partial, 'created': str, 'modified': str }
+        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {
             'functionarytype': self.ft.id,
@@ -425,8 +425,8 @@ class GroupTypesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostM
         super().setUp()
         self.api_path = '/api/grouptypes/'
         self.item = self.gt
-        self.columns_partial = { 'id': int, 'name': str, 'comment': str }
-        self.columns_full = { **self.columns_partial, 'created': str, 'modified': str }
+        self.columns_partial = {'id': int, 'name': str, 'comment': str}
+        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {'name': 'test'}
 
@@ -444,7 +444,7 @@ class GroupsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostMetho
             'begin_date': str,
             'end_date': str,
         }
-        self.columns_full = { **self.columns_partial, 'created': str, 'modified': str }
+        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {
             'grouptype': self.gt.id,
@@ -473,7 +473,7 @@ class GroupMembershipsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests,
                 'name': str,
             },
         }
-        self.columns_full = { **self.columns_partial, 'created': str, 'modified': str }
+        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {
             'group': self.g.id,

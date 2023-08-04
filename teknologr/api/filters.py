@@ -15,8 +15,10 @@ class BaseFilter(django_filters.rest_framework.FilterSet):
         super().__init__(*args, **kwargs)
         always_last = []
         # Inherited classes can remove these fields, so need to check for that
-        if not hasattr(self, 'created') or self.created: always_last.append('created')
-        if not hasattr(self, 'modified') or self.modified: always_last.append('modified')
+        if not hasattr(self, 'created') or self.created:
+            always_last.append('created')
+        if not hasattr(self, 'modified') or self.modified:
+            always_last.append('modified')
 
         # Handle thie special case STAFF_ONLY = '__all__'
         if self.STAFF_ONLY == '__all__':
@@ -114,7 +116,7 @@ class MemberFilter(BaseFilter):
     def filter_name(self, queryset, name, value):
         is_staff = self.is_staff
 
-        # Split the filter value and compare all individual values against all address columns
+        # Split the filter value and compare all individual values against all name columns
         queries = []
         for v in value.split():
             q = Q(preferred_name__icontains=v) | Q(surname__icontains=v)
@@ -167,7 +169,7 @@ class DecorationFilter(BaseFilter):
     )
 
 class DecorationOwnershipFilter(BaseFilter):
-    decoration__id = django_filters.NumberFilter(label='Betygelsens nam')
+    decoration__id = django_filters.NumberFilter(label='Betygelsens id')
     decoration__name = django_filters.CharFilter(
         lookup_expr='icontains',
         label='Betygelsens namn innehåller',
@@ -189,8 +191,8 @@ class FunctionaryFilter(BaseFilter):
         label='Postens namn innehåller',
     )
     member__id = django_filters.NumberFilter(label='Medlemmens id')
-    begin_date = django_filters.DateFromToRangeFilter(label='Startdatum mellan')
-    end_date = django_filters.DateFromToRangeFilter(label='Slutdatum mellan')
+    begin_date = django_filters.DateFromToRangeFilter(label='Startdatumet är mellan')
+    end_date = django_filters.DateFromToRangeFilter(label='Slutdatumet är mellan')
 
 
 class GroupTypeFilter(BaseFilter):
@@ -200,8 +202,8 @@ class GroupTypeFilter(BaseFilter):
     )
 
 class GroupFilter(BaseFilter):
-    begin_date = django_filters.DateFromToRangeFilter(label='Startdatum mellan')
-    end_date = django_filters.DateFromToRangeFilter(label='Slutdatum mellan')
+    begin_date = django_filters.DateFromToRangeFilter(label='Startdatumet är mellan')
+    end_date = django_filters.DateFromToRangeFilter(label='Slutdatumet är mellan')
     grouptype__id = django_filters.NumberFilter(label='Gruppens id')
     grouptype__name = django_filters.CharFilter(
         lookup_expr='icontains',
@@ -210,8 +212,8 @@ class GroupFilter(BaseFilter):
 
 class GroupMembershipFilter(BaseFilter):
     group__id = django_filters.NumberFilter(label='Undergruppens id')
-    group__begin_date = django_filters.DateFromToRangeFilter(label='Undergruppens startdatum mellan')
-    group__end_date = django_filters.DateFromToRangeFilter(label='Undergruppens slutdatum mellan')
+    group__begin_date = django_filters.DateFromToRangeFilter(label='Undergruppens startdatum är mellan')
+    group__end_date = django_filters.DateFromToRangeFilter(label='Undergruppens slutdatum är mellan')
     group__grouptype__id = django_filters.NumberFilter(label='Gruppens id')
     group__grouptype__name = django_filters.CharFilter(
         lookup_expr='icontains',
@@ -222,8 +224,8 @@ class GroupMembershipFilter(BaseFilter):
 
 class MemberTypeFilter(BaseFilter):
     STAFF_ONLY = '__all__'
-    begin_date = django_filters.DateFromToRangeFilter(label='Startdatum mellan')
-    end_date = django_filters.DateFromToRangeFilter(label='Slutdatum mellan')
+    begin_date = django_filters.DateFromToRangeFilter(label='Startdatumet är mellan')
+    end_date = django_filters.DateFromToRangeFilter(label='Slutdatumet är mellan')
     type = django_filters.ChoiceFilter(choices=MemberType.TYPES, label='Medlemstyp')
     member__id = django_filters.NumberFilter(label='Medlemmens id')
 

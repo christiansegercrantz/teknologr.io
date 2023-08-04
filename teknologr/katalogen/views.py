@@ -4,7 +4,7 @@ from django.db.models.functions import TruncYear
 from members.models import *
 from members.utils import *
 from katalogen.utils import *
-from django.db.models import Q, Count, Prefetch
+from django.db.models import Q, Count
 from functools import reduce
 from operator import and_
 
@@ -70,6 +70,7 @@ def profile(request, member_id):
 
     return render(request, 'profile.html', {
         **_get_base_context(request),
+        # XXX: Could use MemberSerializerPartial to remove any unwanted fields for real instead of just not showing them
         'show_all': person.username == request.user.username or person.showContactInformation(),
         'person': person,
         'combined': combine,
