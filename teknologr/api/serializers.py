@@ -154,15 +154,18 @@ class DecorationOwnershipSerializerPublic(DecorationOwnershipSerializerAdmin):
 
 # MemberTypes
 
-class MemberTypeSerializer(serializers.ModelSerializer):
+class MemberTypeSerializerFull(serializers.ModelSerializer):
     class Meta:
         model = MemberType
         fields = '__all__'
+class MemberTypeSerializerAdmin(MemberTypeSerializerFull):
+    # NOTE: Important to use qs.select_related('member'), or else each object will hit the db with an additional fetch query
+    member = MemberSerializerPartial()
 
 
 # Applicant
 
-class ApplicantSerializer(serializers.ModelSerializer):
+class ApplicantSerializerFull(serializers.ModelSerializer):
     class Meta:
         model = Applicant
         fields = '__all__'

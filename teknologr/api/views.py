@@ -242,8 +242,11 @@ class DecorationOwnershipViewSet(BaseModelViewSet):
 # MemberTypes
 
 class MemberTypeViewSet(viewsets.ModelViewSet):
-    queryset = MemberType.objects.all()
-    serializer_class = MemberTypeSerializer
+    # NOTE: Default permissions (staff-only)
+    queryset = MemberType.objects.select_related('member')
+    serializer_class = MemberTypeSerializerAdmin
+    filter_backends = (filters.DjangoFilterBackend, )
+    filterset_class = MemberTypeFilter
 
 
 # User accounts
@@ -387,8 +390,9 @@ class BILLAccountView(APIView):
 # Registration/Applicant
 
 class ApplicantViewSet(viewsets.ModelViewSet):
+    # NOTE: Default permissions (staff-only)
     queryset = Applicant.objects.all()
-    serializer_class = ApplicantSerializer
+    serializer_class = ApplicantSerializerFull
 
 
 class ApplicantMembershipView(APIView):

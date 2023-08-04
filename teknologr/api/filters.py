@@ -13,7 +13,10 @@ class BaseFilter(django_filters.rest_framework.FilterSet):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.STAFF_ONLY = self.STAFF_ONLY + ['created', 'modified']
+        always_last = ['created', 'modified']
+        if self.STAFF_ONLY == '__all__':
+            self.STAFF_ONLY = [k for k in list(self.filters.keys()) if k not in always_last]
+        self.STAFF_ONLY = self.STAFF_ONLY + always_last
 
         # If normal user, remove all staff-only filters, otherwise move them last and add a prefix to their labels
         is_staff = self.is_staff
@@ -209,4 +212,12 @@ class GroupMembershipFilter(BaseFilter):
         lookup_expr='icontains',
         label='Gruppens namn innehåller',
     )
+    member__id = django_filters.NumberFilter(label='Medlemmens id')
+
+
+class MemberTypeFilter(BaseFilter):
+    STAFF_ONLY = '__all__'
+    begin_date = django_filters.DateFromToRangeFilter(label='Startdatum mellan')
+    end_date = django_filters.DateFromToRangeFilter(label='Slutdatum mellan')
+    type = django_filters.ChoiceFilter(choices=MemberType.TYPES, label='Medlemstyp')
     member__id = django_filters.NumberFilter(label='Medlemmens id')
