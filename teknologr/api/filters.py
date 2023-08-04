@@ -13,7 +13,12 @@ class BaseFilter(django_filters.rest_framework.FilterSet):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        always_last = ['created', 'modified']
+        always_last = []
+        # Inherited classes can remove these fields, so need to check for that
+        if not hasattr(self, 'created') or self.created: always_last.append('created')
+        if not hasattr(self, 'modified') or self.modified: always_last.append('modified')
+
+        # Handle thie special case STAFF_ONLY = '__all__'
         if self.STAFF_ONLY == '__all__':
             self.STAFF_ONLY = [k for k in list(self.filters.keys()) if k not in always_last]
         self.STAFF_ONLY = self.STAFF_ONLY + always_last
@@ -221,3 +226,26 @@ class MemberTypeFilter(BaseFilter):
     end_date = django_filters.DateFromToRangeFilter(label='Slutdatum mellan')
     type = django_filters.ChoiceFilter(choices=MemberType.TYPES, label='Medlemstyp')
     member__id = django_filters.NumberFilter(label='Medlemmens id')
+
+
+class ApplicantFilter(MemberFilter):
+    STAFF_ONLY = '__all__'
+
+    # Need to remove all Member fields that do not exist on Applicant
+    graduated = None
+    graduated_year = None
+    comment = None
+    dead = None
+    bill_code = None
+    created = None
+
+    # Add all extra fields
+    motivation = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='Motiveringen innehåller',
+    )
+    mother_tongue = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='Modersmålet innehåller',
+    )
+    created_at = django_filters.DateFromToRangeFilter(label='Ansökningsdatum är mellan')

@@ -432,6 +432,27 @@ class ApplicantViewSet(viewsets.ModelViewSet):
     # NOTE: Default permissions (staff-only)
     queryset = Applicant.objects.all()
     serializer_class = ApplicantSerializerFull
+    filter_backends = (SearchFilter, filters.DjangoFilterBackend, OrderingFilter, )
+    search_fields = (
+        'surname',
+        'given_names',
+        'preferred_name',
+        'email',
+        'username',
+        'motivation',
+        'mother_tongue',
+    )
+    filterset_class = ApplicantFilter
+    ordering_fields = (
+        'id',
+        'surname',
+        'preferred_name',
+        'birth_date',
+        'degree_programme',
+        'enrolment_year',
+        'mother_tongue',
+        'created_at',
+    )
 
 
 class ApplicantMembershipView(APIView):
