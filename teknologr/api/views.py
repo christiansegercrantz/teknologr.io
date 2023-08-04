@@ -17,6 +17,7 @@ from api.filters import *
 from api.ldap import LDAPAccountManager
 from api.bill import BILLAccountManager, BILLException
 from api.mailutils import mailNewPassword, mailNewAccount
+from api.utils import create_dump_response
 from members.models import GroupMembership, Member, Group
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
@@ -649,12 +650,7 @@ def dump_htk(request, member_id=None):
     else:
         data = [dumpMember(member) for member in Member.objects.all()]
 
-    dumpname = 'filename="HTKdump_{}.json'.format(datetime.today().date())
-    return Response(
-        data,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
+    return create_dump_response(data, 'HTKdump', 'json')
 
 
 # CSV-render class
@@ -691,12 +687,7 @@ def dump_modulen(request):
         'country': recipient.country
     } for recipient in recipients]
 
-    dumpname = 'filename="modulendump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
+    return create_dump_response(content, 'modulendump', 'csv')
 
 
 class ActiveRenderer(csv_renderer.CSVRenderer):
@@ -709,7 +700,7 @@ class ActiveRenderer(csv_renderer.CSVRenderer):
 @api_view(['GET'])
 @renderer_classes((ActiveRenderer,))
 def dump_active(request):
-    now = datetime.now().date()
+    now = datetime.today().date()
     content = []
 
     # Functionaries
@@ -743,12 +734,7 @@ def dump_active(request):
             'member': m.common_name
         } for m in members])
 
-    dumpname = 'filename="activedump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
+    return create_dump_response(content, 'activedump', 'csv')
 
 
 class FullRenderer(csv_renderer.CSVRenderer):
@@ -796,12 +782,7 @@ def dump_full(request):
         'should_be_stalmed': member.shouldBeStalm()}
         for member in members]
 
-    dumpname = 'filename="fulldump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
+    return create_dump_response(content, 'fulldump', 'csv')
 
 
 class ArskRenderer(csv_renderer.CSVRenderer):
@@ -814,7 +795,7 @@ class ArskRenderer(csv_renderer.CSVRenderer):
 @renderer_classes((ArskRenderer,))
 def dump_arsk(request):
     tfs_low_range = 5
-    current_year = datetime.now().year
+    current_year = datetime.today().year
 
     counsel_ids = [
         10,  # Affärsrådet (AR)
@@ -867,12 +848,7 @@ def dump_arsk(request):
         'associations': ','.join(association)}
         for member, association in by_association.items()]
 
-    dumpname = 'filename="arskdump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
+    return create_dump_response(content, 'arskdump', 'csv')
 
 
 class RegEmailRenderer(csv_renderer.CSVRenderer):
@@ -892,12 +868,7 @@ def dump_reg_emails(request):
         'email': applicant.email}
         for applicant in applicants]
 
-    dumpname = 'filename="regEmailDump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
+    return create_dump_response(content, 'regEmailDump', 'csv')
 
 
 class ApplicantLanguagesRenderer(csv_renderer.CSVRenderer):
@@ -912,12 +883,7 @@ def dump_applicant_languages(request):
         'language': applicant.mother_tongue}
         for applicant in applicants]
 
-    dumpname = 'filename="applicantLanguages_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
+    return create_dump_response(content, 'applicantLanguages', 'csv')
 
 
 # CSV-render class
@@ -940,9 +906,4 @@ def dump_studentbladet(request):
         'country': recipient.country
     } for recipient in recipients]
 
-    dumpname = 'filename="studentbladetdump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
+    return create_dump_response(content, 'studentbladetdump', 'csv')

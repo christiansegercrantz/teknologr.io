@@ -4,6 +4,8 @@ from django.db.models import Q
 from rest_framework.renderers import BrowsableAPIRenderer
 from members.models import Member
 from registration.models import Applicant
+from datetime import datetime
+from rest_framework.response import Response
 
 
 def findMembers(query, count=50):
@@ -29,6 +31,16 @@ def findApplicants(query, count=50):
         return []
 
     return Applicant.objects.filter(*args).order_by('surname', 'given_names')[:count]
+
+
+def create_dump_response(content, name, filetype):
+    dumpname = f'filename="{name}_{datetime.today().strftime("%Y-%m-%d_%H-%M-%S")}.{filetype}'
+    return Response(
+        content,
+        status=200,
+        headers={'Content-Disposition': f'attachment; {dumpname}'}
+    )
+
 
 class BrowsableAPIRendererWithoutForms(BrowsableAPIRenderer):
     """ Custom renderer for the browsable API that hides the form. """

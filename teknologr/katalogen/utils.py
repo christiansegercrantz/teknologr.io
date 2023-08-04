@@ -1,4 +1,4 @@
-import datetime
+from datetime import timedelta
 from operator import attrgetter
 from functools import total_ordering
 from django.utils.formats import date_format
@@ -84,7 +84,7 @@ def simplify_durations(durations):
     simplified = [durations[0]]
     for next in durations[1:]:
         last = simplified[-1]
-        if next.begin_date > last.end_date + datetime.timedelta(days=1):
+        if next.begin_date > last.end_date + timedelta(days=1):
             simplified.append(next)
         elif next.end_date > last.end_date:
             last.end_date = next.end_date
