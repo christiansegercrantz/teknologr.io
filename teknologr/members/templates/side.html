@@ -20,8 +20,9 @@
       </button>
     </li>
     <li class="list-inline-item">
-      <button class="btn" data-toggle="tooltip" title="Ladda ner modersmålet för alla nuvarande ansökningar.">
-        <a href="{% url 'api:dump_applicant_languages' %}">
+      <!-- XXX: Why is this needed? -->
+      <button class="btn" data-toggle="tooltip" title="Ladda ner epostadressen och modersmålet och för alla nuvarande ansökningar.">
+        <a href="{% url 'api:dump_reg_emails' %}">
           <i class="fas fa-download text-info icon-20"></i>
         </a>
       </button>

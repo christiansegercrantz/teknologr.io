@@ -723,58 +723,6 @@ def dump_active(request):
     return Response(content, status=200)
 
 
-class FullRenderer(csv_renderer.CSVRenderer):
-    header = [
-        'id', 'given_names', 'preferred_name', 'surname', 'membertype',
-        'street_address', 'postal_code', 'city', 'country', 'birth_date',
-        'student_id', 'enrolment_year', 'graduated', 'graduated_year',
-        'degree_programme', 'dead', 'phone', 'email', 'subscribed_to_modulen',
-        'allow_publish_info', 'username', 'bill_code', 'comment', 'should_be_stalmed'
-    ]
-
-
-# "Fulldump". If you need some arbitrary bit of info this with some excel magic might do the trick.
-# Preferably tough for all common needs implement a specific endpoint for it (like modulen or HTK)
-# to save time in the long run.
-@api_view(['GET'])
-@renderer_classes((FullRenderer,))
-def dump_full(request):
-    members = Member.objects.exclude(dead=True)
-
-    content = [{
-        'id': member.id,
-        'given_names': member.given_names,
-        'preferred_name': member.preferred_name,
-        'surname': member.surname,
-        'membertype': str(member.getMostRecentMemberType()),
-        'street_address': member.street_address,
-        'postal_code': member.postal_code,
-        'city': member.city,
-        'country': member.country,
-        'birth_date': member.birth_date,
-        'student_id': member.student_id,
-        'enrolment_year': member.enrolment_year,
-        'graduated': member.graduated,
-        'graduated_year': member.graduated_year,
-        'degree_programme': member.degree_programme,
-        'dead': member.dead,
-        'phone': member.phone,
-        'email': member.email,
-        'subscribed_to_modulen': member.subscribed_to_modulen,
-        'allow_publish_info': member.allow_publish_info,
-        'username': member.username,
-        'bill_code': member.bill_code,
-        'comment': member.comment,
-        'should_be_stalmed': member.shouldBeStalm()}
-        for member in members]
-
-    return create_dump_response(content, 'fulldump', 'csv')
-
-
-class ArskRenderer(csv_renderer.CSVRenderer):
-    header = ['name', 'surname', 'street_address', 'postal_code', 'city', 'country', 'associations']
-
-
 # Dump for Årsfestkommittén, includes all members that should be posted invitations.
 # These include: honor-members, all TFS 5 years back + exactly 10 years back, all counsels, all current functionaries
 @api_view(['GET'])
@@ -847,24 +795,10 @@ def dump_reg_emails(request):
         'surname': applicant.surname,
         'preferred_name': applicant.preferred_name,
         'email': applicant.email,
+        'language': applicant.mother_tongue,
     } for applicant in applicants]
 
     return Response(content, status=200)
-
-
-class ApplicantLanguagesRenderer(csv_renderer.CSVRenderer):
-    header = ['language']
-
-
-@api_view(['GET'])
-@renderer_classes((ApplicantLanguagesRenderer,))
-def dump_applicant_languages(request):
-    applicants = Applicant.objects.exclude(Q(mother_tongue__isnull=True) | Q(mother_tongue__exact=''))
-    content = [{
-        'language': applicant.mother_tongue}
-        for applicant in applicants]
-
-    return create_dump_response(content, 'applicantLanguages', 'csv')
 
 
 # List of addresses whom to post Studentbladet to
