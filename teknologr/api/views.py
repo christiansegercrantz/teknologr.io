@@ -118,7 +118,7 @@ class GroupViewSet(BaseModelViewSet):
     }
 
 class GroupMembershipViewSet(BaseModelViewSet):
-    queryset = GroupMembership.objects.select_related('group', 'group__grouptype', 'member')
+    queryset = GroupMembership.objects.all_with_related()
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = GroupMembershipFilter
     ordering_fields = (
@@ -222,7 +222,7 @@ class FunctionaryTypeViewSet(BaseModelViewSet):
     }
 
 class FunctionaryViewSet(BaseModelViewSet):
-    queryset = Functionary.objects.select_related('functionarytype', 'member')
+    queryset = Functionary.objects.all_with_related()
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = FunctionaryFilter
     ordering_fields = (
@@ -255,7 +255,7 @@ class DecorationViewSet(BaseModelViewSet):
     }
 
 class DecorationOwnershipViewSet(BaseModelViewSet):
-    queryset = DecorationOwnership.objects.select_related('decoration', 'member')
+    queryset = DecorationOwnership.objects.all_with_related()
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = DecorationOwnershipFilter
     ordering_fields = (
@@ -277,7 +277,7 @@ class DecorationOwnershipViewSet(BaseModelViewSet):
 
 class MemberTypeViewSet(viewsets.ModelViewSet):
     # NOTE: Default permissions (staff-only)
-    queryset = MemberType.objects.select_related('member')
+    queryset = MemberType.objects.all_with_related()
     serializer_class = MemberTypeSerializerAdmin
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = MemberTypeFilter

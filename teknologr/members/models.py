@@ -20,7 +20,7 @@ class SuperClass(models.Model):
 
 
 class MemberManager(models.Manager):
-    def get_prefetched_or_404(self, member_id):
+    def all_with_related(self):
         '''
         This is done in 5 queries:
         1. SELECT Member WHERE id=member_id
@@ -29,13 +29,15 @@ class MemberManager(models.Manager):
         4. SELECT GroupMembership WHERE member__id=member_id
         5. SELECT MemberType WHERE member__id=member_id
         '''
-        queryset = Member.objects.prefetch_related(
+        return Member.objects.prefetch_related(
             Prefetch('decoration_ownerships', queryset=DecorationOwnership.objects.select_related('decoration')),
             Prefetch('functionaries', queryset=Functionary.objects.select_related('functionarytype')),
             Prefetch('group_memberships', queryset=GroupMembership.objects.select_related('group', 'group__grouptype')),
             'member_types',
         )
-        return get_object_or_404(queryset, id=member_id)
+
+    def get_prefetched_or_404(self, member_id):
+        return get_object_or_404(self.all_with_related(), id=member_id)
 
 
 class Member(SuperClass):
@@ -274,8 +276,11 @@ class Member(SuperClass):
 
 
 class DecorationOwnershipManager(models.Manager):
+    def all_with_related(self):
+        return self.get_queryset().select_related('decoration', 'member')
+
     def year(self, year):
-        return self.get_queryset().select_related('member', 'decoration').filter(acquired__year=year)
+        return self.all_with_related().filter(acquired__year=year)
 
     def year_ordered(self, year):
         l = list(self.year(year))
@@ -349,6 +354,11 @@ class Decoration(SuperClass):
 
 
 class GroupMembership(SuperClass):
+    class GMManager(models.Manager):
+        def all_with_related(self):
+            return self.get_queryset().select_related('group', 'group__grouptype', 'member')
+
+    objects = GMManager()
     member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="group_memberships")
     group = models.ForeignKey("Group", on_delete=models.CASCADE, related_name="memberships")
 
@@ -468,8 +478,11 @@ class GroupType(SuperClass):
 
 
 class FunctionaryManager(models.Manager):
+    def all_with_related(self):
+        return self.get_queryset().select_related('functionarytype', 'member')
+
     def year(self, year):
-        return self.get_queryset().select_related('member', 'functionarytype').filter(begin_date__lte=datetime.date(int(year), 12, 31), end_date__gte=datetime.date(int(year), 1, 1))
+        return self.all_with_related().filter(begin_date__lte=datetime.date(int(year), 12, 31), end_date__gte=datetime.date(int(year), 1, 1))
 
     def year_ordered_and_unique(self, year):
         queryset = self.year(year)
@@ -557,8 +570,11 @@ class FunctionaryType(SuperClass):
 
 
 class MemberTypeManager(models.Manager):
+    def all_with_related(self):
+        return self.get_queryset().select_related('member')
+
     def begin_year(self, year):
-        return self.get_queryset().select_related('member').filter(begin_date__year=year)
+        return self.all_with_related().filter(begin_date__year=year)
 
     def ordinary_members_begin_year(self, year):
         return self.begin_year(year).filter(type='OM')
