@@ -2,8 +2,13 @@ from django.conf.urls import url, include
 from rest_framework import routers
 from api.views import *
 
+class RootView(routers.APIRootView):
+    name = 'Katalogen root API'
+    description = ''
+
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
+router.APIRootView = RootView
 router.register(r'members', MemberViewSet)
 router.register(r'grouptypes', GroupTypeViewSet)
 router.register(r'groups', GroupViewSet)
