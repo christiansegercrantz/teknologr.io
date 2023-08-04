@@ -72,6 +72,7 @@ class MemberViewSet(BaseModelViewSet):
     filterset_class = MemberFilter
     search_fields = ('dummy', ) # The search box does not appear if this is removed
     # XXX: Is there a way to dynamically change which fields can be ordered (depending on the requesting user)?
+    # XXX: Ordering in alphabethical order does not take into account the locale, and can not do our manual sort either because OrderingFilter.filter() is expected to return a queryset
     ordering_fields = ('id', 'preferred_name', 'surname', 'enrolment_year', 'graduated_year', )
 
     serializer_classes = {
@@ -85,8 +86,10 @@ class MemberViewSet(BaseModelViewSet):
 
 class GroupTypeViewSet(BaseModelViewSet):
     queryset = GroupType.objects.all()
-    filter_backends = (filters.DjangoFilterBackend, )
+    filter_backends = (SearchFilter, filters.DjangoFilterBackend, OrderingFilter, )
+    search_fields = ('name', 'comment', )
     filterset_class = GroupTypeFilter
+    ordering_fields = ('id', 'name', )
 
     serializer_classes = {
         'post': GroupTypeSerializerFull,
@@ -96,8 +99,15 @@ class GroupTypeViewSet(BaseModelViewSet):
 
 class GroupViewSet(BaseModelViewSet):
     queryset = Group.objects.select_related('grouptype')
-    filter_backends = (filters.DjangoFilterBackend, )
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = GroupFilter
+    ordering_fields = (
+        'id',
+        'begin_date',
+        'end_date',
+        ('grouptype__id', 'grouptype.id'),
+        ('grouptype__name', 'grouptype.name'),
+    )
 
     serializer_classes = {
         'post': GroupSerializerFull,
@@ -107,8 +117,16 @@ class GroupViewSet(BaseModelViewSet):
 
 class GroupMembershipViewSet(BaseModelViewSet):
     queryset = GroupMembership.objects.select_related('group', 'group__grouptype', 'member')
-    filter_backends = (filters.DjangoFilterBackend, )
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = GroupMembershipFilter
+    ordering_fields = (
+        'id',
+        ('group__begin_date', 'group.begin_date'),
+        ('group__end_date', 'group.end_date'),
+        ('group__grouptype__id', 'group.grouptype.id'),
+        ('group__grouptype__name', 'group.grouptype.name'),
+        ('member__id', 'member.id'),
+    )
 
     serializer_classes = {
         'post': GroupMembershipSerializerFull,
@@ -190,8 +208,10 @@ def multi_decoration_ownerships_save(request):
 
 class FunctionaryTypeViewSet(BaseModelViewSet):
     queryset = FunctionaryType.objects.all()
-    filter_backends = (filters.DjangoFilterBackend, )
+    filter_backends = (SearchFilter, filters.DjangoFilterBackend, OrderingFilter, )
+    search_fields = ('name', 'comment', )
     filterset_class = FunctionaryTypeFilter
+    ordering_fields = ('id', 'name', )
 
     serializer_classes = {
         'post': FunctionaryTypeSerializerFull,
@@ -201,8 +221,14 @@ class FunctionaryTypeViewSet(BaseModelViewSet):
 
 class FunctionaryViewSet(BaseModelViewSet):
     queryset = Functionary.objects.select_related('functionarytype', 'member')
-    filter_backends = (filters.DjangoFilterBackend, )
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = FunctionaryFilter
+    ordering_fields = (
+        'id',
+        ('functionarytype__id', 'functionarytype.id'),
+        ('functionarytype__name', 'functionarytype.name'),
+        ('member__id', 'member.id'),
+    )
 
     serializer_classes = {
         'post': FunctionarySerializerFull,
@@ -215,7 +241,10 @@ class FunctionaryViewSet(BaseModelViewSet):
 
 class DecorationViewSet(BaseModelViewSet):
     queryset = Decoration.objects.all()
+    filter_backends = (SearchFilter, filters.DjangoFilterBackend, OrderingFilter, )
+    search_fields = ('name', 'comment', )
     filterset_class = DecorationFilter
+    ordering_fields = ('id', 'name', )
 
     serializer_classes = {
         'post': DecorationSerializerFull,
@@ -225,8 +254,15 @@ class DecorationViewSet(BaseModelViewSet):
 
 class DecorationOwnershipViewSet(BaseModelViewSet):
     queryset = DecorationOwnership.objects.select_related('decoration', 'member')
-    filter_backends = (filters.DjangoFilterBackend, )
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = DecorationOwnershipFilter
+    ordering_fields = (
+        'id',
+        'acquired',
+        ('decoration__id', 'decoration.id'),
+        ('decoration__name', 'decoration.name'),
+        ('member__id', 'member.id'),
+    )
 
     serializer_classes = {
         'post': DecorationOwnershipSerializerFull,
@@ -241,8 +277,15 @@ class MemberTypeViewSet(viewsets.ModelViewSet):
     # NOTE: Default permissions (staff-only)
     queryset = MemberType.objects.select_related('member')
     serializer_class = MemberTypeSerializerAdmin
-    filter_backends = (filters.DjangoFilterBackend, )
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = MemberTypeFilter
+    ordering_fields = (
+        'id',
+        'type',
+        'begin_date',
+        'end_date',
+        ('member__id', 'member.id'),
+    )
 
 
 # User accounts
