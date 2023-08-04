@@ -17,7 +17,6 @@ from ldap import LDAPError
 from api.bill import BILLAccountManager, BILLException
 from rest_framework_csv import renderers as csv_renderer
 from django_filters import rest_framework as filters
-import django_filters
 from api.mailutils import mailNewPassword, mailNewAccount
 from collections import defaultdict
 from datetime import datetime
@@ -90,6 +89,8 @@ class MemberViewSet(BaseModelViewSet):
 
 class GroupTypeViewSet(BaseModelViewSet):
     queryset = GroupType.objects.all()
+    filter_backends = (filters.DjangoFilterBackend, )
+    filterset_class = GroupTypeFilter
 
     serializer_classes = {
         'post': GroupTypeSerializerFull,
@@ -99,6 +100,8 @@ class GroupTypeViewSet(BaseModelViewSet):
 
 class GroupViewSet(BaseModelViewSet):
     queryset = Group.objects.select_related('grouptype')
+    filter_backends = (filters.DjangoFilterBackend, )
+    filterset_class = GroupFilter
 
     serializer_classes = {
         'post': GroupSerializerFull,
@@ -108,6 +111,8 @@ class GroupViewSet(BaseModelViewSet):
 
 class GroupMembershipViewSet(BaseModelViewSet):
     queryset = GroupMembership.objects.select_related('group', 'group__grouptype', 'member')
+    filter_backends = (filters.DjangoFilterBackend, )
+    filterset_class = GroupMembershipFilter
 
     serializer_classes = {
         'post': GroupMembershipSerializerFull,
@@ -189,6 +194,8 @@ def multi_decoration_ownerships_save(request):
 
 class FunctionaryTypeViewSet(BaseModelViewSet):
     queryset = FunctionaryType.objects.all()
+    filter_backends = (filters.DjangoFilterBackend, )
+    filterset_class = FunctionaryTypeFilter
 
     serializer_classes = {
         'post': FunctionaryTypeSerializerFull,
@@ -198,6 +205,8 @@ class FunctionaryTypeViewSet(BaseModelViewSet):
 
 class FunctionaryViewSet(BaseModelViewSet):
     queryset = Functionary.objects.select_related('functionarytype', 'member')
+    filter_backends = (filters.DjangoFilterBackend, )
+    filterset_class = FunctionaryFilter
 
     serializer_classes = {
         'post': FunctionarySerializerFull,
@@ -210,6 +219,7 @@ class FunctionaryViewSet(BaseModelViewSet):
 
 class DecorationViewSet(BaseModelViewSet):
     queryset = Decoration.objects.all()
+    filterset_class = DecorationFilter
 
     serializer_classes = {
         'post': DecorationSerializerFull,
@@ -219,6 +229,8 @@ class DecorationViewSet(BaseModelViewSet):
 
 class DecorationOwnershipViewSet(BaseModelViewSet):
     queryset = DecorationOwnership.objects.select_related('decoration', 'member')
+    filter_backends = (filters.DjangoFilterBackend, )
+    filterset_class = DecorationOwnershipFilter
 
     serializer_classes = {
         'post': DecorationOwnershipSerializerFull,

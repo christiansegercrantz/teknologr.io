@@ -3,7 +3,34 @@ from members.models import *
 from functools import reduce
 from operator import and_
 
-class MemberFilter(django_filters.rest_framework.FilterSet):
+class BaseFilter(django_filters.rest_framework.FilterSet):
+    '''
+    Base filter class that takes care of normal users from using staff-only filters.
+    '''
+    STAFF_ONLY = []
+    created = django_filters.DateFromToRangeFilter(label='Skapad mellan')
+    modified = django_filters.DateFromToRangeFilter(label='Modifierad mellan')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.STAFF_ONLY = self.STAFF_ONLY + ['created', 'modified']
+
+        # If normal user, remove all staff-only filters, otherwise move them last and add a prefix to their labels
+        is_staff = self.is_staff
+        for key in self.STAFF_ONLY:
+            f = self.filters.pop(key)
+            if is_staff:
+                f.label = f'[Staff only] {f.label}'
+                self.filters[key] = f
+
+    @property
+    def is_staff(self):
+        ''' Helper method for checking if the user making the request is staff '''
+        user = self.request.user
+        return user and user.is_staff
+
+
+class MemberFilter(BaseFilter):
     '''
     A custom FilterSet class that set up filters for Members. Some filters are ignored if the requesting user is not staff.
     '''
@@ -40,55 +67,35 @@ class MemberFilter(django_filters.rest_framework.FilterSet):
     )
 
     # Staff only filters
-    STAFF_ONLY_FILTERS = ('birth_date', 'student_id', 'dead', 'subscribed_to_modulen', 'allow_studentbladet', 'allow_publish_info', 'comment', 'username', 'bill_code', )
+    STAFF_ONLY = ['birth_date', 'student_id', 'dead', 'subscribed_to_modulen', 'allow_studentbladet', 'allow_publish_info', 'comment', 'username', 'bill_code']
     birth_date = django_filters.DateFromToRangeFilter(
-        label='(Admins only) Född mellan'
+        label='Född mellan',
     )
     student_id = django_filters.CharFilter(
-        label='(Admins only) Studienummer'
+        label='Studienummer',
     )
     dead = django_filters.BooleanFilter(
-        label='(Admins only) Avliden?'
+        label='Avliden?',
     )
     subscribed_to_modulen = django_filters.BooleanFilter(
-        label='(Admins only) Prenumererar på Modulen?'
+        label='Prenumererar på Modulen?',
     )
     allow_studentbladet = django_filters.BooleanFilter(
-        label='(Admins only) Prenumererar på Studentbladet?'
+        label='Prenumererar på Studentbladet?',
     )
     allow_publish_info = django_filters.BooleanFilter(
-        label='(Admins only) Tillåter publicering av kontaktinformation?'
+        label='Tillåter publicering av kontaktinformation?',
     )
     comment = django_filters.CharFilter(
         lookup_expr='icontains',
-        label='(Admins only) Kommentaren innehåller',
+        label='Kommentaren innehåller',
     )
     username = django_filters.CharFilter(
-        label='(Admins only) Användarnamn'
+        label='Användarnamn',
     )
     bill_code = django_filters.CharFilter(
-        label='(Admins only) BILL-konto'
+        label='BILL-konto',
     )
-
-    class Meta:
-        model = Member
-        fields = ()
-
-    def filter_queryset(self, queryset):
-        '''
-        Override parent method to add skipping of staff-only filters for non-staff users.
-        '''
-        if not self.is_staff:
-            for name in self.STAFF_ONLY_FILTERS:
-                self.form.cleaned_data.pop(name)
-
-        return super().filter_queryset(queryset)
-
-    @property
-    def is_staff(self):
-        ''' Helper method for checking if the user making the request is staff '''
-        user = self.request.user
-        return user and user.is_staff
 
     def filter_non_public_memebers(self, queryset):
         ''' Helper method for filtering members that have not allowed their info to be published '''
@@ -143,3 +150,63 @@ class MemberFilter(django_filters.rest_framework.FilterSet):
             return queryset.filter(Q(graduated=True) | Q(graduated_year__isnull=False))
         # Not graduated and graduated year is not set
         return queryset.filter(Q(graduated=False) & Q(graduated_year__isnull=True))
+
+
+class DecorationFilter(BaseFilter):
+    name = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='Betygelsens namn innehåller',
+    )
+
+class DecorationOwnershipFilter(BaseFilter):
+    decoration__id = django_filters.NumberFilter(label='Betygelsens nam')
+    decoration__name = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='Betygelsens namn innehåller',
+    )
+    member__id = django_filters.NumberFilter(label='Medlemmens id')
+    acquired = django_filters.DateFromToRangeFilter(label='Tilldelat mellan')
+
+
+class FunctionaryTypeFilter(BaseFilter):
+    name = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='Postens namn innehåller',
+    )
+
+class FunctionaryFilter(BaseFilter):
+    functionarytype__id = django_filters.NumberFilter(label='Postens id')
+    functionarytype__name = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='Postens namn innehåller',
+    )
+    member__id = django_filters.NumberFilter(label='Medlemmens id')
+    begin_date = django_filters.DateFromToRangeFilter(label='Startdatum mellan')
+    end_date = django_filters.DateFromToRangeFilter(label='Slutdatum mellan')
+
+
+class GroupTypeFilter(BaseFilter):
+    name = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='Gruppens namn innehåller',
+    )
+
+class GroupFilter(BaseFilter):
+    begin_date = django_filters.DateFromToRangeFilter(label='Startdatum mellan')
+    end_date = django_filters.DateFromToRangeFilter(label='Slutdatum mellan')
+    grouptype__id = django_filters.NumberFilter(label='Gruppens id')
+    grouptype__name = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='Gruppens namn innehåller',
+    )
+
+class GroupMembershipFilter(BaseFilter):
+    group__id = django_filters.NumberFilter(label='Undergruppens id')
+    group__begin_date = django_filters.DateFromToRangeFilter(label='Undergruppens startdatum mellan')
+    group__end_date = django_filters.DateFromToRangeFilter(label='Undergruppens slutdatum mellan')
+    group__grouptype__id = django_filters.NumberFilter(label='Gruppens id')
+    group__grouptype__name = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='Gruppens namn innehåller',
+    )
+    member__id = django_filters.NumberFilter(label='Medlemmens id')
