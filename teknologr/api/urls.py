@@ -7,6 +7,7 @@ class RootView(routers.APIRootView):
     description = ''
 
 # Routers provide an easy way of automatically determining the URL conf.
+# NOTE: Use for example {% url 'api:member-list' %} to access these urls
 router = routers.DefaultRouter()
 router.APIRootView = RootView
 router.register(r'members', MemberViewSet)
