@@ -7,6 +7,7 @@ from katalogen.utils import *
 from django.db.models import Q, Count
 from functools import reduce
 from operator import and_
+from collections import defaultdict
 
 
 def _get_base_context(request):
@@ -195,7 +196,7 @@ def years(request):
       3. SELECT DecortaionOwnership => COUNT
       4. SELECT MemberType WHERE type IN ["OM", "ST"] => COUNT
     '''
-    years = {}
+    years = defaultdict(dict)
 
     def add(obj, key, count_key=None):
         date = obj['year']
@@ -203,8 +204,6 @@ def years(request):
             return
 
         y = date.year
-        if y not in years:
-            years[y] = {}
         years[y][key] = obj[count_key or key]
 
     # Get all functionaries and group them by their start year, and for each year return a count for the total amount of functionaries and the amount of unique members holding the posts

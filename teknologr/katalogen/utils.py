@@ -1,4 +1,5 @@
 from datetime import timedelta
+from collections import defaultdict
 from operator import attrgetter
 from functools import total_ordering
 from django.utils.formats import date_format
@@ -29,13 +30,11 @@ class Duration:
 
 class DurationsHelper:
     def __init__(self, items):
-        self.__dict = {}
+        self.__dict = defaultdict(list)
         for key, duration in items:
             self.add(key, duration)
 
     def add(self, key, new_duration):
-        if key not in self.__dict:
-            self.__dict[key] = []
         self.__dict[key].append(new_duration)
 
     def simplify(self):

@@ -1,8 +1,7 @@
-from datetime import date
-
 from django.test import TestCase
 from members.models import *
 from ldap import LDAPError
+from datetime import date, timedelta
 import random
 
 def shuffle(l):
@@ -342,7 +341,7 @@ class GroupOrderTest(BaseTest):
                 Group.objects.create(
                     grouptype=group_type,
                     begin_date=date,
-                    end_date=date + datetime.timedelta(days=1),
+                    end_date=date + timedelta(days=1),
                 )
 
         self.groups = list(Group.objects.all())
@@ -448,7 +447,7 @@ class FunctionaryOrderTest(BaseTest):
                     member=member,
                     functionarytype=functionary_type,
                     begin_date=date,
-                    end_date=date + datetime.timedelta(days=1),
+                    end_date=date + timedelta(days=1),
                 )
 
         self.functionaries = list(Functionary.objects.all())
@@ -540,7 +539,7 @@ class MemberTypeOrderTest(BaseTest):
                 MemberType.objects.create(
                     member=member,
                     begin_date=date,
-                    end_date=date + datetime.timedelta(days=1),
+                    end_date=date + timedelta(days=1),
                 )
 
         self.member_types = list(MemberType.objects.all())

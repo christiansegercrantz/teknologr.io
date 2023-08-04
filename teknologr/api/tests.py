@@ -1,4 +1,3 @@
-from django.test import TestCase
 from django.contrib.auth.models import User, Group
 from members.models import *
 from rest_framework import status
@@ -21,7 +20,7 @@ class BaseAPITest(APITestCase):
             email='1@teknolog.com',
             birth_date='1999-01-01',
             student_id='111111',
-            degree_programme='Energi– och miljöteknik',
+            degree_programme='Energi- och miljöteknik',
             enrolment_year=2019,
             graduated=True,
             graduated_year=2022,
@@ -43,7 +42,7 @@ class BaseAPITest(APITestCase):
             email='2@teknolog.com',
             birth_date='2999-02-02',
             student_id='222222',
-            degree_programme='Energi– och miljöteknik',
+            degree_programme='Energi- och miljöteknik',
             enrolment_year=2019,
             graduated=True,
             graduated_year=2022,
@@ -65,7 +64,7 @@ class BaseAPITest(APITestCase):
             email='3@teknolog.com',
             birth_date='3999-03-03',
             student_id='333333',
-            degree_programme='Energi– och miljöteknik',
+            degree_programme='Energi- och miljöteknik',
             enrolment_year=2019,
             graduated=True,
             graduated_year=2022,
@@ -77,13 +76,13 @@ class BaseAPITest(APITestCase):
         )
 
         self.d = Decoration.objects.create(name="My decoration")
-        self.do = DecorationOwnership.objects.create(decoration=self.d, member=self.m1, acquired=datetime.date.today())
+        self.do = DecorationOwnership.objects.create(decoration=self.d, member=self.m1, acquired=date.today())
 
         self.ft = FunctionaryType.objects.create(name="My functionarytype")
-        self.f = Functionary.objects.create(functionarytype=self.ft, member=self.m1, begin_date=datetime.date.today(), end_date=datetime.date.today())
+        self.f = Functionary.objects.create(functionarytype=self.ft, member=self.m1, begin_date=date.today(), end_date=date.today())
 
         self.gt = GroupType.objects.create(name="My grouptype")
-        self.g = Group.objects.create(grouptype=self.gt, begin_date=datetime.date.today(), end_date=datetime.date.today())
+        self.g = Group.objects.create(grouptype=self.gt, begin_date=date.today(), end_date=date.today())
         self.gm = GroupMembership.objects.create(group=self.g, member=self.m1)
 
         self.ms = [self.m1, self.m2, self.m3]
@@ -374,7 +373,7 @@ class DecorationMembershipsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodT
         self.post_data = {
             'decoration': self.d.id,
             'member': self.m2.id,
-            'acquired': datetime.date.today().isoformat(),
+            'acquired': date.today().isoformat(),
         }
 
 
@@ -413,8 +412,8 @@ class FunctionariesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, Po
         self.post_data = {
             'functionarytype': self.ft.id,
             'member': self.m2.id,
-            'begin_date': datetime.date.today().isoformat(),
-            'end_date': datetime.date.today().isoformat(),
+            'begin_date': date.today().isoformat(),
+            'end_date': date.today().isoformat(),
         }
 
 
@@ -448,8 +447,8 @@ class GroupsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostMetho
         self.n_all = 1
         self.post_data = {
             'grouptype': self.gt.id,
-            'begin_date': datetime.date.today().isoformat(),
-            'end_date': datetime.date.today().isoformat(),
+            'begin_date': date.today().isoformat(),
+            'end_date': date.today().isoformat(),
         }
 
 class GroupMembershipsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostMethodTests):

@@ -50,7 +50,6 @@ class BaseModelViewSet(viewsets.ModelViewSet):
         return self.serializer_classes['public']
 
 
-
 class MemberSearchFilter(SearchFilter):
     '''
     A custom SearchFilter class for Members that restricts the searchable columns to non-staff.

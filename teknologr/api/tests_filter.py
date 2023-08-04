@@ -1,8 +1,8 @@
-from django.test import TestCase
 from django.contrib.auth.models import User, Group
 from members.models import *
 from rest_framework import status
 from rest_framework.test import APITestCase
+from datetime import date
 
 '''
 This file tests the filtering on the Members API.
@@ -25,7 +25,7 @@ class BaseAPITest(APITestCase):
             enrolment_year=1999,
             graduated=False,
             graduated_year=None,
-            birth_date=datetime.date(1999, 1, 1),
+            birth_date=date(1999, 1, 1),
             student_id='12345L',
             dead=False,
             subscribed_to_modulen=False,
