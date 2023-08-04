@@ -596,7 +596,7 @@ def members_by_member_type(request, membertype, field=None):
 def dump_htk(request, member_id=None):
     def dumpMember(member):
         # Functionaries
-        funcs = Functionary.objects.filter(member=member)
+        funcs = member.functionaries.all()
         func_list = []
         for func in funcs:
             func_str = "{}: {} > {}".format(
@@ -606,17 +606,17 @@ def dump_htk(request, member_id=None):
             )
             func_list.append(func_str)
         # Groups
-        groups = GroupMembership.objects.filter(member=member)
+        group_memberships = member.group_memberships.all()
         group_list = []
-        for group in groups:
+        for gm in group_memberships:
             group_str = "{}: {} > {}".format(
-                group.group.grouptype.name,
-                group.group.begin_date,
-                group.group.end_date
+                gm.group.grouptype.name,
+                gm.group.begin_date,
+                gm.group.end_date
             )
             group_list.append(group_str)
         # Membertypes
-        types = MemberType.objects.filter(member=member)
+        types = member.member_types.all()
         type_list = []
         for type in types:
             type_str = "{}: {} > {}".format(
@@ -626,12 +626,12 @@ def dump_htk(request, member_id=None):
             )
             type_list.append(type_str)
         # Decorations
-        decorations = DecorationOwnership.objects.filter(member=member)
+        decoration_ownerships = member.decoration_ownerships.all()
         decoration_list = []
-        for decoration in decorations:
+        for do in decoration_ownerships:
             decoration_str = "{}: {}".format(
-                decoration.decoration.name,
-                decoration.acquired
+                do.decoration.name,
+                do.acquired
             )
             decoration_list.append(decoration_str)
 
@@ -644,23 +644,18 @@ def dump_htk(request, member_id=None):
             "decorations": decoration_list
         }
 
+    # Remember to prefetch all needed data to avoid hitting the db with n_members*5 extra fetches
     if member_id:
-        member = get_object_or_404(Member, id=member_id)
+        member = Member.objects.get_prefetched_or_404(member_id)
         data = dumpMember(member)
     else:
-        data = [dumpMember(member) for member in Member.objects.all()]
+        data = [dumpMember(member) for member in Member.objects.all_with_related()]
 
-    return create_dump_response(data, 'HTKdump', 'json')
-
-
-# CSV-render class
-class ModulenRenderer(csv_renderer.CSVRenderer):
-    header = ['given_names', 'preferred_name', 'surname', 'street_address', 'postal_code', 'city', 'country']
+    return Response(data, status=200)
 
 
 # List of addresses whom to post modulen to
 @api_view(['GET'])
-@renderer_classes((ModulenRenderer,))
 def dump_modulen(request):
     recipients = Member.objects.exclude(
         postal_code='02150'
@@ -684,42 +679,33 @@ def dump_modulen(request):
         'street_address': recipient.street_address,
         'postal_code': recipient.postal_code,
         'city': recipient.city,
-        'country': recipient.country
+        'country': recipient.country.name
     } for recipient in recipients]
 
-    return create_dump_response(content, 'modulendump', 'csv')
-
-
-class ActiveRenderer(csv_renderer.CSVRenderer):
-    header = ['position', 'member']
+    return Response(content, status=200)
 
 
 # Lists all members that are active at the moment. These are members
 # that are either functionaries right now or in a group that has an
 # active mandate
 @api_view(['GET'])
-@renderer_classes((ActiveRenderer,))
 def dump_active(request):
     now = datetime.today().date()
     content = []
 
     # Functionaries
-    all_functionaries = Functionary.objects.filter(
-        begin_date__lt=now,
-        end_date__gt=now
+    all_functionaries = Functionary.objects.all_with_related().filter(
+        begin_date__lte=now,
+        end_date__gte=now
     )
     for func in all_functionaries:
         content.append({
-            'position': str(func.functionarytype),
-            'member': ''
-        })
-        content.append({
-            'position': '',
-            'member': func.member.common_name
+            'position': func.functionarytype.name,
+            'member': func.member.full_name,
         })
 
     # Groups
-    groupmemberships = GroupMembership.objects.all()
+    groupmemberships = GroupMembership.objects.all_with_related()
     grouped_by_group = defaultdict(list)
     for membership in groupmemberships:
         if membership.group.begin_date < now and membership.group.end_date > now:
@@ -734,7 +720,7 @@ def dump_active(request):
             'member': m.common_name
         } for m in members])
 
-    return create_dump_response(content, 'activedump', 'csv')
+    return Response(content, status=200)
 
 
 class FullRenderer(csv_renderer.CSVRenderer):
@@ -792,17 +778,17 @@ class ArskRenderer(csv_renderer.CSVRenderer):
 # Dump for Årsfestkommittén, includes all members that should be posted invitations.
 # These include: honor-members, all TFS 5 years back + exactly 10 years back, all counsels, all current functionaries
 @api_view(['GET'])
-@renderer_classes((ArskRenderer,))
 def dump_arsk(request):
     tfs_low_range = 5
     current_year = datetime.today().year
 
+    # XXX: Very scary hardcoded impementation... Still correct as of 4.8.2023 //FS
     counsel_ids = [
         10,  # Affärsrådet (AR)
         9,   # Finansrådet (FR)
         12,  # De Äldres Råd (DÄR)
-        44,  # Fastighets Rådet (FaR)
-        19,  # Kontinuitets Rådet (KonRad)
+        44,  # Fastighetsrådet (FaR)
+        19,  # Kontinuitetsrådet (KonRad)
     ]
     styrelse_id = 2  # Styrelsen
     honor_id = 3  # Hedersmedlemmar
@@ -823,17 +809,17 @@ def dump_arsk(request):
     styrelse_members_query = Q(is_styrelse_q & Q(is_recent_q | is_ten_years_back_q))
 
     # Apply membership queries to database and append answer
-    memberships = GroupMembership.objects.filter(Q(styrelse_members_query | counsel_members_query) & is_alive)
+    memberships = GroupMembership.objects.all_with_related().filter(Q(styrelse_members_query | counsel_members_query) & is_alive)
     for membership in memberships:
         by_association[membership.member].append(str(membership.group))
 
     # Apply honor member queries and append answer
-    honor_decoration = DecorationOwnership.objects.filter(Q(decoration__id=honor_id) & is_alive)
+    honor_decoration = DecorationOwnership.objects.all_with_related().filter(Q(decoration__id=honor_id) & is_alive)
     for decoration in honor_decoration:
         by_association[decoration.member].append(decoration.decoration.name)
 
     # Apply functionary queries and append answer
-    functionaries = Functionary.objects.filter(Q(begin_date__year=current_year) & is_alive)
+    functionaries = Functionary.objects.all_with_related().filter(Q(begin_date__year=current_year) & is_alive)
     for functionary in functionaries:
         by_association[functionary.member].append(functionary.functionarytype.name)
 
@@ -845,30 +831,25 @@ def dump_arsk(request):
         'postal_code': member.postal_code,
         'city': member.city,
         'country': member.country.name,
-        'associations': ','.join(association)}
-        for member, association in by_association.items()]
+        'associations': ','.join(association),
+    } for member, association in by_association.items()]
 
-    return create_dump_response(content, 'arskdump', 'csv')
-
-
-class RegEmailRenderer(csv_renderer.CSVRenderer):
-    header = ['name', 'surname', 'preferred_name', 'email']
+    return Response(content, status=200)
 
 
 # Dump for receiving all emails from member applicants
 # Used by e.g. the PhuxMästare to send out information
 @api_view(['GET'])
-@renderer_classes((RegEmailRenderer,))
 def dump_reg_emails(request):
     applicants = Applicant.objects.all()
     content = [{
         'name': applicant.given_names,
         'surname': applicant.surname,
         'preferred_name': applicant.preferred_name,
-        'email': applicant.email}
-        for applicant in applicants]
+        'email': applicant.email,
+    } for applicant in applicants]
 
-    return create_dump_response(content, 'regEmailDump', 'csv')
+    return Response(content, status=200)
 
 
 class ApplicantLanguagesRenderer(csv_renderer.CSVRenderer):
@@ -886,14 +867,8 @@ def dump_applicant_languages(request):
     return create_dump_response(content, 'applicantLanguages', 'csv')
 
 
-# CSV-render class
-class StudentbladetRenderer(csv_renderer.CSVRenderer):
-    header = ['name', 'street_address', 'postal_code', 'city', 'country']
-
-
 # List of addresses whom to post Studentbladet to
 @api_view(['GET'])
-@renderer_classes((StudentbladetRenderer,))
 def dump_studentbladet(request):
     recipients = Member.objects.exclude(dead=True).filter(allow_studentbladet=True)
     recipients = [m for m in recipients if m.isValidMember()]
@@ -903,7 +878,7 @@ def dump_studentbladet(request):
         'street_address': recipient.street_address,
         'postal_code': recipient.postal_code,
         'city': recipient.city,
-        'country': recipient.country
+        'country': str(recipient.country),
     } for recipient in recipients]
 
-    return create_dump_response(content, 'studentbladetdump', 'csv')
+    return Response(content, status=200)
