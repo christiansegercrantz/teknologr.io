@@ -214,6 +214,7 @@ REST_FRAMEWORK = {
         'api.utils.BrowsableAPIRendererWithoutForms',
         'rest_framework_csv.renderers.CSVRenderer',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'api.utils.Pagination',
 }
 
 # LDAP stuff

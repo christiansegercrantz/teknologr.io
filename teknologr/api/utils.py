@@ -2,6 +2,7 @@
 
 from django.db.models import Q
 from rest_framework.renderers import BrowsableAPIRenderer
+from rest_framework.pagination import LimitOffsetPagination
 from members.models import Member
 from registration.models import Applicant
 from datetime import datetime
@@ -55,3 +56,10 @@ class BrowsableAPIRendererWithoutForms(BrowsableAPIRenderer):
 
     def get_rendered_html_form(self, data, view, method, request):
         return ''
+
+
+class Pagination(LimitOffsetPagination):
+    default_limit = 100
+    limit_query_param = 'limit'
+    offset_query_param = 'offset'
+    max_limit = 1000

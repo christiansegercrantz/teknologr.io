@@ -54,13 +54,13 @@ class TestCases():
         self.login_user()
         response = self.filter()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), self.n_normal)
+        self.assertEqual(response.json()['count'], self.n_normal)
 
     def test_filter_for_superuser(self):
         self.login_superuser()
         response = self.filter()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), self.n_staff)
+        self.assertEqual(response.json()['count'], self.n_staff)
 
 
 class MemberFilterSingleNameTest(BaseAPITest, TestCases):

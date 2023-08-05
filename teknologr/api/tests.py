@@ -145,13 +145,13 @@ class GetAllMethodTests(CheckJSON):
         self.login_user()
         response = self.get_all()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), self.n_all)
+        self.assertEqual(response.json()['count'], self.n_all)
 
     def test_get_all_for_superuser(self):
         self.login_superuser()
         response = self.get_all()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), self.n_all)
+        self.assertEqual(response.json()['count'], self.n_all)
 
 class GetOneMethodTests(CheckJSON):
     def test_get_one_for_anonymous_users(self):
@@ -330,13 +330,13 @@ class MemberSearchTest(BaseAPITest):
         self.login_user()
         response = self.search()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()['count'], 1)
 
     def test_search_for_superuser(self):
         self.login_superuser()
         response = self.search()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), 4)
+        self.assertEqual(response.json()['count'], 4)
 
 
 # DECORATIONS
