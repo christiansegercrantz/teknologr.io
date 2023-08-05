@@ -7,8 +7,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, renderer_classes
-from rest_framework_csv import renderers as csv_renderer
+from rest_framework.decorators import api_view
 from ldap import LDAPError
 from collections import defaultdict
 from datetime import datetime
@@ -17,7 +16,6 @@ from api.filters import *
 from api.ldap import LDAPAccountManager
 from api.bill import BILLAccountManager, BILLException
 from api.mailutils import mailNewPassword, mailNewAccount
-from api.utils import create_dump_response
 from members.models import GroupMembership, Member, Group
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
@@ -49,6 +47,11 @@ class BaseModelViewSet(viewsets.ModelViewSet):
             return self.serializer_classes['admin']
         return self.serializer_classes['public']
 
+    def get_serializer(self, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        kwargs['detail'] = self.action == 'retrieve'
+        return serializer_class(*args, **kwargs)
+
 
 class MemberSearchFilter(SearchFilter):
     '''
@@ -68,7 +71,7 @@ class MemberSearchFilter(SearchFilter):
         return fields
 
 class MemberViewSet(BaseModelViewSet):
-    queryset = Member.objects.all()
+    queryset = Member.objects.all_with_related()
     filter_backends = (MemberSearchFilter, filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = MemberFilter
     search_fields = ('dummy', ) # The search box does not appear if this is removed
@@ -77,7 +80,7 @@ class MemberViewSet(BaseModelViewSet):
     ordering_fields = ('id', 'preferred_name', 'surname', 'enrolment_year', 'graduated_year', )
 
     serializer_classes = {
-        'post': MemberSerializerAdmin,
+        'post': MemberSerializerFull,
         'admin': MemberSerializerAdmin,
         'public': MemberSerializerPublic,
     }
@@ -94,7 +97,7 @@ class GroupTypeViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': GroupTypeSerializerFull,
-        'admin': GroupTypeSerializerFull,
+        'admin': GroupTypeSerializerAdmin,
         'public': GroupTypeSerializerPublic,
     }
 
@@ -216,7 +219,7 @@ class FunctionaryTypeViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': FunctionaryTypeSerializerFull,
-        'admin': FunctionaryTypeSerializerFull,
+        'admin': FunctionaryTypeSerializerAdmin,
         'public': FunctionaryTypeSerializerPublic,
     }
 
@@ -249,7 +252,7 @@ class DecorationViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': DecorationSerializerFull,
-        'admin': DecorationSerializerFull,
+        'admin': DecorationSerializerAdmin,
         'public': DecorationSerializerPublic,
     }
 

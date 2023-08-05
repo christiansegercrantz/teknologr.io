@@ -75,15 +75,26 @@ class BaseAPITest(APITestCase):
             comment='Kommentar',
         )
 
-        self.d = Decoration.objects.create(name="My decoration")
-        self.do = DecorationOwnership.objects.create(decoration=self.d, member=self.m1, acquired=date.today())
+        d1 = '1999-01-01'
+        d2 = '1999-12-31'
 
-        self.ft = FunctionaryType.objects.create(name="My functionarytype")
-        self.f = Functionary.objects.create(functionarytype=self.ft, member=self.m1, begin_date=date.today(), end_date=date.today())
+        self.d = Decoration.objects.create(name='My decoration')
+        self.do = DecorationOwnership.objects.create(decoration=self.d, member=self.m1, acquired=d1)
+        DecorationOwnership.objects.create(decoration=self.d, member=self.m2, acquired=d1)
+        DecorationOwnership.objects.create(decoration=self.d, member=self.m3, acquired=d1)
 
-        self.gt = GroupType.objects.create(name="My grouptype")
-        self.g = Group.objects.create(grouptype=self.gt, begin_date=date.today(), end_date=date.today())
+        self.ft = FunctionaryType.objects.create(name='My functionarytype')
+        self.f = Functionary.objects.create(functionarytype=self.ft, member=self.m1, begin_date=d1, end_date=d2)
+        Functionary.objects.create(functionarytype=self.ft, member=self.m2, begin_date=d1, end_date=d2)
+        Functionary.objects.create(functionarytype=self.ft, member=self.m3, begin_date=d1, end_date=d2)
+
+        self.gt = GroupType.objects.create(name='My grouptype')
+        self.g = Group.objects.create(grouptype=self.gt, begin_date=d1, end_date=d1)
         self.gm = GroupMembership.objects.create(group=self.g, member=self.m1)
+        g2 = Group.objects.create(grouptype=self.gt, begin_date=d2, end_date=d2)
+        GroupMembership.objects.create(group=g2, member=self.m1)
+        GroupMembership.objects.create(group=g2, member=self.m2)
+        GroupMembership.objects.create(group=g2, member=self.m3)
 
         self.ms = [self.m1, self.m2, self.m3]
 
@@ -111,20 +122,41 @@ class CheckJSON():
     def __check_type(self, value, t):
         return (t is None and value is None) or type(value) == t
 
-    def __check_types(self, value, types):
-        if types == dict:
+    def __check_types(self, value, t):
+        if t in [dict, list]:
             raise Exception('Be more specific please')
 
-        if type(types) is dict:
-            return self.check_response(value, types)
+        # Dict works as sub-objects
+        if type(t) is dict:
+            return self.__check_type(value, dict) and self.check_response(value, t)
 
-        if type(types) is list:
+        # List works as sub-arrays
+        if type(t) is list:
+            if len(t) != 1:
+                raise Exception('Can only check the list elements against one type')
+
+            # The required structure is a list
+            if not self.__check_type(value, list):
+                return False
+
+            # Getting a list with length 0 is pretty useless, so make a better test
+            if len(value) == 0:
+                return False
+
+            # Check the structure for each element
+            for element in value:
+                if not self.__check_types(element, t[0]):
+                    return False
+            return True
+
+        # Tuple works as a union of types
+        if type(t) is tuple:
             ok = False
-            for t in types:
-                ok |= self.__check_type(value, t)
+            for tt in t:
+                ok |= self.__check_type(value, tt)
             return ok
 
-        return self.__check_type(value, types)
+        return self.__check_type(value, t)
 
     def check_response(self, data, structure):
         ''' Check that the data from a JSON response has a specific structure '''
@@ -162,13 +194,13 @@ class GetOneMethodTests(CheckJSON):
         self.login_user()
         response = self.get_one(self.item)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.check_response(response.json(), self.columns_partial)
+        self.check_response(response.json(), self.columns_public_detail if hasattr(self, 'columns_public_detail') else self.columns_public)
 
     def test_get_one_for_superuser(self):
         self.login_superuser()
         response = self.get_one(self.item)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.check_response(response.json(), self.columns_full)
+        self.check_response(response.json(), self.columns_admin_detail if hasattr(self, 'columns_admin_detail') else self.columns_admin)
 
 class PostMethodTests():
     def test_post_for_anonymous_users(self):
@@ -192,32 +224,78 @@ Test case classes that extends one or many test implementation classes. Each tes
 
 # MEMBERS
 
-all_member_columns = {
+MEMBER_PUBLIC = {
     'id': int,
-    'country': str,
-    'created': str,
-    'modified': str,
     'given_names': str,
     'preferred_name': str,
     'surname': str,
-    'street_address': str,
-    'postal_code': str,
-    'city': str,
-    'phone': str,
-    'email': str,
-    'birth_date': str,
-    'student_id': str,
     'degree_programme': str,
     'enrolment_year': int,
     'graduated': bool,
     'graduated_year': int,
+    'n_functionaries': int,
+    'n_groups': int,
+    'n_decorations': int,
+}
+MEMBER_PERSONAL = {
+    **MEMBER_PUBLIC,
+    'street_address': str,
+    'postal_code': str,
+    'city': str,
+    'country': str,
+    'phone': str,
+    'email': str,
+}
+MEMBER_ADMIN = {
+    **MEMBER_PERSONAL,
+    'created': str,
+    'modified': str,
+    'birth_date': str,
+    'student_id': str,
     'dead': bool,
     'subscribed_to_modulen': bool,
     'allow_publish_info': bool,
     'allow_studentbladet': bool,
     'comment': str,
-    'username': [str, None],
-    'bill_code': [str, None],
+    'username': (str, None),
+    'bill_code': (str, None),
+}
+MEMBER_DETAIL = {
+    'functionaries': [{
+        'functionarytype': {
+            'id': int,
+            'name': str,
+        },
+        'begin_date': str,
+        'end_date': str,
+    }],
+    'groups': [{
+        'grouptype': {
+            'id': int,
+            'name': str,
+        },
+        'begin_date': str,
+        'end_date': str,
+    }],
+    'decorations': [{
+        'decoration': {
+            'id': int,
+            'name': str,
+        },
+        'acquired': str,
+    }],
+}
+MEMBER_PUBLIC_DETAIL = {
+    **MEMBER_PUBLIC,
+    **MEMBER_DETAIL,
+}
+MEMBER_PERSONAL_DETAIL = {
+    **MEMBER_PERSONAL,
+    **MEMBER_DETAIL,
+}
+MEMBER_ADMIN_DETAIL = {
+    **MEMBER_ADMIN,
+    **MEMBER_DETAIL,
 }
 
 class MembersAPITest(BaseAPITest, GetAllMethodTests, PostMethodTests):
@@ -232,17 +310,10 @@ class MemberHiddenAPITest(BaseAPITest, GetOneMethodTests):
         super().setUp()
         self.api_path = '/api/members/'
         self.item = self.m1
-        self.columns_partial = {
-            'id': int,
-            'given_names': str,
-            'preferred_name': str,
-            'surname': str,
-            'degree_programme': str,
-            'enrolment_year': int,
-            'graduated': bool,
-            'graduated_year': int,
-        }
-        self.columns_full = all_member_columns
+        self.columns_public = MEMBER_PUBLIC
+        self.columns_public_detail = MEMBER_PUBLIC_DETAIL
+        self.columns_admin = MEMBER_ADMIN
+        self.columns_admin_detail = MEMBER_ADMIN_DETAIL
 
     def test_member_given_names_for_user(self):
         self.login_user()
@@ -254,17 +325,10 @@ class MemberDeadAPITest(BaseAPITest, GetOneMethodTests):
         super().setUp()
         self.api_path = '/api/members/'
         self.item = self.m2
-        self.columns_partial = {
-            'id': int,
-            'given_names': str,
-            'preferred_name': str,
-            'surname': str,
-            'degree_programme': str,
-            'enrolment_year': int,
-            'graduated': bool,
-            'graduated_year': int,
-        }
-        self.columns_full = all_member_columns
+        self.columns_public = MEMBER_PUBLIC
+        self.columns_public_detail = MEMBER_PUBLIC_DETAIL
+        self.columns_admin = MEMBER_ADMIN
+        self.columns_admin_detail = MEMBER_ADMIN_DETAIL
 
     def test_member_given_names_for_user(self):
         self.login_user()
@@ -276,23 +340,10 @@ class MemberNormalAPITest(BaseAPITest, GetOneMethodTests):
         super().setUp()
         self.api_path = '/api/members/'
         self.item = self.m3
-        self.columns_partial = {
-            'id': int,
-            'given_names': str,
-            'preferred_name': str,
-            'surname': str,
-            'street_address': str,
-            'postal_code': str,
-            'city': str,
-            'country': str,
-            'phone': str,
-            'email': str,
-            'degree_programme': str,
-            'enrolment_year': int,
-            'graduated': bool,
-            'graduated_year': int,
-        }
-        self.columns_full = all_member_columns
+        self.columns_public = MEMBER_PERSONAL
+        self.columns_public_detail = MEMBER_PERSONAL_DETAIL
+        self.columns_admin = MEMBER_ADMIN
+        self.columns_admin_detail = MEMBER_ADMIN_DETAIL
 
     def test_member_given_names_for_user(self):
         self.login_user()
@@ -346,17 +397,26 @@ class DecorationsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, Post
         super().setUp()
         self.api_path = '/api/decorations/'
         self.item = self.d
-        self.columns_partial = {'id': int, 'name': str, 'comment': str}
-        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
+        self.columns_public = {'id': int, 'name': str, 'comment': str, 'n_ownerships': int}
+        self.columns_public_detail = {
+            **self.columns_public,
+            'ownerships': [{
+                'id': int,
+                'acquired': str,
+                'member': {'id': int, 'name': str},
+            }],
+        }
+        self.columns_admin = {**self.columns_public, 'created': str, 'modified': str}
+        self.columns_admin_detail = {**self.columns_public_detail, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {'name': 'test'}
 
-class DecorationMembershipsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostMethodTests):
+class DecorationOwnershipsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostMethodTests):
     def setUp(self):
         super().setUp()
         self.api_path = '/api/decorationownerships/'
         self.item = self.do
-        self.columns_partial = {
+        self.columns_public = {
             'id': int,
             'decoration': {
                 'id': int,
@@ -368,8 +428,8 @@ class DecorationMembershipsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodT
             },
             'acquired': str,
         }
-        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
-        self.n_all = 1
+        self.columns_admin = {**self.columns_public, 'created': str, 'modified': str}
+        self.n_all = 3
         self.post_data = {
             'decoration': self.d.id,
             'member': self.m2.id,
@@ -384,8 +444,18 @@ class FunctionaryTypesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests,
         super().setUp()
         self.api_path = '/api/functionarytypes/'
         self.item = self.ft
-        self.columns_partial = {'id': int, 'name': str, 'comment': str}
-        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
+        self.columns_public = {'id': int, 'name': str, 'comment': str, 'n_functionaries': int}
+        self.columns_public_detail = {
+            **self.columns_public,
+            'functionaries': [{
+                'id': int,
+                'begin_date': str,
+                'end_date': str,
+                'member': {'id': int, 'name': str},
+            }],
+        }
+        self.columns_admin = {**self.columns_public, 'created': str, 'modified': str}
+        self.columns_admin_detail = {**self.columns_public_detail, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {'name': 'test'}
 
@@ -394,7 +464,7 @@ class FunctionariesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, Po
         super().setUp()
         self.api_path = '/api/functionaries/'
         self.item = self.f
-        self.columns_partial = {
+        self.columns_public = {
             'id': int,
             'functionarytype': {
                 'id': int,
@@ -407,8 +477,8 @@ class FunctionariesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, Po
             'begin_date': str,
             'end_date': str,
         }
-        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
-        self.n_all = 1
+        self.columns_admin = {**self.columns_public, 'created': str, 'modified': str}
+        self.n_all = 3
         self.post_data = {
             'functionarytype': self.ft.id,
             'member': self.m2.id,
@@ -424,8 +494,8 @@ class GroupTypesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostM
         super().setUp()
         self.api_path = '/api/grouptypes/'
         self.item = self.gt
-        self.columns_partial = {'id': int, 'name': str, 'comment': str}
-        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
+        self.columns_public = {'id': int, 'name': str, 'comment': str, 'n_groups': int}
+        self.columns_admin = {**self.columns_public, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {'name': 'test'}
 
@@ -434,7 +504,7 @@ class GroupsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostMetho
         super().setUp()
         self.api_path = '/api/groups/'
         self.item = self.g
-        self.columns_partial = {
+        self.columns_public = {
             'id': int,
             'grouptype': {
                 'id': int,
@@ -442,9 +512,18 @@ class GroupsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostMetho
             },
             'begin_date': str,
             'end_date': str,
+            'n_members': int,
         }
-        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
-        self.n_all = 1
+        self.columns_public_detail = {
+            **self.columns_public,
+            'members': [{
+                'id': int,
+                'name': str,
+            }],
+        }
+        self.columns_admin = {**self.columns_public, 'created': str, 'modified': str}
+        self.columns_admin_detail = {**self.columns_public_detail, 'created': str, 'modified': str}
+        self.n_all = 2
         self.post_data = {
             'grouptype': self.gt.id,
             'begin_date': date.today().isoformat(),
@@ -456,7 +535,7 @@ class GroupMembershipsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests,
         super().setUp()
         self.api_path = '/api/groupmemberships/'
         self.item = self.gm
-        self.columns_partial = {
+        self.columns_public = {
             'id': int,
             'group': {
                 'id': int,
@@ -472,8 +551,8 @@ class GroupMembershipsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests,
                 'name': str,
             },
         }
-        self.columns_full = {**self.columns_partial, 'created': str, 'modified': str}
-        self.n_all = 1
+        self.columns_admin = {**self.columns_public, 'created': str, 'modified': str}
+        self.n_all = 4
         self.post_data = {
             'group': self.g.id,
             'member': self.m2.id,
