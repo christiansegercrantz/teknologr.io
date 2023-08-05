@@ -50,6 +50,7 @@ class BaseModelViewSet(viewsets.ModelViewSet):
     def get_serializer(self, *args, **kwargs):
         serializer_class = self.get_serializer_class()
         kwargs['detail'] = self.action == 'retrieve'
+        kwargs['is_staff'] = self.request.user.is_staff
         return serializer_class(*args, **kwargs)
 
 
@@ -81,8 +82,8 @@ class MemberViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': MemberSerializerFull,
-        'admin': MemberSerializerAdmin,
-        'public': MemberSerializerPublic,
+        'admin': MemberSerializer,
+        'public': MemberSerializer,
     }
 
 
@@ -97,8 +98,8 @@ class GroupTypeViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': GroupTypeSerializerFull,
-        'admin': GroupTypeSerializerAdmin,
-        'public': GroupTypeSerializerPublic,
+        'admin': GroupTypeSerializer,
+        'public': GroupTypeSerializer,
     }
 
 class GroupViewSet(BaseModelViewSet):
@@ -115,8 +116,8 @@ class GroupViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': GroupSerializerFull,
-        'admin': GroupSerializerAdmin,
-        'public': GroupSerializerPublic,
+        'admin': GroupSerializer,
+        'public': GroupSerializer,
     }
 
 class GroupMembershipViewSet(BaseModelViewSet):
@@ -134,8 +135,8 @@ class GroupMembershipViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': GroupMembershipSerializerFull,
-        'admin': GroupMembershipSerializerAdmin,
-        'public': GroupMembershipSerializerPublic,
+        'admin': GroupMembershipSerializer,
+        'public': GroupMembershipSerializer,
     }
 
 
@@ -219,8 +220,8 @@ class FunctionaryTypeViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': FunctionaryTypeSerializerFull,
-        'admin': FunctionaryTypeSerializerAdmin,
-        'public': FunctionaryTypeSerializerPublic,
+        'admin': FunctionaryTypeSerializer,
+        'public': FunctionaryTypeSerializer,
     }
 
 class FunctionaryViewSet(BaseModelViewSet):
@@ -236,8 +237,8 @@ class FunctionaryViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': FunctionarySerializerFull,
-        'admin': FunctionarySerializerAdmin,
-        'public': FunctionarySerializerPublic,
+        'admin': FunctionarySerializer,
+        'public': FunctionarySerializer,
     }
 
 
@@ -252,8 +253,8 @@ class DecorationViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': DecorationSerializerFull,
-        'admin': DecorationSerializerAdmin,
-        'public': DecorationSerializerPublic,
+        'admin': DecorationSerializer,
+        'public': DecorationSerializer,
     }
 
 class DecorationOwnershipViewSet(BaseModelViewSet):
@@ -270,8 +271,8 @@ class DecorationOwnershipViewSet(BaseModelViewSet):
 
     serializer_classes = {
         'post': DecorationOwnershipSerializerFull,
-        'admin': DecorationOwnershipSerializerAdmin,
-        'public': DecorationOwnershipSerializerPublic,
+        'admin': DecorationOwnershipSerializer,
+        'public': DecorationOwnershipSerializer,
     }
 
 

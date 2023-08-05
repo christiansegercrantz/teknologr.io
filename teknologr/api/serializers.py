@@ -15,16 +15,32 @@ class IdAndName(serializers.Serializer):
     def to_representation(self, obj):
         return {'id': obj.id, 'name': obj.name}
 
-class IdAndPublicFullName(serializers.Serializer):
-    ''' Helper class for serializing partial Member objects '''
-    def to_representation(self, obj):
-        return {'id': obj.id, 'name': obj.public_full_name}
-
 class BaseSerializer(serializers.ModelSerializer):
-    ''' Base class for all our serializers that captures the 'detail' keyword '''
-    def __init__(self, *args, detail=False, **kwargs):
+    '''
+    Base class for all our serializers that automatically removes staff-only fields for normal users. It also captures the 'detail' keyword that signifies that the serializer is used for a detail API view instead, for which inherited classes add more details to the representation.
+    '''
+
+    STAFF_ONLY = []
+
+    def __init__(self, *args, detail=False, is_staff=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.detail = detail
+        self.is_staff = is_staff
+
+    def remove_fields(self, fields):
+        ''' Removed fields from this serializer by removing them from self.fields, which works because that is a @cached_property '''
+        for field in fields:
+            if field in self.fields:
+                self.fields.pop(field)
+
+    def to_representation(self, obj):
+        # Remove staff only fields for normal users
+        if not self.is_staff:
+            self.remove_fields(self.STAFF_ONLY + ['created', 'modified'])
+        return super().to_representation(obj)
+
+    def get_minimal_member(self, member):
+        return {'id': member.id, 'name': member.name if self.is_staff else member.public_full_name}
 
 
 # Members
@@ -35,8 +51,14 @@ class MemberSerializerFull(BaseSerializer):
     class Meta:
         model = Member
         fields = '__all__'
-class MemberSerializerAdmin(MemberSerializerFull):
+class MemberSerializer(MemberSerializerFull):
+    STAFF_ONLY = ['birth_date', 'student_id', 'dead', 'subscribed_to_modulen', 'allow_publish_info', 'allow_studentbladet', 'comment', 'username', 'bill_code']
+
     def to_representation(self, obj):
+        hide = not self.is_staff and not obj.showContactInformation()
+        if hide:
+            self.remove_fields(['country', 'street_address', 'postal_code', 'city', 'phone', 'email'])
+
         data = super().to_representation(obj)
         functionaries = obj.functionaries.all()
         group_memberships = obj.group_memberships.all()
@@ -65,24 +87,8 @@ class MemberSerializerAdmin(MemberSerializerFull):
                 'acquired': do.acquired,
             } for do in decoration_ownerships]
 
-        return data
-
-class MemberSerializerPublic(MemberSerializerAdmin):
-    class Meta:
-        model = Member
-        fields = ('id', 'country', 'given_names', 'preferred_name', 'surname', 'street_address', 'postal_code', 'city', 'phone', 'email', 'degree_programme', 'enrolment_year', 'graduated', 'graduated_year', )
-
-    def to_representation(self, obj):
-        # Get the original representation
-        data = super().to_representation(obj)
-
-        # Modify Member data if necessary
-        if not obj.showContactInformation():
-            # Remove contact information
-            for c in ['country', 'street_address', 'postal_code', 'city', 'phone', 'email']:
-                data.pop(c)
-
-            # Convert given names to initials
+        # Modify certain fields if necessary
+        if hide:
             data['given_names'] = obj.get_given_names_with_initials()
 
         return data
@@ -94,7 +100,7 @@ class GroupTypeSerializerFull(BaseSerializer):
     class Meta:
         model = GroupType
         fields = '__all__'
-class GroupTypeSerializerAdmin(GroupTypeSerializerFull):
+class GroupTypeSerializer(GroupTypeSerializerFull):
     def to_representation(self, obj):
         data = super().to_representation(obj)
         groups = obj.groups.all()
@@ -103,16 +109,12 @@ class GroupTypeSerializerAdmin(GroupTypeSerializerFull):
         data['n_groups'] = len(groups)
 
         return data
-class GroupTypeSerializerPublic(GroupTypeSerializerAdmin):
-    class Meta:
-        model = GroupType
-        fields = ('id', 'name', 'comment', )
 
 class GroupSerializerFull(BaseSerializer):
     class Meta:
         model = Group
         fields = '__all__'
-class GroupSerializerAdmin(GroupSerializerFull):
+class GroupSerializer(GroupSerializerFull):
     grouptype = IdAndName()
 
     def to_representation(self, obj):
@@ -132,21 +134,17 @@ class GroupSerializerAdmin(GroupSerializerFull):
             } for gm in memberships]
 
         return data
-class GroupSerializerPublic(GroupSerializerAdmin):
-    class Meta:
-        model = Group
-        fields = ('id', 'grouptype', 'begin_date', 'end_date', )
 
 class GroupMembershipSerializerFull(BaseSerializer):
     class Meta:
         model = GroupMembership
         fields = '__all__'
-class GroupMembershipSerializerAdmin(GroupMembershipSerializerFull):
+class GroupMembershipSerializer(GroupMembershipSerializerFull):
     def to_representation(self, obj):
         data = super().to_representation(obj)
         group = obj.group
 
-        data['member'] = IdAndName(obj.member).data
+        data['member'] = self.get_minimal_member(obj.member)
         data['group'] = {
             'id': group.id,
             'begin_date': group.begin_date,
@@ -155,10 +153,6 @@ class GroupMembershipSerializerAdmin(GroupMembershipSerializerFull):
         }
 
         return data
-class GroupMembershipSerializerPublic(GroupMembershipSerializerAdmin):
-    class Meta:
-        model = GroupMembership
-        fields = ('id', 'group', 'member', )
 
 
 # FunctionaryTypes and Functionaries
@@ -168,8 +162,7 @@ class FunctionaryTypeSerializerFull(BaseSerializer):
         model = FunctionaryType
         fields = '__all__'
 
-class FunctionaryTypeSerializerAdmin(FunctionaryTypeSerializerFull):
-
+class FunctionaryTypeSerializer(FunctionaryTypeSerializerFull):
     def to_representation(self, obj):
         data = super().to_representation(obj)
         functionaries = obj.functionaries.all()
@@ -183,29 +176,22 @@ class FunctionaryTypeSerializerAdmin(FunctionaryTypeSerializerFull):
                 'id': f.id,
                 'begin_date': f.begin_date,
                 'end_date': f.end_date,
-                # XXX: Full name for staff?
-                'member': IdAndPublicFullName(f.member).data,
+                'member': self.get_minimal_member(f.member),
             } for f in functionaries]
 
         return data
-class FunctionaryTypeSerializerPublic(FunctionaryTypeSerializerAdmin):
-    class Meta:
-        model = FunctionaryType
-        fields = ('id', 'name', 'comment', )
 
 class FunctionarySerializerFull(BaseSerializer):
     class Meta:
         model = Functionary
         fields = '__all__'
-class FunctionarySerializerAdmin(FunctionarySerializerFull):
+class FunctionarySerializer(FunctionarySerializerFull):
     functionarytype = IdAndName()
-    member = IdAndName()
-class FunctionarySerializerPublic(FunctionarySerializerAdmin):
-    member = IdAndPublicFullName()
 
-    class Meta:
-        model = Functionary
-        fields = ('id', 'functionarytype', 'member', 'begin_date', 'end_date', )
+    def to_representation(self, obj):
+        data = super().to_representation(obj)
+        data['member'] = self.get_minimal_member(obj.member)
+        return data
 
 
 # Decorations and DecorationOwnerships
@@ -214,8 +200,7 @@ class DecorationSerializerFull(BaseSerializer):
     class Meta:
         model = Decoration
         fields = '__all__'
-class DecorationSerializerAdmin(DecorationSerializerFull):
-
+class DecorationSerializer(DecorationSerializerFull):
     def to_representation(self, obj):
         data = super().to_representation(obj)
         ownerships = obj.ownerships.all()
@@ -228,29 +213,22 @@ class DecorationSerializerAdmin(DecorationSerializerFull):
             data['ownerships'] = [{
                 'id': do.id,
                 'acquired': do.acquired,
-                # XXX: Full name for staff?
-                'member': IdAndPublicFullName(do.member).data,
+                'member': self.get_minimal_member(do.member),
             } for do in ownerships]
 
         return data
-class DecorationSerializerPublic(DecorationSerializerAdmin):
-    class Meta:
-        model = Decoration
-        fields = ('id', 'name', 'comment', )
 
 class DecorationOwnershipSerializerFull(BaseSerializer):
     class Meta:
         model = DecorationOwnership
         fields = '__all__'
-class DecorationOwnershipSerializerAdmin(DecorationOwnershipSerializerFull):
+class DecorationOwnershipSerializer(DecorationOwnershipSerializerFull):
     decoration = IdAndName()
-    member = IdAndName()
-class DecorationOwnershipSerializerPublic(DecorationOwnershipSerializerAdmin):
-    member = IdAndPublicFullName()
 
-    class Meta:
-        model = DecorationOwnership
-        fields = ('id', 'decoration', 'member', 'acquired', )
+    def to_representation(self, obj):
+        data = super().to_representation(obj)
+        data['member'] = self.get_minimal_member(obj.member)
+        return data
 
 
 # MemberTypes
