@@ -12,8 +12,8 @@ class SerializableCountryField(serializers.ChoiceField):
 
 class IdAndName(serializers.Serializer):
     ''' Helper class for serializing small partial objects '''
-    def to_representation(self, obj):
-        return {'id': obj.id, 'name': obj.name}
+    def to_representation(self, instance):
+        return {'id': instance.id, 'name': instance.name}
 
 class BaseSerializer(serializers.ModelSerializer):
     '''
@@ -33,11 +33,11 @@ class BaseSerializer(serializers.ModelSerializer):
             if field in self.fields:
                 self.fields.pop(field)
 
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         # Remove staff only fields for normal users
         if not self.is_staff:
             self.remove_fields(self.STAFF_ONLY + ['created', 'modified'])
-        return super().to_representation(obj)
+        return super().to_representation(instance)
 
     def get_minimal_member(self, member):
         return {'id': member.id, 'name': member.name if self.is_staff else member.public_full_name}
@@ -54,15 +54,15 @@ class MemberSerializerFull(BaseSerializer):
 class MemberSerializer(MemberSerializerFull):
     STAFF_ONLY = ['birth_date', 'student_id', 'dead', 'subscribed_to_modulen', 'allow_publish_info', 'allow_studentbladet', 'comment', 'username', 'bill_code']
 
-    def to_representation(self, obj):
-        hide = not self.is_staff and not obj.showContactInformation()
+    def to_representation(self, instance):
+        hide = not self.is_staff and not instance.showContactInformation()
         if hide:
             self.remove_fields(['country', 'street_address', 'postal_code', 'city', 'phone', 'email'])
 
-        data = super().to_representation(obj)
-        functionaries = obj.functionaries.all()
-        group_memberships = obj.group_memberships.all()
-        decoration_ownerships = obj.decoration_ownerships.all()
+        data = super().to_representation(instance)
+        functionaries = instance.functionaries.all()
+        group_memberships = instance.group_memberships.all()
+        decoration_ownerships = instance.decoration_ownerships.all()
 
         # Add counts of related objects
         # XXX: Could annotate the Member objects with count fields beforehand...
@@ -89,7 +89,7 @@ class MemberSerializer(MemberSerializerFull):
 
         # Modify certain fields if necessary
         if hide:
-            data['given_names'] = obj.get_given_names_with_initials()
+            data['given_names'] = instance.get_given_names_with_initials()
 
         return data
 
@@ -101,9 +101,9 @@ class GroupTypeSerializerFull(BaseSerializer):
         model = GroupType
         fields = '__all__'
 class GroupTypeSerializer(GroupTypeSerializerFull):
-    def to_representation(self, obj):
-        data = super().to_representation(obj)
-        groups = obj.groups.all()
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        groups = instance.groups.all()
 
         # Add count of related objects
         data['n_groups'] = len(groups)
@@ -117,9 +117,9 @@ class GroupSerializerFull(BaseSerializer):
 class GroupSerializer(GroupSerializerFull):
     grouptype = IdAndName()
 
-    def to_representation(self, obj):
-        data = super().to_representation(obj)
-        memberships = obj.memberships.all()
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        memberships = instance.memberships.all()
 
         # Add count of related objects
         data['n_members'] = len(memberships)
@@ -140,11 +140,11 @@ class GroupMembershipSerializerFull(BaseSerializer):
         model = GroupMembership
         fields = '__all__'
 class GroupMembershipSerializer(GroupMembershipSerializerFull):
-    def to_representation(self, obj):
-        data = super().to_representation(obj)
-        group = obj.group
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        group = instance.group
 
-        data['member'] = self.get_minimal_member(obj.member)
+        data['member'] = self.get_minimal_member(instance.member)
         data['group'] = {
             'id': group.id,
             'begin_date': group.begin_date,
@@ -163,9 +163,9 @@ class FunctionaryTypeSerializerFull(BaseSerializer):
         fields = '__all__'
 
 class FunctionaryTypeSerializer(FunctionaryTypeSerializerFull):
-    def to_representation(self, obj):
-        data = super().to_representation(obj)
-        functionaries = obj.functionaries.all()
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        functionaries = instance.functionaries.all()
 
         # Add count of related objects
         data['n_functionaries'] = len(functionaries)
@@ -188,9 +188,9 @@ class FunctionarySerializerFull(BaseSerializer):
 class FunctionarySerializer(FunctionarySerializerFull):
     functionarytype = IdAndName()
 
-    def to_representation(self, obj):
-        data = super().to_representation(obj)
-        data['member'] = self.get_minimal_member(obj.member)
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['member'] = self.get_minimal_member(instance.member)
         return data
 
 
@@ -201,9 +201,9 @@ class DecorationSerializerFull(BaseSerializer):
         model = Decoration
         fields = '__all__'
 class DecorationSerializer(DecorationSerializerFull):
-    def to_representation(self, obj):
-        data = super().to_representation(obj)
-        ownerships = obj.ownerships.all()
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        ownerships = instance.ownerships.all()
 
         # Add count of related objects
         data['n_ownerships'] = len(ownerships)
@@ -225,9 +225,9 @@ class DecorationOwnershipSerializerFull(BaseSerializer):
 class DecorationOwnershipSerializer(DecorationOwnershipSerializerFull):
     decoration = IdAndName()
 
-    def to_representation(self, obj):
-        data = super().to_representation(obj)
-        data['member'] = self.get_minimal_member(obj.member)
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['member'] = self.get_minimal_member(instance.member)
         return data
 
 
