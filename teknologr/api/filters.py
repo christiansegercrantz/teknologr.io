@@ -39,6 +39,17 @@ class BaseFilter(django_filters.rest_framework.FilterSet):
         user = self.request.user
         return user and user.is_staff
 
+    def filter_count(self, queryset, value, field_name):
+        name = f'n_{field_name}'
+        queryset = queryset.annotate(**{name: Count(field_name, distinct=True)})
+        min = value.start
+        max = value.stop
+        if min is not None:
+            queryset = queryset.exclude(**{f'{name}__lt': min})
+        if max is not None:
+            queryset = queryset.exclude(**{f'{name}__gt': max})
+        return queryset
+
 
 class MemberFilter(BaseFilter):
     '''
@@ -106,6 +117,18 @@ class MemberFilter(BaseFilter):
     bill_code = django_filters.CharFilter(
         label='BILL-konto',
     )
+    n_functionaries = django_filters.RangeFilter(
+        method='filter_n_functionaries',
+        label='Antalet poster är mellan',
+    )
+    n_groups = django_filters.RangeFilter(
+        method='filter_n_groups',
+        label='Antalet grupper är mellan',
+    )
+    n_decorations = django_filters.RangeFilter(
+        method='filter_n_decorations',
+        label='Antalet betygelser är mellan',
+    )
 
     def filter_non_public_memebers(self, queryset):
         ''' Helper method for filtering members that have not allowed their info to be published '''
@@ -161,12 +184,27 @@ class MemberFilter(BaseFilter):
         # Not graduated and graduated year is not set
         return queryset.filter(Q(graduated=False) & Q(graduated_year__isnull=True))
 
+    def filter_n_functionaries(self, queryset, name, value):
+        return self.filter_count(queryset, value, 'functionaries')
+
+    def filter_n_groups(self, queryset, name, value):
+        return self.filter_count(queryset, value, 'group_memberships')
+
+    def filter_n_decorations(self, queryset, name, value):
+        return self.filter_count(queryset, value, 'decoration_ownerships')
 
 class DecorationFilter(BaseFilter):
     name = django_filters.CharFilter(
         lookup_expr='icontains',
         label='Betygelsens namn innehåller',
     )
+    n_ownerships = django_filters.RangeFilter(
+        method='filter_n_ownerships',
+        label='Antalet innehavare är mellan',
+    )
+
+    def filter_n_ownerships(self, queryset, name, value):
+        return self.filter_count(queryset, value, 'ownerships')
 
 class DecorationOwnershipFilter(BaseFilter):
     decoration__id = django_filters.NumberFilter(label='Betygelsens id')
@@ -183,6 +221,13 @@ class FunctionaryTypeFilter(BaseFilter):
         lookup_expr='icontains',
         label='Postens namn innehåller',
     )
+    n_functionaries = django_filters.RangeFilter(
+        method='filter_n_functionaries',
+        label='Antalet postinnehavare är mellan',
+    )
+
+    def filter_n_functionaries(self, queryset, name, value):
+        return self.filter_count(queryset, value, 'functionaries')
 
 class FunctionaryFilter(BaseFilter):
     functionarytype__id = django_filters.NumberFilter(label='Postens id')
@@ -200,6 +245,13 @@ class GroupTypeFilter(BaseFilter):
         lookup_expr='icontains',
         label='Gruppens namn innehåller',
     )
+    n_groups = django_filters.RangeFilter(
+        method='filter_n_groups',
+        label='Antalet undergrupper är mellan',
+    )
+
+    def filter_n_groups(self, queryset, name, value):
+        return self.filter_count(queryset, value, 'groups')
 
 class GroupFilter(BaseFilter):
     begin_date = django_filters.DateFromToRangeFilter(label='Startdatumet är mellan')
@@ -209,6 +261,13 @@ class GroupFilter(BaseFilter):
         lookup_expr='icontains',
         label='Gruppens namn innehåller',
     )
+    n_members = django_filters.RangeFilter(
+        method='filter_n_members',
+        label='Antalet gruppmedlemmar är mellan',
+    )
+
+    def filter_n_members(self, queryset, name, value):
+        return self.filter_count(queryset, value, 'memberships')
 
 class GroupMembershipFilter(BaseFilter):
     group__id = django_filters.NumberFilter(label='Undergruppens id')
