@@ -10,7 +10,15 @@ class SerializableCountryField(serializers.ChoiceField):
             return ''  # instead of `value` as Country(u'') is not serializable
         return super(SerializableCountryField, self).to_representation(value)
 
-# Serializers define the API representation.
+class IdAndName(serializers.Serializer):
+    ''' Helper class for serializing small partial objects '''
+    def to_representation(self, obj):
+        return {'id': obj.id, 'name': obj.name}
+
+class IdAndPublicFullName(serializers.Serializer):
+    ''' Helper class for serializing partial Member objects '''
+    def to_representation(self, obj):
+        return {'id': obj.id, 'name': obj.public_full_name}
 
 
 # Members
@@ -44,13 +52,6 @@ class MemberSerializerPublic(serializers.ModelSerializer):
 
         return data
 
-class MemberSerializerPartial(serializers.ModelSerializer):
-    def to_representation(self, obj):
-        return {
-            'id': obj.id,
-            'name': obj.public_full_name,
-        }
-
 
 # GroupTypes, Groups and GroupMemberships
 
@@ -62,18 +63,13 @@ class GroupTypeSerializerPublic(serializers.ModelSerializer):
     class Meta:
         model = GroupType
         fields = ('id', 'name', 'comment', )
-class GroupTypeSerializerPartial(serializers.ModelSerializer):
-    class Meta:
-        model = GroupType
-        fields = ('id', 'name', )
 
 class GroupSerializerFull(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = '__all__'
 class GroupSerializerAdmin(GroupSerializerFull):
-    # NOTE: Important to use qs.select_related('grouptype'), or else each object will hit the db with an additional fetch query
-    grouptype = GroupTypeSerializerPartial()
+    grouptype = IdAndName()
 class GroupSerializerPublic(GroupSerializerAdmin):
     class Meta:
         model = Group
@@ -84,9 +80,8 @@ class GroupMembershipSerializerFull(serializers.ModelSerializer):
         model = GroupMembership
         fields = '__all__'
 class GroupMembershipSerializerAdmin(GroupMembershipSerializerFull):
-    # NOTE: Important to use qs.select_related('group', 'group__grouptype', 'member), or else each object will hit the db with three additional fetch queries
     group = GroupSerializerPublic()
-    member = MemberSerializerPartial()
+    member = IdAndPublicFullName()
 class GroupMembershipSerializerPublic(GroupMembershipSerializerAdmin):
     class Meta:
         model = GroupMembership
@@ -103,20 +98,17 @@ class FunctionaryTypeSerializerPublic(serializers.ModelSerializer):
     class Meta:
         model = FunctionaryType
         fields = ('id', 'name', 'comment', )
-class FunctionaryTypeSerializerPartial(serializers.ModelSerializer):
-    class Meta:
-        model = FunctionaryType
-        fields = ('id', 'name', )
 
 class FunctionarySerializerFull(serializers.ModelSerializer):
     class Meta:
         model = Functionary
         fields = '__all__'
 class FunctionarySerializerAdmin(FunctionarySerializerFull):
-    # NOTE: Important to use qs.select_related('functionarytype', 'member'), or else each object will hit the db with two additional fetch queries
-    functionarytype = FunctionaryTypeSerializerPartial()
-    member = MemberSerializerPartial()
+    functionarytype = IdAndName()
+    member = IdAndName()
 class FunctionarySerializerPublic(FunctionarySerializerAdmin):
+    member = IdAndPublicFullName()
+
     class Meta:
         model = Functionary
         fields = ('id', 'functionarytype', 'member', 'begin_date', 'end_date', )
@@ -132,21 +124,17 @@ class DecorationSerializerPublic(serializers.ModelSerializer):
     class Meta:
         model = Decoration
         fields = ('id', 'name', 'comment', )
-class DecorationSerializerPartial(serializers.ModelSerializer):
-    class Meta:
-        model = Decoration
-        fields = ('id', 'name', )
-
 
 class DecorationOwnershipSerializerFull(serializers.ModelSerializer):
     class Meta:
         model = DecorationOwnership
         fields = '__all__'
 class DecorationOwnershipSerializerAdmin(DecorationOwnershipSerializerFull):
-    # NOTE: Important to use qs.select_related('decoration', 'member'), or else each object will hit the db with two additional fetch queries
-    decoration = DecorationSerializerPartial()
-    member = MemberSerializerPartial()
+    decoration = IdAndName()
+    member = IdAndName()
 class DecorationOwnershipSerializerPublic(DecorationOwnershipSerializerAdmin):
+    member = IdAndPublicFullName()
+
     class Meta:
         model = DecorationOwnership
         fields = ('id', 'decoration', 'member', 'acquired', )
@@ -159,8 +147,7 @@ class MemberTypeSerializerFull(serializers.ModelSerializer):
         model = MemberType
         fields = '__all__'
 class MemberTypeSerializerAdmin(MemberTypeSerializerFull):
-    # NOTE: Important to use qs.select_related('member'), or else each object will hit the db with an additional fetch query
-    member = MemberSerializerPartial()
+    member = IdAndName()
 
 
 # Applicant
