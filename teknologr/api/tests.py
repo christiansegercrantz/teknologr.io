@@ -113,6 +113,9 @@ class BaseAPITest(APITestCase):
     def post(self):
         return self.client.post(self.api_path, self.post_data)
 
+    def check_status_code(self, response, status_code):
+        self.assertEqual(response.status_code, status_code, response.data)
+
 
 '''
 Test implementation classes that implements all the tests. The test case classes then sets up their own test data and extends from these classes to get the sutiable tests.
@@ -171,51 +174,58 @@ class CheckJSON():
 class GetAllMethodTests(CheckJSON):
     def test_get_all_for_anonymous_users(self):
         response = self.get_all()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.check_status_code(response, status.HTTP_403_FORBIDDEN)
 
     def test_get_all_for_user(self):
         self.login_user()
         response = self.get_all()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        if self.columns_public is None:
+            return self.check_status_code(response, status.HTTP_403_FORBIDDEN)
+        self.check_status_code(response, status.HTTP_200_OK)
         self.assertEqual(response.json()['count'], self.n_all)
+        self.check_response(response.json()['results'][0], self.columns_public)
 
     def test_get_all_for_superuser(self):
         self.login_superuser()
         response = self.get_all()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.check_status_code(response, status.HTTP_200_OK)
         self.assertEqual(response.json()['count'], self.n_all)
+        self.check_response(response.json()['results'][0], self.columns_admin)
 
 class GetOneMethodTests(CheckJSON):
     def test_get_one_for_anonymous_users(self):
         response = self.get_one(self.item)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.check_status_code(response, status.HTTP_403_FORBIDDEN)
 
     def test_get_one_for_user(self):
         self.login_user()
         response = self.get_one(self.item)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.check_response(response.json(), self.columns_public_detail if hasattr(self, 'columns_public_detail') else self.columns_public)
+        columns = self.columns_public_detail if hasattr(self, 'columns_public_detail') else self.columns_public
+        if columns is None:
+            return self.check_status_code(response, status.HTTP_403_FORBIDDEN)
+        self.check_status_code(response, status.HTTP_200_OK)
+        self.check_response(response.json(), columns)
 
     def test_get_one_for_superuser(self):
         self.login_superuser()
         response = self.get_one(self.item)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.check_status_code(response, status.HTTP_200_OK)
         self.check_response(response.json(), self.columns_admin_detail if hasattr(self, 'columns_admin_detail') else self.columns_admin)
 
 class PostMethodTests():
     def test_post_for_anonymous_users(self):
         response = self.post()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.check_status_code(response, status.HTTP_403_FORBIDDEN)
 
     def test_post_for_user(self):
         self.login_user()
         response = self.post()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.check_status_code(response, status.HTTP_403_FORBIDDEN)
 
     def test_post_for_superuser(self):
         self.login_superuser()
         response = self.post()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.check_status_code(response, status.HTTP_201_CREATED)
 
 
 '''
@@ -302,6 +312,8 @@ class MembersAPITest(BaseAPITest, GetAllMethodTests, PostMethodTests):
     def setUp(self):
         super().setUp()
         self.api_path = '/api/members/'
+        self.columns_public = MEMBER_PUBLIC
+        self.columns_admin = MEMBER_ADMIN
         self.n_all = len(self.ms)
         self.post_data = {}
 
@@ -310,9 +322,7 @@ class MemberHiddenAPITest(BaseAPITest, GetOneMethodTests):
         super().setUp()
         self.api_path = '/api/members/'
         self.item = self.m1
-        self.columns_public = MEMBER_PUBLIC
         self.columns_public_detail = MEMBER_PUBLIC_DETAIL
-        self.columns_admin = MEMBER_ADMIN
         self.columns_admin_detail = MEMBER_ADMIN_DETAIL
 
     def test_member_given_names_for_user(self):
@@ -325,9 +335,7 @@ class MemberDeadAPITest(BaseAPITest, GetOneMethodTests):
         super().setUp()
         self.api_path = '/api/members/'
         self.item = self.m2
-        self.columns_public = MEMBER_PUBLIC
         self.columns_public_detail = MEMBER_PUBLIC_DETAIL
-        self.columns_admin = MEMBER_ADMIN
         self.columns_admin_detail = MEMBER_ADMIN_DETAIL
 
     def test_member_given_names_for_user(self):
@@ -340,9 +348,7 @@ class MemberNormalAPITest(BaseAPITest, GetOneMethodTests):
         super().setUp()
         self.api_path = '/api/members/'
         self.item = self.m3
-        self.columns_public = MEMBER_PERSONAL
         self.columns_public_detail = MEMBER_PERSONAL_DETAIL
-        self.columns_admin = MEMBER_ADMIN
         self.columns_admin_detail = MEMBER_ADMIN_DETAIL
 
     def test_member_given_names_for_user(self):
@@ -375,18 +381,18 @@ class MemberSearchTest(BaseAPITest):
 
     def test_search_for_anonymous_users(self):
         response = self.search()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.check_status_code(response, status.HTTP_403_FORBIDDEN)
 
     def test_search_for_user(self):
         self.login_user()
         response = self.search()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.check_status_code(response, status.HTTP_200_OK)
         self.assertEqual(response.json()['count'], 1)
 
     def test_search_for_superuser(self):
         self.login_superuser()
         response = self.search()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.check_status_code(response, status.HTTP_200_OK)
         self.assertEqual(response.json()['count'], 4)
 
 
