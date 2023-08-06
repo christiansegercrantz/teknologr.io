@@ -131,7 +131,7 @@ class MemberFilter(BaseFilter):
         label='Antalet betygelser är mellan',
     )
 
-    def filter_non_public_memebers(self, queryset):
+    def filter_non_public_members(self, queryset):
         ''' Helper method for filtering members that have not allowed their info to be published '''
         if self.is_staff:
             return queryset
@@ -155,7 +155,7 @@ class MemberFilter(BaseFilter):
     def filter_address(self, queryset, name, value):
         # Remove hidden Members if not staff
         if not self.is_staff:
-            queryset = self.filter_non_public_memebers(queryset)
+            queryset = self.filter_non_public_members(queryset)
 
         # Split the filter value and compare all individual values against all address columns
         queries = []
@@ -171,7 +171,7 @@ class MemberFilter(BaseFilter):
     def filter_email(self, queryset, name, value):
         # Remove hidden Members if not staff
         if not self.is_staff:
-            queryset = self.filter_non_public_memebers(queryset)
+            queryset = self.filter_non_public_members(queryset)
 
         return queryset.filter(email__icontains=value)
 

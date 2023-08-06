@@ -242,10 +242,10 @@ def year(request, year):
     This could be enhanced, but curretnly it is done with 10 queries:
       1. SELECT Functionary WHERE correct_year => COUNT
       2. SELECT Functionary WHERE correct_year
-      3. SELECT GroupMemebership WHERE correct_year => COUNT
+      3. SELECT GroupMembership WHERE correct_year => COUNT
       4. COUNT DISTINCT over ^
       5. group_ids, group_type_ids = SELECT Group WHERE correct_year
-      6. SELECT GroupMemebership WHERE group__id IN group_ids
+      6. SELECT GroupMembership WHERE group__id IN group_ids
       7. SELECT GroupType WHERE id IN group_type_ids
       8. SELECT DecortaionOwnership WHERE correct_year
       9. SELECT MemberType WHERE correct_year AND type="OM"
