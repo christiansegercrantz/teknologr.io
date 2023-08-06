@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User, Group
 from members.models import *
+from registration.models import *
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -95,6 +96,15 @@ class BaseAPITest(APITestCase):
         GroupMembership.objects.create(group=g2, member=self.m1)
         GroupMembership.objects.create(group=g2, member=self.m2)
         GroupMembership.objects.create(group=g2, member=self.m3)
+
+        self.mt = MemberType.objects.create(member=self.m1, type='OM', begin_date=d1)
+
+        self.a = Applicant.objects.create(
+            given_names='Märta',
+            preferred_name='Märta',
+            surname='von Teknolog',
+            birth_date='1993-03-03',
+        )
 
         self.ms = [self.m1, self.m2, self.m3]
 
@@ -562,4 +572,78 @@ class GroupMembershipsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests,
         self.post_data = {
             'group': self.g.id,
             'member': self.m2.id,
+        }
+
+
+# MEMBERTYPES
+
+class MemberTypesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostMethodTests):
+    def setUp(self):
+        super().setUp()
+        self.api_path = '/api/membertypes/'
+        self.item = self.mt
+        self.columns_public = None
+        self.columns_admin = {
+            'id': int,
+            'begin_date': str,
+            'end_date': (str, None),
+            'type': str,
+            'member': {
+                'id': int,
+                'name': str,
+            },
+            'created': str,
+            'modified': str,
+        }
+        self.n_all = 1
+        self.post_data = {
+            'member': self.m2.id,
+            'type': 'OM',
+            'begin_date': date.today().isoformat(),
+        }
+
+
+# APPLICANTS
+
+class ApplicantsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostMethodTests):
+    def setUp(self):
+        super().setUp()
+        self.api_path = '/api/applicants/'
+        self.item = self.mt
+        self.columns_public = None
+        self.columns_admin = {
+            'id': int,
+            'surname': str,
+            'given_names': str,
+            'preferred_name': str,
+            'street_address': str,
+            'postal_code': str,
+            'city': str,
+            'country': str,
+            'phone': str,
+            'email': str,
+            'birth_date': str,
+            'student_id': str,
+            'degree_programme': str,
+            'enrolment_year': int,
+            'username': (str, None),
+            'motivation': str,
+            'subscribed_to_modulen': bool,
+            'allow_publish_info': bool,
+            'allow_studentbladet': bool,
+            'mother_tongue': str,
+            'created_at': str,
+        }
+        self.n_all = 1
+        self.post_data = {
+            'surname': 'Test',
+            'given_names': 'Test',
+            'street_address': 'Test',
+            'postal_code': 'Test',
+            'city': 'Test',
+            'phone': 'Test',
+            'email': 'test@test.com',
+            'birth_date': '1999-01-01',
+            'student_id': "123456",
+            'degree_programme': 'Test',
         }

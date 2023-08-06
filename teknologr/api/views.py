@@ -278,10 +278,10 @@ class DecorationOwnershipViewSet(BaseModelViewSet):
 
 # MemberTypes
 
-class MemberTypeViewSet(viewsets.ModelViewSet):
+class MemberTypeViewSet(BaseModelViewSet):
     # NOTE: Default permissions (staff-only)
+    permission_classes = (permissions.IsAdminUser, )
     queryset = MemberType.objects.all_with_related()
-    serializer_class = MemberTypeSerializerAdmin
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
     filterset_class = MemberTypeFilter
     ordering_fields = (
@@ -291,6 +291,12 @@ class MemberTypeViewSet(viewsets.ModelViewSet):
         'end_date',
         ('member__id', 'member.id'),
     )
+
+    serializer_classes = {
+        'post': MemberTypeSerializerFull,
+        'admin': MemberTypeSerializer,
+        'public': MemberTypeSerializer,
+    }
 
 
 # User accounts
