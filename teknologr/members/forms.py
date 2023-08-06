@@ -79,7 +79,6 @@ class FunctionaryForm(BSModelForm):
 
     functionarytype = ChoiceField(choices=get_functionarytype_choices)
 
-
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
         kwargs.setdefault('auto_id', 'fform_%s')
@@ -124,7 +123,6 @@ class DecorationOwnershipForm(BSModelForm):
 
     decoration = ChoiceField(choices=get_decoration_choices)
 
-
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
         kwargs.setdefault('auto_id', 'doform_%s')
@@ -155,7 +153,6 @@ class GroupForm(BSModelForm):
         return [(None, '---------')] + [(gt.id, gt.name) for gt in GroupType.objects.all_by_name()]
 
     grouptype = ChoiceField(choices=get_grouptype_choices)
-
 
     def __init__(self, *args, **kwargs):
         # Make sure automatic dom element ids are different from other forms'
