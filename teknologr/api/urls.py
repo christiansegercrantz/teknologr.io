@@ -1,8 +1,9 @@
 from django.conf.urls import url, include
-from rest_framework import routers
+from rest_framework import routers, permissions
 from api.views import *
 
 class RootView(routers.APIRootView):
+    permission_classes = (permissions.IsAuthenticated, )
     name = 'Katalogen root API'
     description = ''
 

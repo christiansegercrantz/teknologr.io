@@ -670,3 +670,24 @@ class ApplicantsAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostM
             'student_id': "123456",
             'degree_programme': 'Test',
         }
+
+class RootAPIPageTests(BaseAPITest):
+    def setUp(self):
+        super().setUp()
+        self.api_path = '/api/'
+
+    def test_get_for_anonymous_users(self):
+        response = self.get_all()
+        self.check_status_code(response, status.HTTP_403_FORBIDDEN)
+
+    def test_get_for_user(self):
+        self.login_user()
+        response = self.get_all()
+        self.check_status_code(response, status.HTTP_200_OK)
+        self.assertEqual(10, len(response.json()))
+
+    def test_get_for_superuser(self):
+        self.login_superuser()
+        response = self.get_all()
+        self.check_status_code(response, status.HTTP_200_OK)
+        self.assertEqual(10, len(response.json()))
