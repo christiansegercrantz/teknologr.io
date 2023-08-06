@@ -460,7 +460,13 @@ class FunctionaryTypesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests,
         super().setUp()
         self.api_path = '/api/functionarytypes/'
         self.item = self.ft
-        self.columns_public = {'id': int, 'name': str, 'comment': str, 'n_functionaries': int}
+        self.columns_public = {
+            'id': int,
+            'name': str,
+            'comment': str,
+            'n_functionaries_total': int,
+            'n_functionaries_unique': int,
+        }
         self.columns_public_detail = {
             **self.columns_public,
             'functionaries': [{
@@ -515,6 +521,8 @@ class GroupTypesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostM
             'name': str,
             'comment': str,
             'n_groups': int,
+            'n_members_total': int,
+            'n_members_unique': int,
         }
         self.columns_public_detail = {
             **self.columns_public,

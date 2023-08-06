@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Count
 from members.models import *
 from functools import reduce
 from operator import and_
@@ -221,12 +222,13 @@ class FunctionaryTypeFilter(BaseFilter):
         lookup_expr='icontains',
         label='Postens namn innehåller',
     )
-    n_functionaries = django_filters.RangeFilter(
-        method='filter_n_functionaries',
-        label='Antalet postinnehavare är mellan',
+    n_functionaries_total = django_filters.RangeFilter(
+        method='filter_n_functionaries_total',
+        label='Totala antalet postinnehavare är mellan',
     )
+    # XXX: What about filtering on unique functionaries?
 
-    def filter_n_functionaries(self, queryset, name, value):
+    def filter_n_functionaries_total(self, queryset, name, value):
         return self.filter_count(queryset, value, 'functionaries')
 
 class FunctionaryFilter(BaseFilter):
@@ -249,6 +251,7 @@ class GroupTypeFilter(BaseFilter):
         method='filter_n_groups',
         label='Antalet undergrupper är mellan',
     )
+    # XXX: What about filtering on amount of members (total and unique)?
 
     def filter_n_groups(self, queryset, name, value):
         return self.filter_count(queryset, value, 'groups')

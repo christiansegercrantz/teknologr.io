@@ -34,6 +34,10 @@ class MemberManager(models.Manager):
             Prefetch('functionaries', queryset=Functionary.objects.select_related('functionarytype')),
             Prefetch('group_memberships', queryset=GroupMembership.objects.select_related('group', 'group__grouptype')),
             'member_types',
+        ).annotate(
+            count_decoration_ownerships=Count('decoration_ownerships'),
+            count_functionaries=Count('functionaries'),
+            count_group_memberships=Count('group_memberships'),
         )
 
     def get_prefetched_or_404(self, member_id):
@@ -182,6 +186,24 @@ class Member(SuperClass):
         city = f'{self.postal_code} {self.city}'.strip()
         address_parts = [self.street_address, city, country]
         return ", ".join([s for s in address_parts if s])
+
+    @property
+    def n_decorations(self):
+        if hasattr(self, 'count_decoration_ownerships'):
+            return self.count_decoration_ownerships
+        return self.decoration_ownerships.count()
+
+    @property
+    def n_functionaries(self):
+        if hasattr(self, 'count_functionaries'):
+            return self.count_functionaries
+        return self.functionaries.count()
+
+    @property
+    def n_groups(self):
+        if hasattr(self, 'count_group_memberships'):
+            return self.count_group_memberships
+        return self.group_memberships.count()
 
     def save(self, *args, **kwargs):
         if not self.username:
@@ -338,6 +360,12 @@ class Decoration(SuperClass):
         return self.name
 
     @property
+    def n_ownerships(self):
+        if hasattr(self, 'count'):
+            return self.count
+        return self.ownerships.count()
+
+    @property
     def ownerships_by_date(self):
         l = list(self.ownerships.all())
         DecorationOwnership.order_by(l, 'member')
@@ -408,12 +436,18 @@ class Group(SuperClass):
         return f'{self.grouptype}: {self.begin_date} - {self.end_date}'
 
     @property
+    def n_members(self):
+        if hasattr(self, 'num_members'):
+            return self.num_members
+        return self.memberships.count()
+
+    @property
     def duration(self):
         return Duration(self.begin_date, self.end_date)
 
     @property
     def memberships_by_member(self):
-        l = list(self.memberships.all())
+        l = list(self.memberships.select_related('member'))
         GroupMembership.order_by(l, 'member')
         return l
 
@@ -461,6 +495,24 @@ class GroupType(SuperClass):
 
     def __str__(self):
         return self.name
+
+    @property
+    def n_groups(self):
+        if hasattr(self, 'count'):
+            return self.count
+        return self.groups.count()
+
+    @property
+    def n_members_total(self):
+        if hasattr(self, 'count_members_total'):
+            return self.count_members_total
+        return self.groups.aggregate(count=Count('memberships'))['count']
+
+    @property
+    def n_members_unique(self):
+        if hasattr(self, 'count_members_unique'):
+            return self.count_members_unique
+        return self.groups.aggregate(count=Count('memberships__member', distinct=True))['count']
 
     @property
     def groups_by_date(self):
@@ -552,6 +604,18 @@ class FunctionaryType(SuperClass):
 
     def __str__(self):
         return self.name
+
+    @property
+    def n_functionaries_total(self):
+        if hasattr(self, 'count'):
+            return self.count
+        return self.functionaries.count()
+
+    @property
+    def n_functionaries_unique(self):
+        if hasattr(self, 'count_unique'):
+            return self.count_unique
+        return self.functionaries.aggregate(count=Count('member', distinct=True))['count']
 
     @property
     def functionaries_by_date(self):
