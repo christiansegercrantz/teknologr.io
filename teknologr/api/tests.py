@@ -510,8 +510,23 @@ class GroupTypesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, PostM
         super().setUp()
         self.api_path = '/api/grouptypes/'
         self.item = self.gt
-        self.columns_public = {'id': int, 'name': str, 'comment': str, 'n_groups': int}
+        self.columns_public = {
+            'id': int,
+            'name': str,
+            'comment': str,
+            'n_groups': int,
+        }
+        self.columns_public_detail = {
+            **self.columns_public,
+            'groups': [{
+                'id': int,
+                'begin_date': str,
+                'end_date': str,
+                'n_members': int,
+            }]
+        }
         self.columns_admin = {**self.columns_public, 'created': str, 'modified': str}
+        self.columns_admin_detail = {**self.columns_public_detail, 'created': str, 'modified': str}
         self.n_all = 1
         self.post_data = {'name': 'test'}
 

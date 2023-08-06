@@ -106,6 +106,15 @@ class GroupTypeSerializer(BaseSerializer):
         # Add count of related objects
         data['n_groups'] = len(groups)
 
+        # Add the actual related objects if detail view
+        if self.detail:
+            data['groups'] = [{
+                'id': g.id,
+                'begin_date': g.begin_date,
+                'end_date': g.end_date,
+                'n_members': g.num_members
+            } for g in groups]
+
         return data
 
 class GroupSerializer(BaseSerializer):
