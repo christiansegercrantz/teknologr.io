@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install OpenLDAP dependencies
-      run: sudo apt install libsasl2-dev python-dev libldap2-dev libssl-dev
+      run: sudo apt install libsasl2-dev python3-dev libldap2-dev libssl-dev
     - name: Set up Python $PYTHON_VERSION
       uses: actions/setup-python@v3
       with:
