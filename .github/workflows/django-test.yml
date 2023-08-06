@@ -2,9 +2,9 @@ name: teknologr.io unittests
 
 on:
   push:
-    branches: [ "feature/github-action" ]
+    branches: [ develop ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ develop ]
   workflow_dispatch:
 
 jobs:
