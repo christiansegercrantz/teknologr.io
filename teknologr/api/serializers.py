@@ -22,17 +22,12 @@ class BaseSerializer(serializers.ModelSerializer):
         self.detail = detail
         self.is_staff = is_staff
 
-    def remove_fields(self, fields):
-        ''' Removed fields from this serializer by removing them from self.fields, which works because that is a @cached_property '''
-        for field in fields:
-            if field in self.fields:
-                self.fields.pop(field)
-
-    def to_representation(self, instance):
         # Remove staff only fields for normal users
+        # NOTE: This assumes that this serializer instanace is only used for one request
         if not self.is_staff:
-            self.remove_fields(self.STAFF_ONLY + ['created', 'modified'])
-        return super().to_representation(instance)
+            for field in self.STAFF_ONLY + ['created', 'modified']:
+                if field in self.fields:
+                    self.fields.pop(field)
 
     def get_minimal_id_name(self, instance):
         return {'id': instance.id, 'name': instance.name}
@@ -56,11 +51,12 @@ class MemberSerializer(BaseSerializer):
         fields = '__all__'
 
     def to_representation(self, instance):
+        data = super().to_representation(instance)
+
         hide = not self.is_staff and not instance.showContactInformation()
         if hide:
-            self.remove_fields(Member.HIDABLE_FIELDS)
-
-        data = super().to_representation(instance)
+            for field in Member.HIDABLE_FIELDS:
+                data.pop(field)
 
         # Add the actual related objects if detail view
         # XXX: Do we need to prefetch all related objects here? It's now done earlier, by the caller...

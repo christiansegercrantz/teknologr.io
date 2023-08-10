@@ -327,6 +327,15 @@ class MembersAPITest(BaseAPITest, GetAllMethodTests, PostMethodTests):
         self.n_all = len(self.ms)
         self.post_data = {}
 
+    def test_get_all_structure_for_user(self):
+        self.login_user()
+        data = self.get_all().json()
+        self.assertEqual(3, data['count'])
+        results = data['results']
+        self.check_response(results[0], MEMBER_PUBLIC)
+        self.check_response(results[1], MEMBER_PUBLIC)
+        self.check_response(results[2], MEMBER_PERSONAL)
+
 class MemberHiddenAPITest(BaseAPITest, GetOneMethodTests):
     def setUp(self):
         super().setUp()
