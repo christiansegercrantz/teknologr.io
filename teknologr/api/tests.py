@@ -249,10 +249,6 @@ MEMBER_PUBLIC = {
     'given_names': str,
     'preferred_name': str,
     'surname': str,
-    'degree_programme': str,
-    'enrolment_year': int,
-    'graduated': bool,
-    'graduated_year': int,
     'n_functionaries': int,
     'n_groups': int,
     'n_decorations': int,
@@ -265,6 +261,10 @@ MEMBER_PERSONAL = {
     'country': str,
     'phone': str,
     'email': str,
+    'degree_programme': str,
+    'enrolment_year': int,
+    'graduated': bool,
+    'graduated_year': int,
 }
 MEMBER_ADMIN = {
     **MEMBER_PERSONAL,

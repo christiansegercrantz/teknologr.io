@@ -15,6 +15,7 @@ from api.serializers import *
 from api.filters import *
 from api.ldap import LDAPAccountManager
 from api.bill import BILLAccountManager, BILLException
+from api.utils import assert_public_member_fields
 from api.mailutils import mailNewPassword, mailNewAccount
 from members.models import GroupMembership, Member, Group
 from members.programmes import DEGREE_PROGRAMME_CHOICES
@@ -57,6 +58,7 @@ class MemberSearchFilter(SearchFilter):
     def get_search_fields(self, view, request):
         # By default only allow searching in a few 100% public fields
         fields = ['preferred_name', 'surname']
+        assert_public_member_fields(fields)
 
         # Staff get to search in a few more fields
         if request.user.is_staff:
@@ -72,7 +74,10 @@ class MemberViewSet(BaseModelViewSet):
     search_fields = ('dummy', ) # The search box does not appear if this is removed
     # XXX: Is there a way to dynamically change which fields can be ordered (depending on the requesting user)?
     # XXX: Ordering in alphabethical order does not take into account the locale, and can not do our manual sort either because OrderingFilter.filter() is expected to return a queryset
-    ordering_fields = ('id', 'preferred_name', 'surname', 'enrolment_year', 'graduated_year', )
+    ordering_fields = ('id', 'preferred_name', 'surname', )
+
+    assert_public_member_fields(search_fields)
+    assert_public_member_fields(ordering_fields)
 
 
 # GroupTypes, Groups and GroupMemberships

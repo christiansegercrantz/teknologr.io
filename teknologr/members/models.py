@@ -46,6 +46,9 @@ class MemberManager(models.Manager):
 
 class Member(SuperClass):
     objects = MemberManager()
+    STAFF_ONLY_FIELDS = ['birth_date', 'student_id', 'dead', 'subscribed_to_modulen', 'allow_publish_info', 'allow_studentbladet', 'comment', 'username', 'bill_code']
+    HIDABLE_FIELDS = ['street_address', 'postal_code', 'city', 'country', 'phone', 'email', 'degree_programme', 'enrolment_year', 'graduated', 'graduated_year']
+    # NOTE: given_names is semi-hidable
 
     # NAMES
     given_names = models.CharField(max_length=64, blank=False, null=False, default="UNKNOWN")

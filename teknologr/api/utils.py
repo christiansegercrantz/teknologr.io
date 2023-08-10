@@ -42,6 +42,9 @@ def create_dump_response(content, name, filetype):
         headers={'Content-Disposition': f'attachment; {dumpname}'}
     )
 
+def assert_public_member_fields(fields):
+    assert len(set(fields).intersection(set(Member.STAFF_ONLY_FIELDS + Member.HIDABLE_FIELDS))) == 0, 'Only 100% public Member fields allowed'
+
 
 class BrowsableAPIRendererWithoutForms(BrowsableAPIRenderer):
     """ Custom renderer for the browsable API that hides the form. """

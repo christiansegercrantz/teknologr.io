@@ -44,7 +44,7 @@ class BaseSerializer(serializers.ModelSerializer):
 # Members
 
 class MemberSerializer(BaseSerializer):
-    STAFF_ONLY = ['birth_date', 'student_id', 'dead', 'subscribed_to_modulen', 'allow_publish_info', 'allow_studentbladet', 'comment', 'username', 'bill_code']
+    STAFF_ONLY = Member.STAFF_ONLY_FIELDS
 
     country = SerializableCountryField(allow_blank=True, choices=Countries(), required=False)
     n_decorations = serializers.IntegerField(read_only=True)
@@ -58,7 +58,7 @@ class MemberSerializer(BaseSerializer):
     def to_representation(self, instance):
         hide = not self.is_staff and not instance.showContactInformation()
         if hide:
-            self.remove_fields(['country', 'street_address', 'postal_code', 'city', 'phone', 'email'])
+            self.remove_fields(Member.HIDABLE_FIELDS)
 
         data = super().to_representation(instance)
 
