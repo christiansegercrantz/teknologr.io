@@ -48,18 +48,18 @@ class TestCases():
 
     def test_filter_for_anonymous_users(self):
         response = self.filter()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, response.data)
 
     def test_filter_for_user(self):
         self.login_user()
         response = self.filter()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
         self.assertEqual(response.json()['count'], self.n_normal)
 
     def test_filter_for_superuser(self):
         self.login_superuser()
         response = self.filter()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
         self.assertEqual(response.json()['count'], self.n_staff)
 
 
@@ -307,9 +307,18 @@ class MemberFilterDegreeProgrammeTest(BaseAPITest, TestCases):
 
         self.query = 'degree_programme=Svakar'
         self.n_normal = 1
-        self.n_staff = 1
+        self.n_staff = 2
 
         # Should be found by all
+        Member.objects.create(
+            given_names='Test',
+            surname='von Test',
+            degree_programme='Svakars linje',
+            allow_publish_info=True,
+            dead=False,
+        )
+
+        # Should only be found by staff
         Member.objects.create(
             given_names='Test',
             surname='von Test',
@@ -377,7 +386,7 @@ class MemberFilterGraduatedTrueTest(BaseAPITest, TestCases):
         super().setUp()
 
         self.query = 'graduated=true'
-        self.n_normal = 3
+        self.n_normal = 2
         self.n_staff = 3
 
         # Should be found by all
@@ -386,8 +395,7 @@ class MemberFilterGraduatedTrueTest(BaseAPITest, TestCases):
             given_names='Test',
             surname='von Test',
             graduated=True,
-            allow_publish_info=False,
-            dead=True,
+            allow_publish_info=True,
         )
         Member.objects.create(
             # Has graduated year (XXX: graduated can be false)
@@ -395,17 +403,16 @@ class MemberFilterGraduatedTrueTest(BaseAPITest, TestCases):
             surname='von Test',
             graduated=False,
             graduated_year=2000,
-            allow_publish_info=False,
-            dead=True,
+            allow_publish_info=True,
         )
+
+        # Should only be found by staff
         Member.objects.create(
-            # Graduated and has graduated year
+            # Graduated, but hidden
             given_names='Test',
             surname='von Test',
             graduated=True,
-            graduated_year=2000,
             allow_publish_info=False,
-            dead=True,
         )
 
         # Should not be found
@@ -413,18 +420,52 @@ class MemberFilterGraduatedTrueTest(BaseAPITest, TestCases):
             # Not graduated
             given_names='Test',
             surname='von Test',
+            graduated=False,
             allow_publish_info=True,
-            dead=False,
         )
 
-class MemberFilterGraduatedFalseTest(MemberFilterGraduatedTrueTest):
+class MemberFilterGraduatedFalseTest(BaseAPITest, TestCases):
     def setUp(self):
         super().setUp()
 
         # Dummy member included
         self.query = 'graduated=false'
         self.n_normal = 2
-        self.n_staff = 2
+        self.n_staff = 3
+
+        # Should be found by all
+        Member.objects.create(
+            given_names='Test',
+            surname='von Test',
+            graduated=False,
+            allow_publish_info=True,
+        )
+
+        # Should only be found by staff
+        Member.objects.create(
+            # Graduated and has graduated year
+            given_names='Test',
+            surname='von Test',
+            graduated=False,
+            allow_publish_info=False,
+        )
+
+        # Should not be found
+        Member.objects.create(
+            # Not graduated
+            given_names='Test',
+            surname='von Test',
+            graduated=True,
+            allow_publish_info=True,
+        )
+        Member.objects.create(
+            # Has graduated year (XXX: graduated can be false)
+            given_names='Test',
+            surname='von Test',
+            graduated=False,
+            graduated_year=2000,
+            allow_publish_info=True,
+        )
 
 
 class MemberFilterGraduatedYearTest(BaseAPITest, TestCases):

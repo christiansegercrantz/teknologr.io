@@ -59,18 +59,33 @@ class MemberFilter(BaseFilter):
 
     # Public filters
     name = django_filters.CharFilter(
-        # NOTE: 'given_names' is a semi-public field
+        # NOTE: Custom field name
+        # NOTE: given_names is semi-public, handling of hidden Members is done in the method
         method='filter_name',
         label='Namnet innehåller',
     )
+    n_functionaries = django_filters.RangeFilter(
+        method='filter_n_functionaries',
+        label='Antalet poster är mellan',
+    )
+    n_groups = django_filters.RangeFilter(
+        method='filter_n_groups',
+        label='Antalet grupper är mellan',
+    )
+    n_decorations = django_filters.RangeFilter(
+        method='filter_n_decorations',
+        label='Antalet betygelser är mellan',
+    )
+
+    # Public but hidable fields (hidden Members are not included)
+    HIDABLE = Member.HIDABLE_FIELDS + ['address']
     address = django_filters.CharFilter(
-        # NOTE: Semi-public field
+        # NOTE: Custom field name, but added manually to HIDABLE
         method='filter_address',
         label='Adressen innehåller',
     )
     email = django_filters.CharFilter(
-        # NOTE: Semi-public field
-        method='filter_email',
+        lookup_expr='icontains',
         label='E-postadressen innehåller',
     )
     degree_programme = django_filters.CharFilter(
@@ -89,7 +104,7 @@ class MemberFilter(BaseFilter):
     )
 
     # Staff only filters
-    STAFF_ONLY = ['birth_date', 'student_id', 'dead', 'subscribed_to_modulen', 'allow_studentbladet', 'allow_publish_info', 'comment', 'username', 'bill_code']
+    STAFF_ONLY = Member.STAFF_ONLY_FIELDS
     birth_date = django_filters.DateFromToRangeFilter(
         label='Född mellan',
     )
@@ -118,26 +133,24 @@ class MemberFilter(BaseFilter):
     bill_code = django_filters.CharFilter(
         label='BILL-konto',
     )
-    n_functionaries = django_filters.RangeFilter(
-        method='filter_n_functionaries',
-        label='Antalet poster är mellan',
-    )
-    n_groups = django_filters.RangeFilter(
-        method='filter_n_groups',
-        label='Antalet grupper är mellan',
-    )
-    n_decorations = django_filters.RangeFilter(
-        method='filter_n_decorations',
-        label='Antalet betygelser är mellan',
-    )
 
-    def filter_non_public_members(self, queryset):
-        ''' Helper method for filtering members that have not allowed their info to be published '''
-        if self.is_staff:
-            return queryset
-        return queryset.filter(Member.get_show_info_Q())
+    def includes_hidable_field(self):
+        ''' Check if the current query includes filtering on any hidable Member fields '''
+        for name, value in self.data.items():
+            if name in self.HIDABLE and any(value):
+                return True
+        return False
+
+    def filter_queryset(self, queryset):
+        ''' Remove hidden Members for normal users if filters on any hidden field is used. '''
+        if not self.is_staff and self.includes_hidable_field():
+            queryset = queryset.filter(Member.get_show_info_Q())
+        return super().filter_queryset(queryset)
 
     def filter_name(self, queryset, name, value):
+        '''
+        The given_names field is semi-public so can not filter on that for hidden Members.
+        '''
         is_staff = self.is_staff
 
         # Split the filter value and compare all individual values against all name columns
@@ -153,10 +166,6 @@ class MemberFilter(BaseFilter):
         return queryset.filter(reduce(and_, queries))
 
     def filter_address(self, queryset, name, value):
-        # Remove hidden Members if not staff
-        if not self.is_staff:
-            queryset = self.filter_non_public_members(queryset)
-
         # Split the filter value and compare all individual values against all address columns
         queries = []
         for v in value.split():
@@ -167,13 +176,6 @@ class MemberFilter(BaseFilter):
                 Q(country__icontains=v)
             )
         return queryset.filter(reduce(and_, queries))
-
-    def filter_email(self, queryset, name, value):
-        # Remove hidden Members if not staff
-        if not self.is_staff:
-            queryset = self.filter_non_public_members(queryset)
-
-        return queryset.filter(email__icontains=value)
 
     def filter_graduated(self, queryset, name, value):
         '''
