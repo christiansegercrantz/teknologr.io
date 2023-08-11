@@ -467,6 +467,26 @@ class MemberFilterGraduatedFalseTest(BaseAPITest, TestCases):
             allow_publish_info=True,
         )
 
+class MemberFilterGraduatedNullTest(MemberFilterGraduatedTrueTest):
+    def setUp(self):
+        super().setUp()
+
+        # graduated is the only BooleanFilter on a hidable field, so trying out the null label for it
+        # Dummy member included
+        self.query = 'graduated='
+        self.n_normal = len(Member.objects.all())
+        self.n_staff = self.n_normal
+
+class MemberFilterGraduatedInvalidTest(MemberFilterGraduatedTrueTest):
+    def setUp(self):
+        super().setUp()
+
+        # graduated is the only BooleanFilter on a hidable field, so trying out an invalid label for it
+        # Dummy member included
+        # XXX: This should probably return all Members, but now the filter is being recognized as "set", so all hidden Members will be filtered out for normal users
+        self.query = 'graduated=unknown'
+        self.n_normal = 4
+        self.n_staff = 5
 
 class MemberFilterGraduatedYearTest(BaseAPITest, TestCases):
     def setUp(self):

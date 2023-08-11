@@ -4,6 +4,14 @@ from members.models import *
 from functools import reduce
 from operator import and_
 
+class BooleanFilter(django_filters.BooleanFilter):
+    '''
+    The defualt null label is for some reason 'unknown', but I want it to be ''
+    '''
+    def __init__(self, *args, **kwargs):
+        kwargs['widget'] = django_filters.widgets.BooleanWidget
+        super().__init__(*args, **kwargs)
+
 class BaseFilter(django_filters.rest_framework.FilterSet):
     '''
     Base filter class that takes care of normal users from using staff-only filters.
@@ -95,7 +103,7 @@ class MemberFilter(BaseFilter):
     enrolment_year = django_filters.RangeFilter(
         label='Inskrivingsåret är mellan',
     )
-    graduated = django_filters.BooleanFilter(
+    graduated = BooleanFilter(
         method='filter_graduated',
         label='Utexaminerad?',
     )
@@ -111,16 +119,16 @@ class MemberFilter(BaseFilter):
     student_id = django_filters.CharFilter(
         label='Studienummer',
     )
-    dead = django_filters.BooleanFilter(
+    dead = BooleanFilter(
         label='Avliden?',
     )
-    subscribed_to_modulen = django_filters.BooleanFilter(
+    subscribed_to_modulen = BooleanFilter(
         label='Prenumererar på Modulen?',
     )
-    allow_studentbladet = django_filters.BooleanFilter(
+    allow_studentbladet = BooleanFilter(
         label='Prenumererar på Studentbladet?',
     )
-    allow_publish_info = django_filters.BooleanFilter(
+    allow_publish_info = BooleanFilter(
         label='Tillåter publicering av kontaktinformation?',
     )
     comment = django_filters.CharFilter(
@@ -137,6 +145,7 @@ class MemberFilter(BaseFilter):
     def includes_hidable_field(self):
         ''' Check if the current query includes filtering on any hidable Member fields '''
         for name, value in self.data.items():
+            # XXX: This wrongly identifies invalid filter values as being set. For example, providing an invalid string to a BooleanFilter field will be caught here, even though the field will not be filtered... Maybe this is good enough?
             if name in self.HIDABLE and any(value):
                 return True
         return False
@@ -181,6 +190,8 @@ class MemberFilter(BaseFilter):
         '''
         Modifying the graduated flag whan adding a graduated year can sometimes be forgotten, so taking that into consideration for this filter query.
         '''
+        assert value in [True, False, None]
+
         if value:
             # Graduated or graduated year is set
             return queryset.filter(Q(graduated=True) | Q(graduated_year__isnull=False))
