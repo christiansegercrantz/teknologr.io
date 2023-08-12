@@ -1,8 +1,7 @@
-import datetime
-
 from django.test import TestCase
 from members.models import *
 from ldap import LDAPError
+from datetime import date, timedelta
 import random
 
 def shuffle(l):
@@ -21,22 +20,22 @@ class BaseTest(TestCase):
         'Öbc',
     ]
     test_dates = [
-        datetime.date(1999, 7, 1),
-        datetime.date(1999, 7, 30),
-        datetime.date(2023, 6, 1),
-        datetime.date(2023, 6, 13),
-        datetime.date(2023, 6, 30),
-        datetime.date(2030, 5, 1),
-        datetime.date(2030, 5, 30),
+        date(1999, 7, 1),
+        date(1999, 7, 30),
+        date(2023, 6, 1),
+        date(2023, 6, 13),
+        date(2023, 6, 30),
+        date(2030, 5, 1),
+        date(2030, 5, 30),
     ]
     test_date_pairs = [
-        [datetime.date(2022, 1, 1), datetime.date(2023, 1, 1)],
-        [datetime.date(2023, 1, 1), datetime.date(2023, 7, 7)],
-        [datetime.date(2023, 2, 2), datetime.date(2023, 11, 11)],
-        [datetime.date(2023, 1, 1), datetime.date(2023, 12, 31)],
-        [datetime.date(2023, 7, 7), datetime.date(2023, 12, 31)],
-        [datetime.date(2022, 1, 1), datetime.date(2024, 1, 1)],
-        [datetime.date(2023, 1, 1), datetime.date(2024, 1, 1)],
+        [date(2022, 1, 1), date(2023, 1, 1)],
+        [date(2023, 1, 1), date(2023, 7, 7)],
+        [date(2023, 2, 2), date(2023, 11, 11)],
+        [date(2023, 1, 1), date(2023, 12, 31)],
+        [date(2023, 7, 7), date(2023, 12, 31)],
+        [date(2022, 1, 1), date(2024, 1, 1)],
+        [date(2023, 1, 1), date(2024, 1, 1)],
     ]
 
 
@@ -67,7 +66,7 @@ class MemberTest(TestCase):
         # Surname with prefixes
         # Address is incomplete
         self.member3 = Member.objects.create(
-            given_names='Foo Bar Baz',
+            given_names='Foo-Bar Biz-Baz',
             preferred_name='Baz',
             surname='von der Tester',
             street_address='Otsvängen 22',
@@ -76,12 +75,12 @@ class MemberTest(TestCase):
         )
 
         MemberType.objects.create(
-            begin_date=datetime.date(2020, 1, 1),
+            begin_date=date(2020, 1, 1),
             type='OM',
             member=self.member2,
         )
         MemberType.objects.create(
-            begin_date=datetime.date(2020, 1, 1),
+            begin_date=date(2020, 1, 1),
             type='OM',
             member=self.member3,
         )
@@ -94,7 +93,7 @@ class MemberTest(TestCase):
     def test_get_given_names_with_initials(self):
         self.assertEqual(self.member1.get_given_names_with_initials(), 'Foo B B')
         self.assertEqual(self.member2.get_given_names_with_initials(), 'Foo B B')
-        self.assertEqual(self.member3.get_given_names_with_initials(), 'F B Baz')
+        self.assertEqual(self.member3.get_given_names_with_initials(), 'F-B Biz-Baz')
 
     def test_get_surname_without_prefixes(self):
         self.assertEqual(self.member1.get_surname_without_prefixes(), 'Tester')
@@ -104,27 +103,27 @@ class MemberTest(TestCase):
     def test_full_name(self):
         self.assertEqual(self.member1.full_name, 'Foo Bar Baz Tester')
         self.assertEqual(self.member2.full_name, 'Foo Bar Baz Tester')
-        self.assertEqual(self.member3.full_name, 'Foo Bar Baz von der Tester')
+        self.assertEqual(self.member3.full_name, 'Foo-Bar Biz-Baz von der Tester')
 
     def test_full_name_for_sorting(self):
         self.assertEqual(self.member1.full_name_for_sorting, 'Tester, Foo Bar Baz')
         self.assertEqual(self.member2.full_name_for_sorting, 'Tester, Foo Bar Baz')
-        self.assertEqual(self.member3.full_name_for_sorting, 'Tester, Foo Bar Baz')
+        self.assertEqual(self.member3.full_name_for_sorting, 'Tester, Foo-Bar Biz-Baz')
 
     def test_public_full_name(self):
         self.assertEqual(self.member1.public_full_name, 'Foo B B Tester')
         self.assertEqual(self.member2.public_full_name, 'Foo Bar Baz Tester')
-        self.assertEqual(self.member3.public_full_name, 'F B Baz von der Tester')
+        self.assertEqual(self.member3.public_full_name, 'F-B Biz-Baz von der Tester')
 
     def test_public_full_name_for_sorting(self):
         self.assertEqual(self.member1.public_full_name_for_sorting, 'Tester, Foo B B')
         self.assertEqual(self.member2.public_full_name_for_sorting, 'Tester, Foo Bar Baz')
-        self.assertEqual(self.member3.public_full_name_for_sorting, 'Tester, F B Baz')
+        self.assertEqual(self.member3.public_full_name_for_sorting, 'Tester, F-B Biz-Baz')
 
     def test_name(self):
         self.assertEqual(self.member1.name, 'Foo Bar Baz Tester')
         self.assertEqual(self.member2.name, 'Foo Bar Baz Tester')
-        self.assertEqual(self.member3.name, 'Foo Bar Baz von der Tester')
+        self.assertEqual(self.member3.name, 'Foo-Bar Biz-Baz von der Tester')
 
     def test_address(self):
         self.assertEquals('Otsvängen 22, 02150 Esbo, Finland', self.member1.full_address)
@@ -138,7 +137,7 @@ class MemberTest(TestCase):
     def test_str(self):
         self.assertEqual('Foo B B Tester', str(self.member1))
         self.assertEqual('Foo Bar Baz Tester', str(self.member2))
-        self.assertEqual('F B Baz von der Tester', str(self.member3))
+        self.assertEqual('F-B Biz-Baz von der Tester', str(self.member3))
 
     def test_member_type(self):
         member = Member(given_names='Svatta', surname='Teknolog')
@@ -148,14 +147,14 @@ class MemberTest(TestCase):
         self.assertEquals('', member.current_member_type)
 
         # add some member types. First default member type phux
-        ph = MemberType(member=member, begin_date=datetime.date(2012, 9, 1))
+        ph = MemberType(member=member, begin_date=date(2012, 9, 1))
         ph.save()
         # A 'Phux' is not a real member type and should return ''
         self.assertEquals('', member.current_member_type)
         self.assertFalse(member.isValidMember())
 
         # Make our person a 'real member'
-        om = MemberType(member=member, type='OM', begin_date=datetime.date(2012, 9, 27))
+        om = MemberType(member=member, type='OM', begin_date=date(2012, 9, 27))
         om.save()
         self.assertEquals('Ordinarie Medlem', member.current_member_type)
         self.assertTrue(member.isValidMember())
@@ -163,18 +162,18 @@ class MemberTest(TestCase):
         self.assertEquals('Ordinarie Medlem: 2012-09-27 ->', str(om))
 
         # Wappen kom, phuxen är inte mera phux!
-        ph.end_date = datetime.date(2012, 4, 30)
+        ph.end_date = date(2012, 4, 30)
         ph.save()
         self.assertEquals('Phux: 2012-09-01 - 2012-04-30', str(ph))
         self.assertFalse(member.shouldBeStalm())
 
         # Our person became JuniorStÄlM :O
-        js = MemberType(member=member, type='JS', begin_date=datetime.date(2017, 10, 15))
+        js = MemberType(member=member, type='JS', begin_date=date(2017, 10, 15))
         js.save()
         self.assertFalse(member.shouldBeStalm())
 
         # Our person is now finished with his/her studies
-        om.end_date = datetime.date(2019, 4, 30)
+        om.end_date = date(2019, 4, 30)
         om.save()
         self.assertEquals('Ordinarie Medlem: 2012-09-27 - 2019-04-30', str(om))
 
@@ -183,10 +182,10 @@ class MemberTest(TestCase):
         # and person should become StÄlM now
         self.assertTrue(member.shouldBeStalm())
 
-        fg = MemberType(member=member, type='FG', begin_date=datetime.date(2019, 5, 1))
+        fg = MemberType(member=member, type='FG', begin_date=date(2019, 5, 1))
         fg.save()
 
-        st = MemberType(member=member, type='ST', begin_date=datetime.date(2019, 5, 16))
+        st = MemberType(member=member, type='ST', begin_date=date(2019, 5, 16))
         st.save()
         self.assertEquals('StÄlM', member.current_member_type)
         self.assertFalse(member.shouldBeStalm())
@@ -233,7 +232,7 @@ class DecorationOwnerShipTest(TestCase):
         self.ownership = DecorationOwnership.objects.create(
             member=member,
             decoration=decoration,
-            acquired=datetime.date.today(),
+            acquired=date.today(),
         )
 
     def test_str(self):
@@ -303,23 +302,23 @@ class GroupTest(TestCase):
         group_type = GroupType.objects.create(name='Group Type')
         self.group1 = Group.objects.create(
             grouptype=group_type,
-            begin_date=datetime.date(2023, 1, 1),
-            end_date=datetime.date(2023, 6, 14),
+            begin_date=date(2023, 1, 1),
+            end_date=date(2023, 6, 14),
         )
         self.group2 = Group.objects.create(
             grouptype=group_type,
-            begin_date=datetime.date(2023, 6, 14),
-            end_date=datetime.date(2023, 12, 31),
+            begin_date=date(2023, 6, 14),
+            end_date=date(2023, 12, 31),
         )
         self.group3 = Group.objects.create(
             grouptype=group_type,
-            begin_date=datetime.date(2023, 1, 1),
-            end_date=datetime.date(2023, 12, 31),
+            begin_date=date(2023, 1, 1),
+            end_date=date(2023, 12, 31),
         )
         self.group4 = Group.objects.create(
             grouptype=group_type,
-            begin_date=datetime.date(2022, 1, 1),
-            end_date=datetime.date(2024, 12, 31),
+            begin_date=date(2022, 1, 1),
+            end_date=date(2024, 12, 31),
         )
 
     def test_str(self):
@@ -342,7 +341,7 @@ class GroupOrderTest(BaseTest):
                 Group.objects.create(
                     grouptype=group_type,
                     begin_date=date,
-                    end_date=date + datetime.timedelta(days=1),
+                    end_date=date + timedelta(days=1),
                 )
 
         self.groups = list(Group.objects.all())
@@ -404,26 +403,26 @@ class FunctionaryTest(BaseTest):
         self.functionary1 = Functionary.objects.create(
             functionarytype=functionary_type,
             member=member,
-            begin_date=datetime.date(2023, 1, 1),
-            end_date=datetime.date(2023, 6, 14),
+            begin_date=date(2023, 1, 1),
+            end_date=date(2023, 6, 14),
         )
         self.functionary2 = Functionary.objects.create(
             functionarytype=functionary_type,
             member=member,
-            begin_date=datetime.date(2023, 6, 14),
-            end_date=datetime.date(2023, 12, 31),
+            begin_date=date(2023, 6, 14),
+            end_date=date(2023, 12, 31),
         )
         self.functionary3 = Functionary.objects.create(
             functionarytype=functionary_type,
             member=member,
-            begin_date=datetime.date(2023, 1, 1),
-            end_date=datetime.date(2023, 12, 31),
+            begin_date=date(2023, 1, 1),
+            end_date=date(2023, 12, 31),
         )
         self.functionary4 = Functionary.objects.create(
             functionarytype=functionary_type,
             member=member,
-            begin_date=datetime.date(2022, 1, 1),
-            end_date=datetime.date(2024, 12, 31),
+            begin_date=date(2022, 1, 1),
+            end_date=date(2024, 12, 31),
         )
 
     def test_str(self):
@@ -448,7 +447,7 @@ class FunctionaryOrderTest(BaseTest):
                     member=member,
                     functionarytype=functionary_type,
                     begin_date=date,
-                    end_date=date + datetime.timedelta(days=1),
+                    end_date=date + timedelta(days=1),
                 )
 
         self.functionaries = list(Functionary.objects.all())
@@ -518,13 +517,13 @@ class MemberTypeTest(BaseTest):
         self.member_type1 = MemberType.objects.create(
             type='OM',
             member=member,
-            begin_date=datetime.date(2023, 1, 1),
-            end_date=datetime.date(2023, 6, 14),
+            begin_date=date(2023, 1, 1),
+            end_date=date(2023, 6, 14),
         )
         self.member_type2 = MemberType.objects.create(
             type='OM',
             member=member,
-            begin_date=datetime.date(2023, 6, 14),
+            begin_date=date(2023, 6, 14),
         )
 
     def test_str(self):
@@ -540,7 +539,7 @@ class MemberTypeOrderTest(BaseTest):
                 MemberType.objects.create(
                     member=member,
                     begin_date=date,
-                    end_date=date + datetime.timedelta(days=1),
+                    end_date=date + timedelta(days=1),
                 )
 
         self.member_types = list(MemberType.objects.all())

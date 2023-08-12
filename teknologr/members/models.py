@@ -20,7 +20,7 @@ class SuperClass(models.Model):
 
 
 class MemberManager(models.Manager):
-    def get_prefetched_or_404(self, member_id):
+    def all_with_related(self):
         '''
         This is done in 5 queries:
         1. SELECT Member WHERE id=member_id
@@ -29,17 +29,26 @@ class MemberManager(models.Manager):
         4. SELECT GroupMembership WHERE member__id=member_id
         5. SELECT MemberType WHERE member__id=member_id
         '''
-        queryset = Member.objects.prefetch_related(
+        return Member.objects.prefetch_related(
             Prefetch('decoration_ownerships', queryset=DecorationOwnership.objects.select_related('decoration')),
             Prefetch('functionaries', queryset=Functionary.objects.select_related('functionarytype')),
             Prefetch('group_memberships', queryset=GroupMembership.objects.select_related('group', 'group__grouptype')),
             'member_types',
+        ).annotate(
+            count_decoration_ownerships=Count('decoration_ownerships'),
+            count_functionaries=Count('functionaries'),
+            count_group_memberships=Count('group_memberships'),
         )
-        return get_object_or_404(queryset, id=member_id)
+
+    def get_prefetched_or_404(self, member_id):
+        return get_object_or_404(self.all_with_related(), id=member_id)
 
 
 class Member(SuperClass):
     objects = MemberManager()
+    STAFF_ONLY_FIELDS = ['birth_date', 'student_id', 'dead', 'subscribed_to_modulen', 'allow_publish_info', 'allow_studentbladet', 'comment', 'username', 'bill_code']
+    HIDABLE_FIELDS = ['street_address', 'postal_code', 'city', 'country', 'phone', 'email', 'degree_programme', 'enrolment_year', 'graduated', 'graduated_year']
+    # NOTE: given_names is semi-hidable
 
     # NAMES
     given_names = models.CharField(max_length=64, blank=False, null=False, default="UNKNOWN")
@@ -114,8 +123,17 @@ class Member(SuperClass):
         return self.preferred_name or self.given_names.split()[0]
 
     def get_given_names_with_initials(self):
+        '''
+        All given names except the preferred one is converted to initials:
+         - _Foo_ Bar Baz -> Foo B B
+         - _Foo-Bar_ Baz -> Foo-Bar B
+         - Foo-_Bar_ Baz -> Foo-Bar B # XXX: Or is 'F-Bar B' better?
+         - _Foo_-Bar Baz -> Foo-Bar B # XXX: Or is 'Foo-B B' better?
+         - Foo Bar _Baz_ -> F B Baz
+         - Foo-Bar _Baz_ -> F-B Baz
+        '''
         preferred_name = self.get_preferred_name()
-        names = [n if n == preferred_name else n[0] for n in self.given_names.split()]
+        names = [n if preferred_name in n else '-'.join([nn[0] for nn in n.split('-')]) for n in self.given_names.split()]
         return " ".join(names)
 
     def get_surname_without_prefixes(self):
@@ -171,6 +189,24 @@ class Member(SuperClass):
         city = f'{self.postal_code} {self.city}'.strip()
         address_parts = [self.street_address, city, country]
         return ", ".join([s for s in address_parts if s])
+
+    @property
+    def n_decorations(self):
+        if hasattr(self, 'count_decoration_ownerships'):
+            return self.count_decoration_ownerships
+        return self.decoration_ownerships.count()
+
+    @property
+    def n_functionaries(self):
+        if hasattr(self, 'count_functionaries'):
+            return self.count_functionaries
+        return self.functionaries.count()
+
+    @property
+    def n_groups(self):
+        if hasattr(self, 'count_group_memberships'):
+            return self.count_group_memberships
+        return self.group_memberships.count()
 
     def save(self, *args, **kwargs):
         if not self.username:
@@ -228,7 +264,11 @@ class Member(SuperClass):
         return member_type_phux.begin_date.year if member_type_phux else None
 
     def showContactInformation(self):
-        return self.allow_publish_info and self.isValidMember() and not self.dead
+        return self.allow_publish_info and not self.dead
+
+    @classmethod
+    def get_show_info_Q(cls):
+        return Q(allow_publish_info=True, dead=False)
 
     @property
     def decoration_ownerships_by_date(self):
@@ -261,8 +301,11 @@ class Member(SuperClass):
 
 
 class DecorationOwnershipManager(models.Manager):
+    def all_with_related(self):
+        return self.get_queryset().select_related('decoration', 'member')
+
     def year(self, year):
-        return self.get_queryset().select_related('member', 'decoration').filter(acquired__year=year)
+        return self.all_with_related().filter(acquired__year=year)
 
     def year_ordered(self, year):
         l = list(self.year(year))
@@ -320,6 +363,12 @@ class Decoration(SuperClass):
         return self.name
 
     @property
+    def n_ownerships(self):
+        if hasattr(self, 'count'):
+            return self.count
+        return self.ownerships.count()
+
+    @property
     def ownerships_by_date(self):
         l = list(self.ownerships.all())
         DecorationOwnership.order_by(l, 'member')
@@ -336,6 +385,11 @@ class Decoration(SuperClass):
 
 
 class GroupMembership(SuperClass):
+    class GMManager(models.Manager):
+        def all_with_related(self):
+            return self.get_queryset().select_related('group', 'group__grouptype', 'member')
+
+    objects = GMManager()
     member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="group_memberships")
     group = models.ForeignKey("Group", on_delete=models.CASCADE, related_name="memberships")
 
@@ -385,12 +439,18 @@ class Group(SuperClass):
         return f'{self.grouptype}: {self.begin_date} - {self.end_date}'
 
     @property
+    def n_members(self):
+        if hasattr(self, 'num_members'):
+            return self.num_members
+        return self.memberships.count()
+
+    @property
     def duration(self):
         return Duration(self.begin_date, self.end_date)
 
     @property
     def memberships_by_member(self):
-        l = list(self.memberships.all())
+        l = list(self.memberships.select_related('member'))
         GroupMembership.order_by(l, 'member')
         return l
 
@@ -440,6 +500,24 @@ class GroupType(SuperClass):
         return self.name
 
     @property
+    def n_groups(self):
+        if hasattr(self, 'count'):
+            return self.count
+        return self.groups.count()
+
+    @property
+    def n_members_total(self):
+        if hasattr(self, 'count_members_total'):
+            return self.count_members_total
+        return self.groups.aggregate(count=Count('memberships'))['count']
+
+    @property
+    def n_members_unique(self):
+        if hasattr(self, 'count_members_unique'):
+            return self.count_members_unique
+        return self.groups.aggregate(count=Count('memberships__member', distinct=True))['count']
+
+    @property
     def groups_by_date(self):
         l = list(self.groups.all())
         Group.order_by(l, 'date', True)
@@ -455,8 +533,11 @@ class GroupType(SuperClass):
 
 
 class FunctionaryManager(models.Manager):
+    def all_with_related(self):
+        return self.get_queryset().select_related('functionarytype', 'member')
+
     def year(self, year):
-        return self.get_queryset().select_related('member', 'functionarytype').filter(begin_date__lte=datetime.date(int(year), 12, 31), end_date__gte=datetime.date(int(year), 1, 1))
+        return self.all_with_related().filter(begin_date__lte=datetime.date(int(year), 12, 31), end_date__gte=datetime.date(int(year), 1, 1))
 
     def year_ordered_and_unique(self, year):
         queryset = self.year(year)
@@ -528,6 +609,18 @@ class FunctionaryType(SuperClass):
         return self.name
 
     @property
+    def n_functionaries_total(self):
+        if hasattr(self, 'count'):
+            return self.count
+        return self.functionaries.count()
+
+    @property
+    def n_functionaries_unique(self):
+        if hasattr(self, 'count_unique'):
+            return self.count_unique
+        return self.functionaries.aggregate(count=Count('member', distinct=True))['count']
+
+    @property
     def functionaries_by_date(self):
         l = list(self.functionaries.all())
         Functionary.order_by(l, 'member')
@@ -544,8 +637,11 @@ class FunctionaryType(SuperClass):
 
 
 class MemberTypeManager(models.Manager):
+    def all_with_related(self):
+        return self.get_queryset().select_related('member')
+
     def begin_year(self, year):
-        return self.get_queryset().select_related('member').filter(begin_date__year=year)
+        return self.all_with_related().filter(begin_date__year=year)
 
     def ordinary_members_begin_year(self, year):
         return self.begin_year(year).filter(type='OM')

@@ -1,9 +1,16 @@
 from django.conf.urls import url, include
-from rest_framework import routers
+from rest_framework import routers, permissions
 from api.views import *
 
+class RootView(routers.APIRootView):
+    permission_classes = (permissions.IsAuthenticated, )
+    name = 'Katalogen root API'
+    description = ''
+
 # Routers provide an easy way of automatically determining the URL conf.
+# NOTE: Use for example {% url 'api:member-list' %} to access these urls
 router = routers.DefaultRouter()
+router.APIRootView = RootView
 router.register(r'members', MemberViewSet)
 router.register(r'grouptypes', GroupTypeViewSet)
 router.register(r'groups', GroupViewSet)
@@ -30,11 +37,9 @@ urlpatterns = [
     url(r'^applicants/make-member/(\d+)/$', ApplicantMembershipView.as_view()),
     url(r'^dump-htk/(\d+)?$', dump_htk, name='dump_htk'),
     url(r'^dump-modulen/$', dump_modulen, name='dump_modulen'),
-    url(r'^dump-full/$', dump_full, name='dump_full'),
     url(r'^dump-active/$', dump_active, name='dump_active'),
     url(r'^dump-arsk/$', dump_arsk, name='dump_arsk'),
     url(r'^dump-regemails/$', dump_reg_emails, name='dump_reg_emails'),
-    url(r'^dump-applicantlanguages/$', dump_applicant_languages, name='dump_applicant_languages'),
     url(r'^dump-studentbladet/$', dump_studentbladet, name='dump_studentbladet'),
     # Used by BILL
     url(r'^memberTypesForMember/(?P<mode>username|studynumber)/(?P<query>[A-Za-z0-9]+)/$', member_types_for_member),

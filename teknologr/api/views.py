@@ -2,49 +2,120 @@ from django.shortcuts import get_object_or_404
 from django.db import connection
 from django.db.models import Q
 from django.db.utils import IntegrityError
-from rest_framework import viewsets
-from api.serializers import *
+from django_filters import rest_framework as filters
+from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from ldap import LDAPError
+from collections import defaultdict
+from datetime import datetime
+from api.serializers import *
+from api.filters import *
+from api.ldap import LDAPAccountManager
+from api.bill import BILLAccountManager, BILLException
+from api.utils import assert_public_member_fields
+from api.mailutils import mailNewPassword, mailNewAccount
 from members.models import GroupMembership, Member, Group
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
-from api.ldap import LDAPAccountManager
-from ldap import LDAPError
-from api.bill import BILLAccountManager, BILLException
-from rest_framework_csv import renderers as csv_renderer
-from api.mailutils import mailNewPassword, mailNewAccount
-from collections import defaultdict
-from datetime import datetime
 
-# Create your views here.
 
 # ViewSets define the view behavior.
 
-# Members
+class APIPermissions(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Do not allow anything for un-authenticated users
+        if not request.user.is_authenticated:
+            return False
+
+        # Allow everything for superusers and staff
+        if request.user.is_staff:
+            return True
+
+        # Allow safe methods for the rest
+        return request.method in permissions.SAFE_METHODS
+
+class BaseModelViewSet(viewsets.ModelViewSet):
+    # Use custom permissions
+    permission_classes = (APIPermissions, )
+
+    def get_serializer(self, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        kwargs['detail'] = self.action == 'retrieve'
+        kwargs['is_staff'] = self.request.user.is_staff
+        return serializer_class(*args, **kwargs)
 
 
-class MemberViewSet(viewsets.ModelViewSet):
-    queryset = Member.objects.all()
+class MemberSearchFilter(SearchFilter):
+    '''
+    A custom SearchFilter class for Members that restricts the searchable columns to non-staff.
+
+    XXX: It would be nice to have for example 'email' be searchable for everyone, but how to restrict the search to only those Members that allow their info to be published?
+    '''
+
+    def get_search_fields(self, view, request):
+        # By default only allow searching in a few 100% public fields
+        fields = ['preferred_name', 'surname']
+        assert_public_member_fields(fields)
+
+        # Staff get to search in a few more fields
+        if request.user.is_staff:
+            fields += ['given_names', 'email', 'comment', 'username']
+
+        return fields
+
+class MemberViewSet(BaseModelViewSet):
+    queryset = Member.objects.all_with_related()
     serializer_class = MemberSerializer
+    filter_backends = (MemberSearchFilter, filters.DjangoFilterBackend, OrderingFilter, )
+    filterset_class = MemberFilter
+    search_fields = ('dummy', ) # The search box does not appear if this is removed
+    # XXX: Is there a way to dynamically change which fields can be ordered (depending on the requesting user)?
+    # XXX: Ordering in alphabethical order does not take into account the locale, and can not do our manual sort either because OrderingFilter.filter() is expected to return a queryset
+    ordering_fields = ('id', 'preferred_name', 'surname', )
+
+    assert_public_member_fields(search_fields)
+    assert_public_member_fields(ordering_fields)
 
 
-# Groups
+# GroupTypes, Groups and GroupMemberships
 
-class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-
-
-class GroupTypeViewSet(viewsets.ModelViewSet):
+class GroupTypeViewSet(BaseModelViewSet):
     queryset = GroupType.objects.all()
     serializer_class = GroupTypeSerializer
+    filter_backends = (SearchFilter, filters.DjangoFilterBackend, OrderingFilter, )
+    search_fields = ('name', 'comment', )
+    filterset_class = GroupTypeFilter
+    ordering_fields = ('id', 'name', )
 
+class GroupViewSet(BaseModelViewSet):
+    queryset = Group.objects.select_related('grouptype')
+    serializer_class = GroupSerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
+    filterset_class = GroupFilter
+    ordering_fields = (
+        'id',
+        'begin_date',
+        'end_date',
+        ('grouptype__id', 'grouptype.id'),
+        ('grouptype__name', 'grouptype.name'),
+    )
 
-class GroupMembershipViewSet(viewsets.ModelViewSet):
-    queryset = GroupMembership.objects.all()
+class GroupMembershipViewSet(BaseModelViewSet):
+    queryset = GroupMembership.objects.all_with_related()
     serializer_class = GroupMembershipSerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
+    filterset_class = GroupMembershipFilter
+    ordering_fields = (
+        'id',
+        ('group__begin_date', 'group.begin_date'),
+        ('group__end_date', 'group.end_date'),
+        ('group__grouptype__id', 'group.grouptype.id'),
+        ('group__grouptype__name', 'group.grouptype.name'),
+        ('member__id', 'member.id'),
+    )
 
 
 def getMultiSelectValues(request, key):
@@ -116,35 +187,71 @@ def multi_decoration_ownerships_save(request):
     return Response(status=200)
 
 
-# Functionaries
+# FunctionaryTypes and Functionaries
 
-class FunctionaryViewSet(viewsets.ModelViewSet):
-    queryset = Functionary.objects.all()
-    serializer_class = FunctionarySerializer
-
-
-class FunctionaryTypeViewSet(viewsets.ModelViewSet):
+class FunctionaryTypeViewSet(BaseModelViewSet):
     queryset = FunctionaryType.objects.all()
     serializer_class = FunctionaryTypeSerializer
+    filter_backends = (SearchFilter, filters.DjangoFilterBackend, OrderingFilter, )
+    search_fields = ('name', 'comment', )
+    filterset_class = FunctionaryTypeFilter
+    ordering_fields = ('id', 'name', )
+
+class FunctionaryViewSet(BaseModelViewSet):
+    queryset = Functionary.objects.all_with_related()
+    serializer_class = FunctionarySerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
+    filterset_class = FunctionaryFilter
+    ordering_fields = (
+        'id',
+        ('functionarytype__id', 'functionarytype.id'),
+        ('functionarytype__name', 'functionarytype.name'),
+        ('member__id', 'member.id'),
+    )
 
 
-# Decorations
+# Decorations and DecorationOwnerships
 
-class DecorationViewSet(viewsets.ModelViewSet):
+class DecorationViewSet(BaseModelViewSet):
     queryset = Decoration.objects.all()
     serializer_class = DecorationSerializer
+    filter_backends = (SearchFilter, filters.DjangoFilterBackend, OrderingFilter, )
+    search_fields = ('name', 'comment', )
+    filterset_class = DecorationFilter
+    ordering_fields = ('id', 'name', )
 
-
-class DecorationOwnershipViewSet(viewsets.ModelViewSet):
-    queryset = DecorationOwnership.objects.all()
+class DecorationOwnershipViewSet(BaseModelViewSet):
+    queryset = DecorationOwnership.objects.all_with_related()
     serializer_class = DecorationOwnershipSerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
+    filterset_class = DecorationOwnershipFilter
+    ordering_fields = (
+        'id',
+        'acquired',
+        ('decoration__id', 'decoration.id'),
+        ('decoration__name', 'decoration.name'),
+        ('member__id', 'member.id'),
+    )
 
 
 # MemberTypes
 
-class MemberTypeViewSet(viewsets.ModelViewSet):
-    queryset = MemberType.objects.all()
-    serializer_class = MemberTypeSerializer
+class MemberTypeViewSet(BaseModelViewSet):
+    # NOTE: Default permissions (staff-only)
+    permission_classes = (permissions.IsAdminUser, )
+    queryset = MemberType.objects.all_with_related()
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, )
+    filterset_class = MemberTypeFilter
+    ordering_fields = (
+        'id',
+        'type',
+        'begin_date',
+        'end_date',
+        ('member__id', 'member.id'),
+    )
+
+    def get_serializer(self, *args, **kwargs):
+        return MemberTypeSerializer(is_staff=True, *args, **kwargs)
 
 
 # User accounts
@@ -287,9 +394,34 @@ class BILLAccountView(APIView):
 
 # Registration/Applicant
 
-class ApplicantViewSet(viewsets.ModelViewSet):
+class ApplicantViewSet(BaseModelViewSet):
+    # NOTE: Default permissions (staff-only)
+    permission_classes = (permissions.IsAdminUser, )
     queryset = Applicant.objects.all()
-    serializer_class = ApplicantSerializer
+    filter_backends = (SearchFilter, filters.DjangoFilterBackend, OrderingFilter, )
+    search_fields = (
+        'surname',
+        'given_names',
+        'preferred_name',
+        'email',
+        'username',
+        'motivation',
+        'mother_tongue',
+    )
+    filterset_class = ApplicantFilter
+    ordering_fields = (
+        'id',
+        'surname',
+        'preferred_name',
+        'birth_date',
+        'degree_programme',
+        'enrolment_year',
+        'mother_tongue',
+        'created_at',
+    )
+
+    def get_serializer(self, *args, **kwargs):
+        return ApplicantSerializer(is_staff=True, *args, **kwargs)
 
 
 class ApplicantMembershipView(APIView):
@@ -431,7 +563,7 @@ def members_by_member_type(request, membertype, field=None):
 def dump_htk(request, member_id=None):
     def dumpMember(member):
         # Functionaries
-        funcs = Functionary.objects.filter(member=member)
+        funcs = member.functionaries.all()
         func_list = []
         for func in funcs:
             func_str = "{}: {} > {}".format(
@@ -441,17 +573,17 @@ def dump_htk(request, member_id=None):
             )
             func_list.append(func_str)
         # Groups
-        groups = GroupMembership.objects.filter(member=member)
+        group_memberships = member.group_memberships.all()
         group_list = []
-        for group in groups:
+        for gm in group_memberships:
             group_str = "{}: {} > {}".format(
-                group.group.grouptype.name,
-                group.group.begin_date,
-                group.group.end_date
+                gm.group.grouptype.name,
+                gm.group.begin_date,
+                gm.group.end_date
             )
             group_list.append(group_str)
         # Membertypes
-        types = MemberType.objects.filter(member=member)
+        types = member.member_types.all()
         type_list = []
         for type in types:
             type_str = "{}: {} > {}".format(
@@ -461,12 +593,12 @@ def dump_htk(request, member_id=None):
             )
             type_list.append(type_str)
         # Decorations
-        decorations = DecorationOwnership.objects.filter(member=member)
+        decoration_ownerships = member.decoration_ownerships.all()
         decoration_list = []
-        for decoration in decorations:
+        for do in decoration_ownerships:
             decoration_str = "{}: {}".format(
-                decoration.decoration.name,
-                decoration.acquired
+                do.decoration.name,
+                do.acquired
             )
             decoration_list.append(decoration_str)
 
@@ -479,28 +611,18 @@ def dump_htk(request, member_id=None):
             "decorations": decoration_list
         }
 
+    # Remember to prefetch all needed data to avoid hitting the db with n_members*5 extra fetches
     if member_id:
-        member = get_object_or_404(Member, id=member_id)
+        member = Member.objects.get_prefetched_or_404(member_id)
         data = dumpMember(member)
     else:
-        data = [dumpMember(member) for member in Member.objects.all()]
+        data = [dumpMember(member) for member in Member.objects.all_with_related()]
 
-    dumpname = 'filename="HTKdump_{}.json'.format(datetime.today().date())
-    return Response(
-        data,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
-
-
-# CSV-render class
-class ModulenRenderer(csv_renderer.CSVRenderer):
-    header = ['given_names', 'preferred_name', 'surname', 'street_address', 'postal_code', 'city', 'country']
+    return Response(data, status=200)
 
 
 # List of addresses whom to post modulen to
 @api_view(['GET'])
-@renderer_classes((ModulenRenderer,))
 def dump_modulen(request):
     recipients = Member.objects.exclude(
         postal_code='02150'
@@ -524,47 +646,33 @@ def dump_modulen(request):
         'street_address': recipient.street_address,
         'postal_code': recipient.postal_code,
         'city': recipient.city,
-        'country': recipient.country
+        'country': recipient.country.name
     } for recipient in recipients]
 
-    dumpname = 'filename="modulendump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
-
-
-class ActiveRenderer(csv_renderer.CSVRenderer):
-    header = ['position', 'member']
+    return Response(content, status=200)
 
 
 # Lists all members that are active at the moment. These are members
 # that are either functionaries right now or in a group that has an
 # active mandate
 @api_view(['GET'])
-@renderer_classes((ActiveRenderer,))
 def dump_active(request):
-    now = datetime.now().date()
+    now = datetime.today().date()
     content = []
 
     # Functionaries
-    all_functionaries = Functionary.objects.filter(
-        begin_date__lt=now,
-        end_date__gt=now
+    all_functionaries = Functionary.objects.all_with_related().filter(
+        begin_date__lte=now,
+        end_date__gte=now
     )
     for func in all_functionaries:
         content.append({
-            'position': str(func.functionarytype),
-            'member': ''
-        })
-        content.append({
-            'position': '',
-            'member': func.member.common_name
+            'position': func.functionarytype.name,
+            'member': func.member.full_name,
         })
 
     # Groups
-    groupmemberships = GroupMembership.objects.all()
+    groupmemberships = GroupMembership.objects.all_with_related()
     grouped_by_group = defaultdict(list)
     for membership in groupmemberships:
         if membership.group.begin_date < now and membership.group.end_date > now:
@@ -579,85 +687,23 @@ def dump_active(request):
             'member': m.common_name
         } for m in members])
 
-    dumpname = 'filename="activedump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
-
-
-class FullRenderer(csv_renderer.CSVRenderer):
-    header = [
-        'id', 'given_names', 'preferred_name', 'surname', 'membertype',
-        'street_address', 'postal_code', 'city', 'country', 'birth_date',
-        'student_id', 'enrolment_year', 'graduated', 'graduated_year',
-        'degree_programme', 'dead', 'phone', 'email', 'subscribed_to_modulen',
-        'allow_publish_info', 'username', 'bill_code', 'comment', 'should_be_stalmed'
-    ]
-
-
-# "Fulldump". If you need some arbitrary bit of info this with some excel magic might do the trick.
-# Preferably tough for all common needs implement a specific endpoint for it (like modulen or HTK)
-# to save time in the long run.
-@api_view(['GET'])
-@renderer_classes((FullRenderer,))
-def dump_full(request):
-    members = Member.objects.exclude(dead=True)
-
-    content = [{
-        'id': member.id,
-        'given_names': member.given_names,
-        'preferred_name': member.preferred_name,
-        'surname': member.surname,
-        'membertype': str(member.getMostRecentMemberType()),
-        'street_address': member.street_address,
-        'postal_code': member.postal_code,
-        'city': member.city,
-        'country': member.country,
-        'birth_date': member.birth_date,
-        'student_id': member.student_id,
-        'enrolment_year': member.enrolment_year,
-        'graduated': member.graduated,
-        'graduated_year': member.graduated_year,
-        'degree_programme': member.degree_programme,
-        'dead': member.dead,
-        'phone': member.phone,
-        'email': member.email,
-        'subscribed_to_modulen': member.subscribed_to_modulen,
-        'allow_publish_info': member.allow_publish_info,
-        'username': member.username,
-        'bill_code': member.bill_code,
-        'comment': member.comment,
-        'should_be_stalmed': member.shouldBeStalm()}
-        for member in members]
-
-    dumpname = 'filename="fulldump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
-
-
-class ArskRenderer(csv_renderer.CSVRenderer):
-    header = ['name', 'surname', 'street_address', 'postal_code', 'city', 'country', 'associations']
+    return Response(content, status=200)
 
 
 # Dump for Årsfestkommittén, includes all members that should be posted invitations.
 # These include: honor-members, all TFS 5 years back + exactly 10 years back, all counsels, all current functionaries
 @api_view(['GET'])
-@renderer_classes((ArskRenderer,))
 def dump_arsk(request):
     tfs_low_range = 5
-    current_year = datetime.now().year
+    current_year = datetime.today().year
 
+    # XXX: Very scary hardcoded impementation... Still correct as of 4.8.2023 //FS
     counsel_ids = [
         10,  # Affärsrådet (AR)
         9,   # Finansrådet (FR)
         12,  # De Äldres Råd (DÄR)
-        44,  # Fastighets Rådet (FaR)
-        19,  # Kontinuitets Rådet (KonRad)
+        44,  # Fastighetsrådet (FaR)
+        19,  # Kontinuitetsrådet (KonRad)
     ]
     styrelse_id = 2  # Styrelsen
     honor_id = 3  # Hedersmedlemmar
@@ -678,17 +724,17 @@ def dump_arsk(request):
     styrelse_members_query = Q(is_styrelse_q & Q(is_recent_q | is_ten_years_back_q))
 
     # Apply membership queries to database and append answer
-    memberships = GroupMembership.objects.filter(Q(styrelse_members_query | counsel_members_query) & is_alive)
+    memberships = GroupMembership.objects.all_with_related().filter(Q(styrelse_members_query | counsel_members_query) & is_alive)
     for membership in memberships:
         by_association[membership.member].append(str(membership.group))
 
     # Apply honor member queries and append answer
-    honor_decoration = DecorationOwnership.objects.filter(Q(decoration__id=honor_id) & is_alive)
+    honor_decoration = DecorationOwnership.objects.all_with_related().filter(Q(decoration__id=honor_id) & is_alive)
     for decoration in honor_decoration:
         by_association[decoration.member].append(decoration.decoration.name)
 
     # Apply functionary queries and append answer
-    functionaries = Functionary.objects.filter(Q(begin_date__year=current_year) & is_alive)
+    functionaries = Functionary.objects.all_with_related().filter(Q(begin_date__year=current_year) & is_alive)
     for functionary in functionaries:
         by_association[functionary.member].append(functionary.functionarytype.name)
 
@@ -700,70 +746,30 @@ def dump_arsk(request):
         'postal_code': member.postal_code,
         'city': member.city,
         'country': member.country.name,
-        'associations': ','.join(association)}
-        for member, association in by_association.items()]
+        'associations': ','.join(association),
+    } for member, association in by_association.items()]
 
-    dumpname = 'filename="arskdump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
-
-
-class RegEmailRenderer(csv_renderer.CSVRenderer):
-    header = ['name', 'surname', 'preferred_name', 'email']
+    return Response(content, status=200)
 
 
 # Dump for receiving all emails from member applicants
 # Used by e.g. the PhuxMästare to send out information
 @api_view(['GET'])
-@renderer_classes((RegEmailRenderer,))
 def dump_reg_emails(request):
     applicants = Applicant.objects.all()
     content = [{
         'name': applicant.given_names,
         'surname': applicant.surname,
         'preferred_name': applicant.preferred_name,
-        'email': applicant.email}
-        for applicant in applicants]
+        'email': applicant.email,
+        'language': applicant.mother_tongue,
+    } for applicant in applicants]
 
-    dumpname = 'filename="regEmailDump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
-
-
-class ApplicantLanguagesRenderer(csv_renderer.CSVRenderer):
-    header = ['language']
-
-
-@api_view(['GET'])
-@renderer_classes((ApplicantLanguagesRenderer,))
-def dump_applicant_languages(request):
-    applicants = Applicant.objects.exclude(Q(mother_tongue__isnull=True) | Q(mother_tongue__exact=''))
-    content = [{
-        'language': applicant.mother_tongue}
-        for applicant in applicants]
-
-    dumpname = 'filename="applicantLanguages_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
-
-
-# CSV-render class
-class StudentbladetRenderer(csv_renderer.CSVRenderer):
-    header = ['name', 'street_address', 'postal_code', 'city', 'country']
+    return Response(content, status=200)
 
 
 # List of addresses whom to post Studentbladet to
 @api_view(['GET'])
-@renderer_classes((StudentbladetRenderer,))
 def dump_studentbladet(request):
     recipients = Member.objects.exclude(dead=True).filter(allow_studentbladet=True)
     recipients = [m for m in recipients if m.isValidMember()]
@@ -773,12 +779,7 @@ def dump_studentbladet(request):
         'street_address': recipient.street_address,
         'postal_code': recipient.postal_code,
         'city': recipient.city,
-        'country': recipient.country
+        'country': str(recipient.country),
     } for recipient in recipients]
 
-    dumpname = 'filename="studentbladetdump_{}.csv"'.format(datetime.today().date())
-    return Response(
-        content,
-        status=200,
-        headers={'Content-Disposition': 'attachment; {}'.format(dumpname)}
-    )
+    return Response(content, status=200)

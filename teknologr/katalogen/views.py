@@ -4,9 +4,10 @@ from django.db.models.functions import TruncYear
 from members.models import *
 from members.utils import *
 from katalogen.utils import *
-from django.db.models import Q, Count, Prefetch
+from django.db.models import Q, Count
 from functools import reduce
 from operator import and_
+from collections import defaultdict
 
 
 def _get_base_context(request):
@@ -70,6 +71,7 @@ def profile(request, member_id):
 
     return render(request, 'profile.html', {
         **_get_base_context(request),
+        # XXX: Could use MemberSerializerPartial to remove any unwanted fields for real instead of just not showing them
         'show_all': person.username == request.user.username or person.showContactInformation(),
         'person': person,
         'combined': combine,
@@ -194,7 +196,7 @@ def years(request):
       3. SELECT DecortaionOwnership => COUNT
       4. SELECT MemberType WHERE type IN ["OM", "ST"] => COUNT
     '''
-    years = {}
+    years = defaultdict(dict)
 
     def add(obj, key, count_key=None):
         date = obj['year']
@@ -202,8 +204,6 @@ def years(request):
             return
 
         y = date.year
-        if y not in years:
-            years[y] = {}
         years[y][key] = obj[count_key or key]
 
     # Get all functionaries and group them by their start year, and for each year return a count for the total amount of functionaries and the amount of unique members holding the posts
@@ -242,10 +242,10 @@ def year(request, year):
     This could be enhanced, but curretnly it is done with 10 queries:
       1. SELECT Functionary WHERE correct_year => COUNT
       2. SELECT Functionary WHERE correct_year
-      3. SELECT GroupMemebership WHERE correct_year => COUNT
+      3. SELECT GroupMembership WHERE correct_year => COUNT
       4. COUNT DISTINCT over ^
       5. group_ids, group_type_ids = SELECT Group WHERE correct_year
-      6. SELECT GroupMemebership WHERE group__id IN group_ids
+      6. SELECT GroupMembership WHERE group__id IN group_ids
       7. SELECT GroupType WHERE id IN group_type_ids
       8. SELECT DecortaionOwnership WHERE correct_year
       9. SELECT MemberType WHERE correct_year AND type="OM"

@@ -3,8 +3,15 @@
 
 {% block main %}
   <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-12">
+        <a class="btn btn-secondary" href="{% url 'katalogen:profile' member.id %}">Katalogen</a>
+        <a class="btn btn-secondary" href="{% url 'api:member-detail' member.id %}">API</a>
+        <a class="btn btn-secondary" href="{% url 'api:dump_htk' member.id %}">HTK dump</a>
+      </div>
+    </div>
     <h2 class="page-header">
-      <a class="katalogen-link" href="{% url 'katalogen:profile' member.id %}">{{ member.full_name }}</a>
+      {{ member.full_name }}
     </h2>
 
     {% if result %}

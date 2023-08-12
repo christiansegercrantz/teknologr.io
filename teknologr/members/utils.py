@@ -1,8 +1,8 @@
-import datetime
+from datetime import date, datetime
 from .models import *
 
 def getCurrentDate():
-    return datetime.datetime.now()
+    return datetime.now()
 
 
 def getCurrentYear():
@@ -10,8 +10,8 @@ def getCurrentYear():
 
 
 def getFirstDayOfCurrentYear():
-    return datetime.date(getCurrentYear(), 1, 1)
+    return date(getCurrentYear(), 1, 1)
 
 
 def getLastDayOfCurrentYear():
-    return datetime.date(getCurrentYear(), 12, 31)
+    return date(getCurrentYear(), 12, 31)

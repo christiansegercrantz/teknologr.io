@@ -30,6 +30,7 @@ TEST_PEP8_DIRS = [os.path.dirname(PROJECT_DIR), ]
 TEST_PEP8_EXCLUDE = ['migrations', ]  # Exclude this paths from tests
 TEST_PEP8_IGNORE = [
     'E226', # Whitespace around arithmetic operators
+    'E266', # Leading amount of '#' in comment
     'E261', # Spaces before inline comments
     'E302', # Blank lines
     'E501', # Line lengths
@@ -61,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'test_pep8',
     'rest_framework',
+    'django_filters',
     'ajax_select',
     'members',
     'katalogen',
@@ -107,7 +109,7 @@ if not DEBUG:
             'file': {
                 'level': 'INFO',
                 'class': 'logging.FileHandler',
-                'filename': '/var/log/teknologr/info.log',
+                'filename': env('LOG_FILE', '/var/log/teknologr/info.log'),
             },
         },
         'loggers': {
@@ -145,6 +147,7 @@ DATABASES = {
     'default': dj_database_url.parse(env('DATABASE', 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')))
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -206,6 +209,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAdminUser',
     ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'api.utils.BrowsableAPIRendererWithoutForms',
+        'rest_framework_csv.renderers.CSVRenderer',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'api.utils.Pagination',
 }
 
 # LDAP stuff
