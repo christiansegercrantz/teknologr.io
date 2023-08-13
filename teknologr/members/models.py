@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q, Prefetch, Count
 from django_countries.fields import CountryField
 from django.shortcuts import get_object_or_404
+from django.utils.html import format_html
 from locale import strxfrm, strcoll
 from operator import attrgetter
 from katalogen.utils import *
@@ -142,6 +143,13 @@ class Member(SuperClass):
         # Let's assume the prefixes in question are always written with lowercase, and that everything written in all lowercase are prefixes...
         surname = self.surname
         return surname.lstrip('abcdefghijklmnopqrstuvwxyzåäö ') or surname.split()[-1]
+
+    def get_full_name_HTML(self):
+        '''
+        Return name with the preferred name undercored. This can go wrong if the preferred name is not set correctly to one of the given names.
+        '''
+        preferred_name = self.get_preferred_name()
+        return format_html(f'{self.given_names.replace(preferred_name, f"<u>{preferred_name}</u>", 1)} {self.surname}')
 
     # Used for the side bar among other things
     @property

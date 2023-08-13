@@ -23,6 +23,7 @@ def set_side_context(context, category, active_obj=None):
         if active_obj and active_obj not in side['objects']:
             from itertools import chain
             side['objects'] = list(chain([active_obj], side['objects']))
+        side['objects'] = [{'id': m.id, 'name': m.get_full_name_HTML()} for m in side['objects']]
     elif category == 'grouptypes':
         side['sname'] = 'grupp'
         side['form'] = GroupTypeForm(auto_id="gtmodal_%s")
