@@ -151,11 +151,6 @@ class Member(SuperClass):
         preferred_name = self.get_preferred_name()
         return format_html(f'{self.given_names.replace(preferred_name, f"<u>{preferred_name}</u>", 1)} {self.surname}')
 
-    # Used for the side bar among other things
-    @property
-    def name(self):
-        return self.full_name
-
     @property
     def common_name(self):
         return f'{self.get_preferred_name()} {self.surname}'
