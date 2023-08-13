@@ -8,8 +8,13 @@ class GetPageTests():
         self.check_status_code(response, status.HTTP_302_FOUND)
         self.assertTrue(response.url.startswith('/login/'), response.url)
 
-    def test_get_for_user(self):
-        self.login_user()
+    def test_get_for_users(self):
+        response = self.get_all()
+        self.check_status_code(response, status.HTTP_302_FOUND)
+        self.assertTrue(response.url.startswith('/login/'), response.url)
+
+    def test_get_for_superusers(self):
+        self.login_superuser()
         response = self.get_all()
         self.check_status_code(response, status.HTTP_200_OK)
 
@@ -17,75 +22,65 @@ class GetPageTests():
 class HomeViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = ''
+        self.api_path = '/admin/members/'
 
-
-class MembersSearchViewTest(BaseAPITest, GetPageTests):
-    def setUp(self):
-        super().setUp()
-        self.api_path = '/search/?q=test'
-
-class MembersStartsWithViewTest(BaseAPITest, GetPageTests):
-    def setUp(self):
-        super().setUp()
-        self.api_path = '/A/'
 
 class MemberViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = f'/members/{self.m1.id}/'
+        self.api_path = f'/admin/members/{self.m1.id}/'
 
 
 class DecorationOwnershipsViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = f'/decorations/{self.d.id}/'
+        self.api_path = f'/admin/decorations/{self.d.id}/'
 
 
 class DecorationsViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = '/decorations/'
+        self.api_path = '/admin/decorations/'
 
 class DecorationOwnershipsViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = f'/decorations/{self.d.id}/'
+        self.api_path = f'/admin/decorations/{self.d.id}/'
 
 
 class FunctionaryTypesViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = '/functionaries/'
+        self.api_path = '/admin/functionarytypes/'
 
 class FunctionariesViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = f'/functionaries/{self.ft.id}/'
+        self.api_path = f'/admin/functionarytypes/{self.ft.id}/'
 
 
 class GroupTypesViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = '/groups/'
+        self.api_path = '/admin/grouptypes/'
 
 class GroupsViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = f'/groups/{self.gt.id}/'
+        self.api_path = f'/admin/grouptypes/{self.gt.id}/'
 
-
-class YearsViewTest(BaseAPITest, GetPageTests):
+class GroupMembershipsViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = '/years/'
+        self.api_path = f'/admin/grouptypes/{self.gt.id}/{self.g.id}/'
 
-class YearViewTest(BaseAPITest, GetPageTests):
+
+class ApplicantsViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = f'/years/2023/'
+        self.api_path = '/admin/applicants/'
 
-class Year0ViewTest(BaseAPITest, GetPageTests):
+class ApplicantViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = f'/years/0/'
+        self.api_path = f'/admin/applicants/{self.a.id}/'

@@ -234,7 +234,7 @@ def decoration_ownership_form(request, decration_ownership_id):
     })
 
 
-@user_passes_test(lambda u: u.is_staff, login_url='/login')
+@user_passes_test(lambda u: u.is_staff, login_url='/login/')
 def applicant(request, applicant_id):
     context = {}
 
