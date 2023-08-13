@@ -19,7 +19,11 @@
         </tr>
         <tr>
           <td>Postinnehavare</td>
-          <td>{{ functionaries|length }} ({{ functionaries_unique_count }})</td>
+          <td>{{ functionaries|length }}
+            {% if functionaries_unique_count %}
+              ({{ functionaries_unique_count }})
+            {% endif %}
+          </td>
         </tr>
         <tr>
           <td>Grupper</td>
@@ -27,7 +31,11 @@
         </tr>
         <tr>
           <td>Gruppmedlemmar</td>
-          <td>{{ group_memberships_total }} ({{ group_memberships_unique }})</td>
+          <td>{{ group_memberships_total|default:0 }}
+            {% if group_memberships_unique %}
+              ({{ group_memberships_unique }})
+            {% endif %}
+          </td>
         </tr>
         <tr>
           <td>Nya ordinarie medlemmar</td>

@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.html import format_html
 from locale import strxfrm, strcoll
 from operator import attrgetter
+from datetime import date
 from katalogen.utils import *
 from members.utils import *
 
@@ -423,7 +424,7 @@ class GroupManager(models.Manager):
                 queryset=GroupMembership.objects.select_related('member')
             ),
             'grouptype'
-        ).filter(begin_date__lte=datetime.date(int(year), 12, 31), end_date__gte=datetime.date(int(year), 1, 1), num_members__gt=0)
+        ).filter(begin_date__lte=date(int(year), 12, 31), end_date__gte=date(int(year), 1, 1), num_members__gt=0)
 
     def year_ordered_and_counts(self, year):
         queryset = self.year(year)
@@ -540,7 +541,7 @@ class FunctionaryManager(models.Manager):
         return self.get_queryset().select_related('functionarytype', 'member')
 
     def year(self, year):
-        return self.all_with_related().filter(begin_date__lte=datetime.date(int(year), 12, 31), end_date__gte=datetime.date(int(year), 1, 1))
+        return self.all_with_related().filter(begin_date__lte=date(int(year), 12, 31), end_date__gte=date(int(year), 1, 1))
 
     def year_ordered_and_unique(self, year):
         queryset = self.year(year)
@@ -692,7 +693,7 @@ class MemberType(SuperClass):
         if by == 'begin_date':
             key = lambda mt: mt.begin_date
         elif by == 'end_date':
-            key = lambda mt: mt.end_date or datetime.date(9999, 12, 31)
+            key = lambda mt: mt.end_date or date(9999, 12, 31)
         elif by == 'member':
             key = lambda mt: strxfrm(mt.member.full_name_for_sorting)
         else:

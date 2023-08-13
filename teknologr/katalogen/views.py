@@ -238,6 +238,12 @@ def years(request):
 
 @login_required
 def year(request, year):
+    if int(year) <= 0:
+        return render(request, 'year.html', {
+            **_get_base_context(request),
+            'year': year,
+        })
+
     '''
     This could be enhanced, but curretnly it is done with 10 queries:
       1. SELECT Functionary WHERE correct_year => COUNT

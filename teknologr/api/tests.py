@@ -124,7 +124,7 @@ class BaseAPITest(APITestCase):
         return self.client.post(self.api_path, self.post_data)
 
     def check_status_code(self, response, status_code):
-        self.assertEqual(response.status_code, status_code, response.data)
+        self.assertEqual(response.status_code, status_code, response.data if 'data' in response else None)
 
 
 '''
