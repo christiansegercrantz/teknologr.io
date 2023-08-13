@@ -18,8 +18,7 @@ class MemberLookup(LookupChannel):
 
     def format_match(self, obj):
         """ (HTML) formatted item for display in the dropdown """
-        preferred_name = obj.get_preferred_name()
-        return f'{obj.given_names.replace(preferred_name, f"<u>{preferred_name}</u>", 1)} {obj.surname}'
+        return obj.get_full_name_HTML()
 
     def format_item_display(self, obj):
         """ (HTML) formatted item for displaying item in the selected deck area """

@@ -121,9 +121,7 @@ class MemberTest(TestCase):
         self.assertEqual(self.member3.public_full_name_for_sorting, 'Tester, F-B Biz-Baz')
 
     def test_name(self):
-        self.assertEqual(self.member1.name, 'Foo Bar Baz Tester')
-        self.assertEqual(self.member2.name, 'Foo Bar Baz Tester')
-        self.assertEqual(self.member3.name, 'Foo-Bar Biz-Baz von der Tester')
+        self.assertFalse(hasattr(self.member1, 'name'))
 
     def test_address(self):
         self.assertEquals('Otsvängen 22, 02150 Esbo, Finland', self.member1.full_address)

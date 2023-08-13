@@ -71,7 +71,7 @@
               <tr>
                 <td>
                   <i class="col-2 fas fa-times delete-gm-button text-danger" role="button" title="Radera gruppmedlemskap" data-id="{{ membership.id }}"></i>
-                  <a class="col-10" href="{% url 'admin:member' membership.member.id %}">{{ membership.member.full_name }}</a>
+                  <a class="col-10" href="{% url 'admin:member' membership.member.id %}">{{ membership.member.get_full_name_HTML }}</a>
                 </td>
               </tr>
             {% endfor %}

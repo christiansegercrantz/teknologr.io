@@ -33,7 +33,7 @@ class BaseSerializer(serializers.ModelSerializer):
         return {'id': instance.id, 'name': instance.name}
 
     def get_minimal_member(self, member):
-        return {'id': member.id, 'name': member.name if self.is_staff else member.public_full_name}
+        return {'id': member.id, 'name': member.full_name if self.is_staff else member.public_full_name}
 
 
 # Members

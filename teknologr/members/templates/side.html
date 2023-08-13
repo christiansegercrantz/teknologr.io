@@ -44,6 +44,6 @@
       {{ obj.name|default:"Namnlös" }}{% if obj.count >= 0 %} ({{ obj.count }}) {% endif %}
     </a>
   {% empty %}
-    <span class="text-muted">Skriv i sökfältet för att visa medlemmar</span>
+    <span class="text-muted">Inga objekt hittades</span>
   {% endfor %}
 </div>
