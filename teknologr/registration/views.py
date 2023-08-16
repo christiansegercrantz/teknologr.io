@@ -20,14 +20,12 @@ class HomeView(BaseView):
 
 
 class SubmitView(BaseView):
-    template = 'submit.html'
-
     def get(self, request, **kwargs):
         previous_context = request.session.pop('context', None)
         if not previous_context:
             return redirect('registration:home')
 
-        return render(request, self.template, previous_context)
+        return render(request, 'submit.html', previous_context)
 
     def post(self, request):
         form = RegistrationForm(request.POST)
@@ -35,12 +33,15 @@ class SubmitView(BaseView):
             registration = form.instance
 
             next_context = {
-                'name': registration.preferred_name or registration.given_names.split(' ')[0],
+                'name': registration.preferred_name or registration.given_names.split()[0],
                 'email': registration.email,
             }
 
             # FIXME: handle situation where email is not sent (e.g. admin log tool)
-            mailApplicantSubmission(next_context)
+            try:
+                mailApplicantSubmission(next_context)
+            except:
+                pass
 
             registration.save()
 

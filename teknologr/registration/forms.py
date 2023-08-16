@@ -36,6 +36,8 @@ class RegistrationForm(forms.ModelForm):
         self.fields['preferred_name'].required = False
         self.fields['mother_tongue'].required = False
         self.fields['username'].required = False
+        # Specify required fields
+        self.fields['country'].required = True
 
     def _set_attributes(self):
         for fname, f in self.fields.items():
@@ -59,8 +61,16 @@ class RegistrationForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        enrolment_year = cleaned_data.get('enrolment_year')
 
+        preferred_name = cleaned_data.get('preferred_name')
+        if preferred_name and preferred_name not in cleaned_data.get('given_names'):
+            raise forms.ValidationError(
+                'Tilltalsnamnet måste vara ett av förnamnen',
+                code='invalid',
+                params={'preferred_name': preferred_name}
+            )
+
+        enrolment_year = cleaned_data.get('enrolment_year')
         if enrolment_year and enrolment_year > datetime.now().year:
             raise forms.ValidationError(
                 _('Enrolment year is larger than current year: %(enrolment_year)d'),
