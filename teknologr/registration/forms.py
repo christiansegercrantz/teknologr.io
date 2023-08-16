@@ -36,6 +36,8 @@ class RegistrationForm(forms.ModelForm):
         self.fields['preferred_name'].required = False
         self.fields['mother_tongue'].required = False
         self.fields['username'].required = False
+        # Specify required fields
+        self.fields['country'].required = True
 
     def _set_attributes(self):
         for fname, f in self.fields.items():
