@@ -19,7 +19,7 @@ $(document).ready(function () {
 		selector: "#add-g-form",
 		method: "POST",
 		url: "/api/groups/",
-		newLocation: (_, msg) => `/admin/grouptypes/${msg.grouptype}/${msg.id}/`,
+		newLocation: (_, msg) => `/admin/grouptypes/${msg.grouptype.id}/${msg.id}/`,
 	});
 	// Remove a group from the list
 	add_request_listener({
@@ -36,7 +36,7 @@ $(document).ready(function () {
 		method: "PUT",
 		url: element => `/api/groups/${element.data("id")}/`,
 		// Can not just reload the page in case the grouptype was edited
-		newLocation: (_, msg) => `/admin/grouptypes/${msg.grouptype}/${msg.id}/`,
+		newLocation: (_, msg) => `/admin/grouptypes/${msg.grouptype.id}/${msg.id}/`,
 	});
 	// Add members to the selected group
 	add_request_listener({
