@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 MEMBERSHIP_FORM_LABELS = {
     'surname': 'Efternamn',
-    'given_names': 'Förnamn',
-    'preferred_name': 'Tilltalsnamn',
+    'given_names': 'Förnamn (samtliga)',
+    'preferred_name': 'Tilltalsnamn (ett av förnamnen)',
     'street_address': 'Gatuadress',
     'postal_code': 'Postnummer',
     'city': 'Postanstalt',

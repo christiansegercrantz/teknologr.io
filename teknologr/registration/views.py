@@ -35,7 +35,7 @@ class SubmitView(BaseView):
             registration = form.instance
 
             next_context = {
-                'name': registration.preferred_name or registration.given_names.split(' ')[0],
+                'name': registration.preferred_name or registration.given_names.split()[0],
                 'email': registration.email,
             }
 
