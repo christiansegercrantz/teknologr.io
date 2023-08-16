@@ -175,7 +175,7 @@ def group_types(request):
 
 
 @login_required
-def group_type(request, group_type_id):
+def groups(request, group_type_id):
     group_type = GroupType.objects.get_prefetched_or_404(group_type_id)
 
     # Do not want to display empty groups here, but filtering that in the template instead of the query
@@ -184,6 +184,22 @@ def group_type(request, group_type_id):
         **_get_base_context(request),
         'group_type': group_type,
         'groups': group_type.groups_by_date,
+    })
+
+
+@login_required
+def group_memberships(request, group_type_id):
+    group_type = GroupType.objects.get_prefetched_or_404(group_type_id)
+
+    gm_duration_strings = [(gm.member, g.duration) for g in group_type.groups.all() for gm in g.memberships.all()]
+
+    # Sort the pairs by date and member name by default
+    gm_duration_strings.sort(key=lambda pair: (pair[1], pair[0].full_name_for_sorting), reverse=True)
+
+    return render(request, 'group_memberships.html', {
+        **_get_base_context(request),
+        'group_type': group_type,
+        'group_membership_duration_strings': gm_duration_strings,
     })
 
 

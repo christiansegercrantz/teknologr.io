@@ -4,7 +4,7 @@
 <div class="row">
   <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
     <h3 class="page-header">
-      Medlemmar av
+      Undergrupperingar av
       {% if is_staff %}
         <a class="admin-link" href="{% url 'admin:group_type' group_type.id %}">{{ group_type.name }}</a>
       {% else %}
@@ -16,7 +16,10 @@
       <thead>
         <tr>
           <th>Datum</th>
-          <th>Medlemmar</th>
+          <th>
+            Medlemmar
+            <a class="fas fa-compress-arrows-alt" href="{% url 'katalogen:group_memberships' group_type.id %}" title="Visa gruppmandat per person"></a>
+          </th>
         </tr>
       </thead>
       <tbody>

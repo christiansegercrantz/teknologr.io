@@ -1,0 +1,36 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+    <h3 class="page-header">
+      Medlemmar av
+      {% if is_staff %}
+        <a class="admin-link" href="{% url 'admin:group_type' group_type.id %}">{{ group_type.name }}</a>
+      {% else %}
+        {{ group_type.name }}
+      {% endif %}
+    </h3>
+    {{ group_type.comment|linebreaks }}
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th>
+            <span class="order-by attribute">Namn</span>
+            <a class="fas fa-expand-arrows-alt" href="{% url 'katalogen:groups' group_type.id %}" title="Visa gruppmandat per undergrupp"></a>
+          </th>
+          <th><span class="order-by attribute default-order-reversed">Datum</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for member, duration in group_membership_duration_strings %}
+          <tr>
+            <td order-data="{{ member.public_full_name_for_sorting }}"><a href="{% url 'katalogen:profile' member.id %}">{{ member.public_full_name }}</a></td>
+            <td order-data="{{ duration.to_sort_string }}">{{ duration }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

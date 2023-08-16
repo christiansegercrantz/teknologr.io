@@ -120,7 +120,7 @@
       <table class="table table-striped table-borderless table-sm">
         {% for gt, duration in group_type_duration_strings %}
           <tr>
-            <th><a href="{% url 'katalogen:group_type' gt.id %}">{{ gt.name }}</a></th>
+            <th><a href="{% url 'katalogen:groups' gt.id %}">{{ gt.name }}</a></th>
             <td class="text-right">{{ duration }}</td>
           </tr>
         {% empty %}
