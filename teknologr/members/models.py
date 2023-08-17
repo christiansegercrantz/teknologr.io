@@ -454,7 +454,7 @@ class Group(SuperClass):
 
     @property
     def memberships_by_member(self):
-        l = list(self.memberships.select_related('member'))
+        l = list(self.memberships.all())
         GroupMembership.order_by(l, 'member')
         return l
 
