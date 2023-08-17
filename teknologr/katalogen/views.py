@@ -27,6 +27,9 @@ def home(request):
 @login_required
 def search(request):
     result = Member.objects.search_by_name(request.GET.get('q').split())
+    if len(result) == 1:
+        return redirect('katalogen:profile', result[0].id)
+
     Member.order_by(result, 'name')
 
     return render(request, 'browse.html', {
