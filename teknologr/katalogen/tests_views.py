@@ -25,6 +25,11 @@ class MembersSearchViewTest(BaseAPITest, GetPageTests):
         super().setUp()
         self.api_path = '/search/?q=test'
 
+class MembersEmptySearchViewTest(BaseAPITest, GetPageTests):
+    def setUp(self):
+        super().setUp()
+        self.api_path = '/search/?q='
+
 class MembersStartsWithViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()

@@ -165,6 +165,7 @@ class MemberFilter(BaseFilter):
         # Split the filter value and compare all individual values against all name columns
         queries = []
         for v in value.split():
+            # XXX: The preferred name does not have to be set in the database, so hidden members with no preferred name set will not show up for normal users even if the derived preferred name would match
             q = Q(preferred_name__icontains=v) | Q(surname__icontains=v)
             # Non-staff users only get to filter on 'given_names' if the Member has allowed publishing of info
             if is_staff:

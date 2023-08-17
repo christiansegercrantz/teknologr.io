@@ -26,15 +26,8 @@ def home(request):
 
 @login_required
 def search(request):
-    query_list = request.GET.get('q').split()
-    result = []
-
-    if query_list:
-        result = Member.objects.filter(
-            reduce(and_, (Q(given_names__icontains=q) | Q(surname__icontains=q) for q in query_list))
-        )
-        result = list(result)
-        Member.order_by(result, 'name')
+    result = Member.objects.search_by_name(request.GET.get('q').split())
+    Member.order_by(result, 'name')
 
     return render(request, 'browse.html', {
         **_get_base_context(request),
