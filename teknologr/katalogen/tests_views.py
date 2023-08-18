@@ -74,6 +74,11 @@ class GroupsViewTest(BaseAPITest, GetPageTests):
         super().setUp()
         self.api_path = f'/groups/{self.gt.id}/'
 
+class GroupMembershipsViewTest(BaseAPITest, GetPageTests):
+    def setUp(self):
+        super().setUp()
+        self.api_path = f'/groupmemberships/{self.gt.id}/'
+
 
 class YearsViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
