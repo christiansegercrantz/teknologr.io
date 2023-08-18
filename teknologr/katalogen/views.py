@@ -62,8 +62,8 @@ def profile(request, member_id):
     group_type_duration_strings = [(gm.group.grouptype, gm.group.duration) for gm in group_memberships]
 
     if combine:
-        functionary_duration_strings = create_duration_strings_by_key(functionary_duration_strings)
-        group_type_duration_strings = create_duration_strings_by_key(group_type_duration_strings)
+        functionary_duration_strings = MultiDuration.combine_per_key(functionary_duration_strings)
+        group_type_duration_strings = MultiDuration.combine_per_key(group_type_duration_strings)
 
     return render(request, 'profile.html', {
         **_get_base_context(request),
@@ -147,7 +147,7 @@ def functionary_type(request, functionary_type_id):
 
     combine = request.GET.get('combine', '0') != '0'
     if combine:
-        functionary_duration_strings = simplify_durations_by_key(functionary_duration_strings)
+        functionary_duration_strings = MultiDuration.combine_per_key(functionary_duration_strings)
 
     # Sort the pairs by date and member name by default
     functionary_duration_strings.sort(key=lambda pair: (pair[1], pair[0].public_full_name_for_sorting), reverse=True)
@@ -188,13 +188,11 @@ def group_memberships(request, group_type_id):
     group_type = GroupType.objects.get_prefetched_or_404(group_type_id)
 
     durations = [(gm.member, g.duration) for g in group_type.groups.all() for gm in g.memberships.all()]
-    # Combine durations per Member, and create a display string and a sort string for each Member
-    gm_duration_strings = [
-        [member, ', '.join([str(d) for d in durations]), ','.join([d.to_sort_string() for d in durations])]
-        for member, durations in DurationsHelper(durations).simplify().items()
-    ]
 
-    # Sort the pairs by date and member name by default
+    # Combine all durations for each Member
+    gm_duration_strings = MultiDuration.combine_per_key(durations)
+
+    # Sort the pairs by member name by default
     gm_duration_strings.sort(key=lambda pair: (pair[0].public_full_name_for_sorting))
 
     return render(request, 'group_memberships.html', {
