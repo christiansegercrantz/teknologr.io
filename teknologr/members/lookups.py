@@ -9,8 +9,9 @@ class MemberLookup(LookupChannel):
     model = Member
 
     def get_query(self, q, request):
-        members = findMembers(q)
-        return members
+        if q == '__ALL__':
+            return Member.objects.order_by('-modified')[:50]
+        return findMembers(q)
 
     def get_result(self, obj):
         """ result is the simple text that is the completion of what the person typed """

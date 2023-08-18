@@ -165,7 +165,7 @@ $(document).ready(function () {
 			timer = setTimeout(function(){
 				$.ajax({
 					// XXX: Why ')'???
-					url: "/ajax_select/ajax_lookup/member)?term=" + filter,
+					url: `/ajax_select/ajax_lookup/member)?term=${filter || "__ALL__"}`,
 					method: "GET",
 				}).done(function(data) {
 					$("#side-objects").empty();
