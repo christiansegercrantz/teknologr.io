@@ -170,7 +170,7 @@ $(document).ready(function () {
 				}).done(function(data) {
 					$("#side-objects").empty();
 					$.each(data, function(i, item) {
-						var a = '<a class="list-group-item" href="/admin/members/'+ item.pk +'/">'+ item.value +'</a>'
+						var a = '<a class="list-group-item" href="/admin/members/'+ item.pk +'/">'+ item.match +'</a>'
 						$("#side-objects").append(a);
 					});
 				});
