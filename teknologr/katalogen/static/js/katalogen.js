@@ -9,7 +9,7 @@ const sortTable = ({ tbody, column, reverse, from_attribute }) => {
     if (from_attribute) {
         getData = a => $(selector, a).attr("order-data") || "";
     } else {
-        getData = a =>  $(selector, a).text();
+        getData = a => $(selector, a).text();
     }
 
     // localeCompare() can compare numbers as strings when the 'numeric' option is set.

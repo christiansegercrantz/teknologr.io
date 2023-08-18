@@ -16,17 +16,17 @@
       <thead>
         <tr>
           <th>
-            <span class="order-by attribute">Namn</span>
+            <span class="order-by attribute default-order">Namn</span>
             <a class="fas fa-expand-arrows-alt" href="{% url 'katalogen:groups' group_type.id %}" title="Visa gruppmandat per undergrupp"></a>
           </th>
-          <th><span class="order-by attribute default-order-reversed">Datum</span></th>
+          <th><span class="order-by attribute">Datum</span></th>
         </tr>
       </thead>
       <tbody>
-        {% for member, duration in group_membership_duration_strings %}
+        {% for member, duration_string, sort_string in group_membership_duration_strings %}
           <tr>
             <td order-data="{{ member.public_full_name_for_sorting }}"><a href="{% url 'katalogen:profile' member.id %}">{{ member.public_full_name }}</a></td>
-            <td order-data="{{ duration.to_sort_string }}">{{ duration }}</td>
+            <td order-data="{{ sort_string }}">{{ duration_string }}</td>
           </tr>
         {% endfor %}
       </tbody>

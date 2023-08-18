@@ -187,10 +187,15 @@ def groups(request, group_type_id):
 def group_memberships(request, group_type_id):
     group_type = GroupType.objects.get_prefetched_or_404(group_type_id)
 
-    gm_duration_strings = [(gm.member, g.duration) for g in group_type.groups.all() for gm in g.memberships.all()]
+    durations = [(gm.member, g.duration) for g in group_type.groups.all() for gm in g.memberships.all()]
+    # Combine durations per Member, and create a display string and a sort string for each Member
+    gm_duration_strings = [
+        [member, ', '.join([str(d) for d in durations]), ','.join([d.to_sort_string() for d in durations])]
+        for member, durations in DurationsHelper(durations).simplify().items()
+    ]
 
     # Sort the pairs by date and member name by default
-    gm_duration_strings.sort(key=lambda pair: (pair[1], pair[0].full_name_for_sorting), reverse=True)
+    gm_duration_strings.sort(key=lambda pair: (pair[0].full_name_for_sorting))
 
     return render(request, 'group_memberships.html', {
         **_get_base_context(request),
