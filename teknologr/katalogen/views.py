@@ -150,7 +150,7 @@ def functionary_type(request, functionary_type_id):
         functionary_duration_strings = simplify_durations_by_key(functionary_duration_strings)
 
     # Sort the pairs by date and member name by default
-    functionary_duration_strings.sort(key=lambda pair: (pair[1], pair[0].full_name_for_sorting), reverse=True)
+    functionary_duration_strings.sort(key=lambda pair: (pair[1], pair[0].public_full_name_for_sorting), reverse=True)
 
     return render(request, 'functionaries.html', {
         **_get_base_context(request),
@@ -195,7 +195,7 @@ def group_memberships(request, group_type_id):
     ]
 
     # Sort the pairs by date and member name by default
-    gm_duration_strings.sort(key=lambda pair: (pair[0].full_name_for_sorting))
+    gm_duration_strings.sort(key=lambda pair: (pair[0].public_full_name_for_sorting))
 
     return render(request, 'group_memberships.html', {
         **_get_base_context(request),

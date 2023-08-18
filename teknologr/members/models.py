@@ -169,9 +169,18 @@ class Member(SuperClass):
     def get_full_name_HTML(self):
         '''
         Return name with the preferred name undercored. This can go wrong if the preferred name is not set correctly to one of the given names.
+
+        NOTE: A.replace(B, C) can be a bit confusing in Python if B = "" is used, since the empty string "" is assumed to be "everywhere" in Python strings:
+            "abc".replace("", "X")    => "XaXbXcX"
+               "".replace("", "X")    => "X"
+        In addition, pre Python 3.9 the extended method A.replace(B, C, N) was bugged if B = "" was used:
+            "abc".replace("", "X", 1) => "Xabc" (OK)
+               "".replace("", "X", 1) => ""     (INCONSITENT)
+        So replacing empty strings can be tricky, especially if the autobuilds run a different Python version than you.
         '''
         preferred_name = self.get_preferred_name()
-        return format_html(f'{self.given_names.replace(preferred_name, f"<u>{preferred_name}</u>", 1)} {self.surname}')
+        given_names_HTML = self.given_names.replace(preferred_name, f"<u>{preferred_name}</u>", 1) if preferred_name else self.given_names
+        return format_html(f'{given_names_HTML} {self.surname}')
 
     @property
     def common_name(self):
