@@ -85,6 +85,11 @@ class MemberTest(TestCase):
             member=self.member3,
         )
 
+    def test_get_given_names(self):
+        self.assertEqual(self.member1.get_given_names(), ['Foo', 'Bar', 'Baz'])
+        self.assertEqual(self.member2.get_given_names(), ['Foo', 'Bar', 'Baz'])
+        self.assertEqual(self.member3.get_given_names(), ['Foo-Bar', 'Biz-Baz'])
+
     def test_get_preferred_name(self):
         self.assertEqual(self.member1.get_preferred_name(), 'Foo')
         self.assertEqual(self.member2.get_preferred_name(), 'Foo')
@@ -99,6 +104,11 @@ class MemberTest(TestCase):
         self.assertEqual(self.member1.get_surname_without_prefixes(), 'Tester')
         self.assertEqual(self.member2.get_surname_without_prefixes(), 'Tester')
         self.assertEqual(self.member3.get_surname_without_prefixes(), 'Tester')
+
+    def test_get_full_name_HTML(self):
+        self.assertEqual(self.member1.get_full_name_HTML(), '<u>Foo</u> Bar Baz Tester')
+        self.assertEqual(self.member2.get_full_name_HTML(), '<u>Foo</u> Bar Baz Tester')
+        self.assertEqual(self.member3.get_full_name_HTML(), 'Foo-Bar Biz-<u>Baz</u> von der Tester')
 
     def test_full_name(self):
         self.assertEqual(self.member1.full_name, 'Foo Bar Baz Tester')
@@ -122,6 +132,17 @@ class MemberTest(TestCase):
 
     def test_name(self):
         self.assertFalse(hasattr(self.member1, 'name'))
+
+    def test_empty_given_names(self):
+        # This should not be possible, at least not anymore, but still need to make sure nothing breakes if it happens
+        self.member1.given_names = ""
+        self.member1.preferred_name = ""
+        self.assertEqual(self.member1.get_given_names(), [""])
+        self.assertEqual(self.member1.get_preferred_name(), "")
+        self.assertEqual(self.member1.get_given_names_with_initials(), "")
+        self.assertEqual(self.member1.get_full_name_HTML(), " Tester")
+        self.assertEqual(self.member1.full_name, " Tester")
+        self.assertEqual(self.member1.public_full_name, " Tester")
 
     def test_address(self):
         self.assertEquals('Otsvängen 22, 02150 Esbo, Finland', self.member1.full_address)

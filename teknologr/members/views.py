@@ -18,6 +18,7 @@ def set_side_context(context, category, active_obj=None):
     if category == 'members':
         side['sname'] = 'medlem'
         side['form'] = MemberForm(initial={'given_names': '', 'surname': ''}, auto_id="mmodal_%s")
+        # XXX: Duplicated in MemberLookup.get_query for when the search box is emptied
         side['objects'] = Member.objects.order_by('-modified')[:50]
         # Add the active member to the list if it is not there already
         if active_obj and active_obj not in side['objects']:

@@ -14,7 +14,8 @@ urlpatterns = [
     url(r'^functionaries/$', views.functionary_types, name='functionary_types'),
     url(r'^functionaries/(\d+)/$', views.functionary_type, name='functionary_type'),
     url(r'^groups/$', views.group_types, name='group_types'),
-    url(r'^groups/(\d+)/$', views.group_type, name='group_type'),
+    url(r'^groups/(\d+)/$', views.groups, name='groups'),
+    url(r'^groupmemberships/(\d+)/$', views.group_memberships, name='group_memberships'),
     url(r'^years/$', views.years, name='years'),
     url(r'^years/(\d+)/$', views.year, name='year'),
 ]

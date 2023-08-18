@@ -98,7 +98,7 @@
       <a class="list-inline-item fa fa-compress-arrows-alt" href="?combine=1" title="Kombinera poster och grupper, samt sortera dem i alfabetisk ordning"></a>
       {% endif %}
       <table class="table table-striped table-borderless table-sm">
-        {% for ft, duration in functionary_duration_strings %}
+        {% for ft, duration in functionary_type_durations %}
           <tr>
             <th><a href="{% url 'katalogen:functionary_type' ft.id %}">{{ ft.name }}</a></td>
             <td class="text-right">{{ duration }}</td>
@@ -118,9 +118,9 @@
       <a class="list-inline-item fa fa-compress-arrows-alt" href="?combine=1" title="Kombinera poster och grupper, samt sortera dem i alfabetisk ordning"></a>
       {% endif %}
       <table class="table table-striped table-borderless table-sm">
-        {% for gt, duration in group_type_duration_strings %}
+        {% for gt, duration in group_type_durations %}
           <tr>
-            <th><a href="{% url 'katalogen:group_type' gt.id %}">{{ gt.name }}</a></th>
+            <th><a href="{% url 'katalogen:groups' gt.id %}">{{ gt.name }}</a></th>
             <td class="text-right">{{ duration }}</td>
           </tr>
         {% empty %}

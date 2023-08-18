@@ -165,12 +165,12 @@ $(document).ready(function () {
 			timer = setTimeout(function(){
 				$.ajax({
 					// XXX: Why ')'???
-					url: "/ajax_select/ajax_lookup/member)?term=" + filter,
+					url: `/ajax_select/ajax_lookup/member)?term=${filter || "__ALL__"}`,
 					method: "GET",
 				}).done(function(data) {
 					$("#side-objects").empty();
 					$.each(data, function(i, item) {
-						var a = '<a class="list-group-item" href="/admin/members/'+ item.pk +'/">'+ item.value +'</a>'
+						var a = '<a class="list-group-item" href="/admin/members/'+ item.pk +'/">'+ item.match +'</a>'
 						$("#side-objects").append(a);
 					});
 				});
@@ -178,9 +178,17 @@ $(document).ready(function () {
 
 		// If not members, simply hide/unhide the elements
 		} else {
+			const queries = filter.split(" ").filter(s => s);
 			$("#side-objects a").each(function () {
 				const element = $(this);
-				const show = element.text().toLowerCase().indexOf(filter) > -1 || element.attr("search").toLowerCase().indexOf(filter) > -1;
+				let show = true;
+				// All parts of the query need to match the content
+				for (const q of queries) {
+					if (!element.text().toLowerCase().includes(q)) {
+						show = false;
+						break;
+					}
+				}
 				element.css("display", show ? "" : "none");
 			});
 		}

@@ -20,10 +20,10 @@ class HomeViewTest(BaseAPITest, GetPageTests):
         self.api_path = ''
 
 
-class MembersSearchViewTest(BaseAPITest, GetPageTests):
+class MembersEmptySearchViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
-        self.api_path = '/search/?q=test'
+        self.api_path = '/search/?q='
 
 class MembersStartsWithViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
@@ -73,6 +73,11 @@ class GroupsViewTest(BaseAPITest, GetPageTests):
     def setUp(self):
         super().setUp()
         self.api_path = f'/groups/{self.gt.id}/'
+
+class GroupMembershipsViewTest(BaseAPITest, GetPageTests):
+    def setUp(self):
+        super().setUp()
+        self.api_path = f'/groupmemberships/{self.gt.id}/'
 
 
 class YearsViewTest(BaseAPITest, GetPageTests):

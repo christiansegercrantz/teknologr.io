@@ -5,8 +5,9 @@ from django.db.models import Q, Prefetch, Count
 from django_countries.fields import CountryField
 from django.shortcuts import get_object_or_404
 from django.utils.html import format_html
-from locale import strxfrm, strcoll
-from operator import attrgetter
+from locale import strxfrm
+from operator import attrgetter, and_
+from functools import reduce
 from datetime import date
 from katalogen.utils import *
 from members.utils import *
@@ -44,6 +45,22 @@ class MemberManager(models.Manager):
 
     def get_prefetched_or_404(self, member_id):
         return get_object_or_404(self.all_with_related(), id=member_id)
+
+    def search_by_name(self, queries, include_hidden=False):
+        if not queries:
+            return []
+
+        # XXX: Would be nice to be able to filter on preferred_name on hidden users, but that is not always set in the database
+        queries = [q.lower() for q in queries]
+        filters = [(Q(given_names__icontains=q) | Q(surname__icontains=q)) for q in queries]
+        members = self.filter(reduce(and_, filters))
+        members = list(members)
+
+        # Need to remove hidden Members that were matched on a non-preferred given name
+        if not include_hidden:
+            members = [m for m in members if m.allow_publish_info or any([q in m.surname.lower() or q in m.get_preferred_name().lower() for q in queries])]
+
+        return members
 
 
 class Member(SuperClass):
@@ -121,8 +138,12 @@ class Member(SuperClass):
         = '<surname with removed prefix> <preferred_name> <remaining given_names initials>'
     '''
 
+    def get_given_names(self):
+        # Make sure to return a list with at least one element
+        return self.given_names.split() if self.given_names else ['']
+
     def get_preferred_name(self):
-        return self.preferred_name or self.given_names.split()[0]
+        return self.preferred_name or self.get_given_names()[0]
 
     def get_given_names_with_initials(self):
         '''
@@ -135,7 +156,7 @@ class Member(SuperClass):
          - Foo-Bar _Baz_ -> F-B Baz
         '''
         preferred_name = self.get_preferred_name()
-        names = [n if preferred_name in n else '-'.join([nn[0] for nn in n.split('-')]) for n in self.given_names.split()]
+        names = [n if preferred_name in n else '-'.join([nn[0] for nn in n.split('-')]) for n in self.get_given_names()]
         return " ".join(names)
 
     def get_surname_without_prefixes(self):
@@ -148,9 +169,18 @@ class Member(SuperClass):
     def get_full_name_HTML(self):
         '''
         Return name with the preferred name undercored. This can go wrong if the preferred name is not set correctly to one of the given names.
+
+        NOTE: A.replace(B, C) can be a bit confusing in Python if B = "" is used, since the empty string "" is assumed to be "everywhere" in Python strings:
+            "abc".replace("", "X")    => "XaXbXcX"
+               "".replace("", "X")    => "X"
+        In addition, pre Python 3.9 the extended method A.replace(B, C, N) was bugged if B = "" was used:
+            "abc".replace("", "X", 1) => "Xabc" (OK)
+               "".replace("", "X", 1) => ""     (INCONSITENT)
+        So replacing empty strings can be tricky, especially if the autobuilds run a different Python version than you.
         '''
         preferred_name = self.get_preferred_name()
-        return format_html(f'{self.given_names.replace(preferred_name, f"<u>{preferred_name}</u>", 1)} {self.surname}')
+        given_names_HTML = self.given_names.replace(preferred_name, f"<u>{preferred_name}</u>", 1) if preferred_name else self.given_names
+        return format_html(f'{given_names_HTML} {self.surname}')
 
     @property
     def common_name(self):
@@ -454,7 +484,7 @@ class Group(SuperClass):
 
     @property
     def memberships_by_member(self):
-        l = list(self.memberships.select_related('member'))
+        l = list(self.memberships.all())
         GroupMembership.order_by(l, 'member')
         return l
 
