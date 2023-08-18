@@ -178,9 +178,17 @@ $(document).ready(function () {
 
 		// If not members, simply hide/unhide the elements
 		} else {
+			const queries = filter.split(" ").filter(s => s);
 			$("#side-objects a").each(function () {
 				const element = $(this);
-				const show = element.text().toLowerCase().indexOf(filter) > -1 || element.attr("search").toLowerCase().indexOf(filter) > -1;
+				let show = true;
+				// All parts of the query need to match the content
+				for (const q of queries) {
+					if (!element.text().toLowerCase().includes(q)) {
+						show = false;
+						break;
+					}
+				}
 				element.css("display", show ? "" : "none");
 			});
 		}
