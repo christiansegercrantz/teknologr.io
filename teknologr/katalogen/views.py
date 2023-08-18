@@ -58,12 +58,12 @@ def profile(request, member_id):
         Functionary.order_by(functionaries, by, reverse)
         GroupMembership.order_by(group_memberships, by, reverse)
 
-    functionary_duration_strings = [(f.functionarytype, f.duration) for f in functionaries]
-    group_type_duration_strings = [(gm.group.grouptype, gm.group.duration) for gm in group_memberships]
+    ft_durations = [(f.functionarytype, f.duration) for f in functionaries]
+    gt_durations = [(gm.group.grouptype, gm.group.duration) for gm in group_memberships]
 
     if combine:
-        functionary_duration_strings = MultiDuration.combine_per_key(functionary_duration_strings)
-        group_type_duration_strings = MultiDuration.combine_per_key(group_type_duration_strings)
+        ft_durations = MultiDuration.combine_per_key(ft_durations)
+        gt_durations = MultiDuration.combine_per_key(gt_durations)
 
     return render(request, 'profile.html', {
         **_get_base_context(request),
@@ -71,8 +71,8 @@ def profile(request, member_id):
         'show_all': person.username == request.user.username or person.showContactInformation(),
         'person': person,
         'combined': combine,
-        'functionary_duration_strings': functionary_duration_strings,
-        'group_type_duration_strings': group_type_duration_strings,
+        'functionary_type_durations': ft_durations,
+        'group_type_durations': gt_durations,
         'decoration_ownerships': person.decoration_ownerships_by_date,
     })
 
@@ -143,19 +143,19 @@ def functionary_type(request, functionary_type_id):
     functionary_type = FunctionaryType.objects.get_prefetched_or_404(functionary_type_id)
     functionaries = list(functionary_type.functionaries.all())
 
-    functionary_duration_strings = [(f.member, f.duration) for f in functionaries]
+    durations = [(f.member, f.duration) for f in functionaries]
 
     combine = request.GET.get('combine', '0') != '0'
     if combine:
-        functionary_duration_strings = MultiDuration.combine_per_key(functionary_duration_strings)
+        durations = MultiDuration.combine_per_key(durations)
 
     # Sort the pairs by date and member name by default
-    functionary_duration_strings.sort(key=lambda pair: (pair[1], pair[0].public_full_name_for_sorting), reverse=True)
+    durations.sort(key=lambda pair: (pair[1], pair[0].public_full_name_for_sorting), reverse=True)
 
     return render(request, 'functionaries.html', {
         **_get_base_context(request),
         'functionary_type': functionary_type,
-        'functionary_duration_strings': functionary_duration_strings,
+        'functionary_durations': durations,
         'combined': combine,
     })
 
@@ -190,15 +190,15 @@ def group_memberships(request, group_type_id):
     durations = [(gm.member, g.duration) for g in group_type.groups.all() for gm in g.memberships.all()]
 
     # Combine all durations for each Member
-    gm_duration_strings = MultiDuration.combine_per_key(durations)
+    durations = MultiDuration.combine_per_key(durations)
 
     # Sort the pairs by member name by default
-    gm_duration_strings.sort(key=lambda pair: (pair[0].public_full_name_for_sorting))
+    durations.sort(key=lambda pair: (pair[0].public_full_name_for_sorting))
 
     return render(request, 'group_memberships.html', {
         **_get_base_context(request),
         'group_type': group_type,
-        'group_membership_duration_strings': gm_duration_strings,
+        'group_membership_durations': durations,
     })
 
 

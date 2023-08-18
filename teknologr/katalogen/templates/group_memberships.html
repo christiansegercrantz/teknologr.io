@@ -23,7 +23,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for member, duration in group_membership_duration_strings %}
+        {% for member, duration in group_membership_durations %}
           <tr>
             <td order-data="{{ member.public_full_name_for_sorting }}"><a href="{% url 'katalogen:profile' member.id %}">{{ member.public_full_name }}</a></td>
             <td order-data="{{ duration.to_sort_string }}">{{ duration }}</td>
