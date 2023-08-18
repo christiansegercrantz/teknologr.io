@@ -138,8 +138,12 @@ class Member(SuperClass):
         = '<surname with removed prefix> <preferred_name> <remaining given_names initials>'
     '''
 
+    def get_given_names(self):
+        # Make sure to return a list with at least one element
+        return self.given_names.split() if self.given_names else ['']
+
     def get_preferred_name(self):
-        return self.preferred_name or self.given_names.split()[0]
+        return self.preferred_name or self.get_given_names()[0]
 
     def get_given_names_with_initials(self):
         '''
@@ -152,7 +156,7 @@ class Member(SuperClass):
          - Foo-Bar _Baz_ -> F-B Baz
         '''
         preferred_name = self.get_preferred_name()
-        names = [n if preferred_name in n else '-'.join([nn[0] for nn in n.split('-')]) for n in self.given_names.split()]
+        names = [n if preferred_name in n else '-'.join([nn[0] for nn in n.split('-')]) for n in self.get_given_names()]
         return " ".join(names)
 
     def get_surname_without_prefixes(self):
