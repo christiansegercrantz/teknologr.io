@@ -183,8 +183,11 @@ $(document).ready(function () {
 				const element = $(this);
 				let show = true;
 				// All parts of the query need to match the content
+				const text_content = element.text().toLowerCase();
+				const search_attribute = element.attr("search").toLowerCase();
 				for (const q of queries) {
-					if (!element.text().toLowerCase().includes(q)) {
+					// Check both text and 'search' attribute
+					if (!text_content.includes(q) && !search_attribute.includes(q)) {
 						show = false;
 						break;
 					}
