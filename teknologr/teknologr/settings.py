@@ -49,7 +49,24 @@ SECRET_KEY = env('SECRET_KEY', 'secret_key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', True)
 
+
+'''
+If a proxy (or similar) is used to handle requests to Teknologr, the request can be modified in some ways which can have unwanted side-effects in Django.
+
+One such problem occurs when an absoule uri (to for example /api/members/) is being built by Django, because the host name is taken from a request. If that request have been forwarded by some proxy it's 'HTTP_HOST' header will no longer be the orignal host name (let's say teknologr.com) but instead for example localhost:8000. The resulting uri is then 'http://localhost:8000/api/members/' while the correct uri is 'https://teknolog.com/api/members/'.
+
+The solution is to instead read the host name from the 'X-Forwarded-Host' (https://http.dev/x-forwarded-host) header in the request, which should be set by the proxy to the target host, as specified by the reqeust originator, if the request is forwarded. This is done in Django using the USE_X_FORWARDED_HOST setting.
+
+However, this will only resolve the problem with the host name, not the protocol part of the uri. Since the forwarded request can be done with HTTP, even if the original request was made with HTTPS, Django migth incorrectly deduce that a request is not secure even if the orignal request was (or vice verca). Using the SECURE_PROXY_SSL_HEADER setting Django will look a the specified header (usually the 'X-Forwarded-Proto' header: https://http.dev/x-forwarded-proto) rather than the request url to deduce if a request is secure or not. Note that the header needs to be in the format as used by request.META, i.e. all caps and (most likely) prefixed with 'HTTP_'.
+'''
 ALLOWED_HOSTS = ['localhost']
+TEKNOLOGR_HOST = env('TEKNOLOGR_HOST', None)
+if TEKNOLOGR_HOST:
+    ALLOWED_HOSTS.append(TEKNOLOGR_HOST)
+
+if env('IS_BEHIND_PROXY', False):
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
@@ -85,7 +102,7 @@ ROOT_URLCONF = 'teknologr.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'api/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

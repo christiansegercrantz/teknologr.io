@@ -24,7 +24,7 @@ from registration.models import Applicant
 
 # ViewSets define the view behavior.
 
-class APIPermissions(permissions.BasePermission):
+class IsStaffOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         # Do not allow anything for un-authenticated users
         if not request.user.is_authenticated:
@@ -39,7 +39,7 @@ class APIPermissions(permissions.BasePermission):
 
 class BaseModelViewSet(viewsets.ModelViewSet):
     # Use custom permissions
-    permission_classes = (APIPermissions, )
+    permission_classes = (IsStaffOrReadOnly, )
 
     def get_serializer(self, *args, **kwargs):
         serializer_class = self.get_serializer_class()
@@ -260,11 +260,11 @@ class LDAPAccountView(APIView):
     def get(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)
         result = {}
-        with LDAPAccountManager() as lm:
-            try:
+        try:
+            with LDAPAccountManager() as lm:
                 result = {'username': member.username, 'groups': lm.get_ldap_groups(member.username)}
-            except LDAPError as e:
-                return Response(str(e), status=400)
+        except LDAPError as e:
+            return Response(str(e), status=400)
 
         return Response(result, status=200)
 
@@ -280,11 +280,11 @@ class LDAPAccountView(APIView):
         if member.username:
             return Response("Member already has LDAP account", status=400)
 
-        with LDAPAccountManager() as lm:
-            try:
+        try:
+            with LDAPAccountManager() as lm:
                 lm.add_account(member, username, password)
-            except LDAPError as e:
-                return Response(str(e), status=400)
+        except LDAPError as e:
+            return Response(str(e), status=400)
 
         # Store account details
         member.username = username
@@ -306,11 +306,11 @@ class LDAPAccountView(APIView):
         if member.bill_code:
             return Response("BILL account must be deleted first", status=400)
 
-        with LDAPAccountManager() as lm:
-            try:
+        try:
+            with LDAPAccountManager() as lm:
                 lm.delete_account(member.username)
-            except LDAPError as e:
-                return Response(str(e), status=400)
+        except LDAPError as e:
+            return Response(str(e), status=400)
 
         # Delete account information from user in db
         member.username = None
@@ -327,15 +327,15 @@ def change_ldap_password(request, member_id):
     if not password:
         return Response("password field missing", status=400)
 
-    with LDAPAccountManager() as lm:
-        try:
+    try:
+        with LDAPAccountManager() as lm:
             lm.change_password(member.username, password)
             if mailToUser:
                 status = mailNewPassword(member, password)
                 if not status:
                     return Response("Password changed, failed to send mail", status=500)
-        except LDAPError as e:
-            return Response(str(e), status=400)
+    except LDAPError as e:
+        return Response(str(e), status=400)
 
     return Response(status=200)
 
@@ -464,8 +464,8 @@ class ApplicantMembershipView(APIView):
 
         # Create an LDAP account if the application included a username and the username is not taken
         if username and not Member.objects.filter(username=username).exists():
-            with LDAPAccountManager() as lm:
-                try:
+            try:
+                with LDAPAccountManager() as lm:
                     import secrets
                     password = secrets.token_urlsafe(16)
                     lm.add_account(new_member, username, password)
@@ -478,14 +478,14 @@ class ApplicantMembershipView(APIView):
                     if not status:
                         return Response(f'LDAP account created, failed to send mail to {new_member}', status=400)
 
-                # LDAP account creation failed (e.g. if the account already exists)
-                except LDAPError as e:
-                    return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
-                # Updating the username field failed, remove the created LDAP account
-                # as it is not currently referenced by any member.
-                except IntegrityError as e:
-                    lm.delete_account(username)
-                    return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
+            # LDAP account creation failed (e.g. if the account already exists)
+            except LDAPError as e:
+                return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
+            # Updating the username field failed, remove the created LDAP account
+            # as it is not currently referenced by any member.
+            except IntegrityError as e:
+                lm.delete_account(username)
+                return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
 
         return Response(status=200)
 
@@ -519,7 +519,7 @@ def multi_applicant_submissions(request):
 
 # JSON API:s
 
-# Used by BILL
+# Used by BILL (?)
 @api_view(['GET'])
 def member_types_for_member(request, mode, query):
     try:
@@ -548,7 +548,7 @@ def member_types_for_member(request, mode, query):
     return Response(data, status=200)
 
 
-# Used by GeneriKey
+# Used by BILL and GeneriKey
 @api_view(['GET'])
 def members_by_member_type(request, membertype, field=None):
     member_pks = MemberType.objects.filter(type=membertype, end_date=None).values_list("member", flat=True)
@@ -678,14 +678,11 @@ def dump_active(request):
         if membership.group.begin_date < now and membership.group.end_date > now:
             grouped_by_group[membership.group].append(membership.member)
     for group, members in grouped_by_group.items():
-        content.append({
-            'position': str(group.grouptype),
-            'member': ''
-        })
-        content.extend([{
-            'position': '',
-            'member': m.common_name
-        } for m in members])
+        for m in members:
+            content.append({
+                'position': str(group.grouptype),
+                'member': m.full_name,
+            })
 
     return Response(content, status=200)
 

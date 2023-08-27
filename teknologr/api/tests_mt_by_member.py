@@ -29,7 +29,7 @@ class BaseClass(APITestCase):
         self.client.login(username='superuser', password='teknolog')
 
 
-class BILLTestCases:
+class TestCases:
     def test_get_for_anonymous_users(self):
         response = self.get()
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -48,11 +48,11 @@ class BILLTestCases:
         else:
             self.assertEqual(self.response, response.json())
 
-class BILLByUsernameTestCases(BILLTestCases):
+class ByUsernameTestCases(TestCases):
     def get(self):
         return self.client.get(f'/api/memberTypesForMember/username/{self.username}/')
 
-class BILLByStudynumberTestCases(BILLTestCases):
+class ByStudynumberTestCases(TestCases):
     def get(self):
         return self.client.get(f'/api/memberTypesForMember/studynumber/{self.studynumber}/')
 
@@ -77,26 +77,26 @@ RESPONSE = {
     }
 }
 
-class BILLByInvalidUsernameTests(BaseClass, BILLByUsernameTestCases):
+class ByInvalidUsernameTests(BaseClass, ByUsernameTestCases):
     def setUp(self):
         super().setUp()
         self.username = 'invalid'
         self.response = None
 
-class BILLByValidUsernameTests(BaseClass, BILLByUsernameTestCases):
+class ByValidUsernameTests(BaseClass, ByUsernameTestCases):
     def setUp(self):
         super().setUp()
         self.username = self.member.username
         self.response = RESPONSE
 
 
-class BILLByInvalidStudynumberTests(BaseClass, BILLByStudynumberTestCases):
+class ByInvalidStudynumberTests(BaseClass, ByStudynumberTestCases):
     def setUp(self):
         super().setUp()
         self.studynumber = '123321'
         self.response = None
 
-class BILLByValidStudynumberTests(BaseClass, BILLByStudynumberTestCases):
+class ByValidStudynumberTests(BaseClass, ByStudynumberTestCases):
     def setUp(self):
         super().setUp()
         self.studynumber = self.member.student_id
