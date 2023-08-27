@@ -260,11 +260,11 @@ class LDAPAccountView(APIView):
     def get(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)
         result = {}
-        with LDAPAccountManager() as lm:
-            try:
+        try:
+            with LDAPAccountManager() as lm:
                 result = {'username': member.username, 'groups': lm.get_ldap_groups(member.username)}
-            except LDAPError as e:
-                return Response(str(e), status=400)
+        except LDAPError as e:
+            return Response(str(e), status=400)
 
         return Response(result, status=200)
 
@@ -280,11 +280,11 @@ class LDAPAccountView(APIView):
         if member.username:
             return Response("Member already has LDAP account", status=400)
 
-        with LDAPAccountManager() as lm:
-            try:
+        try:
+            with LDAPAccountManager() as lm:
                 lm.add_account(member, username, password)
-            except LDAPError as e:
-                return Response(str(e), status=400)
+        except LDAPError as e:
+            return Response(str(e), status=400)
 
         # Store account details
         member.username = username
@@ -306,11 +306,11 @@ class LDAPAccountView(APIView):
         if member.bill_code:
             return Response("BILL account must be deleted first", status=400)
 
-        with LDAPAccountManager() as lm:
-            try:
+        try:
+            with LDAPAccountManager() as lm:
                 lm.delete_account(member.username)
-            except LDAPError as e:
-                return Response(str(e), status=400)
+        except LDAPError as e:
+            return Response(str(e), status=400)
 
         # Delete account information from user in db
         member.username = None
@@ -327,15 +327,15 @@ def change_ldap_password(request, member_id):
     if not password:
         return Response("password field missing", status=400)
 
-    with LDAPAccountManager() as lm:
-        try:
+    try:
+        with LDAPAccountManager() as lm:
             lm.change_password(member.username, password)
             if mailToUser:
                 status = mailNewPassword(member, password)
                 if not status:
                     return Response("Password changed, failed to send mail", status=500)
-        except LDAPError as e:
-            return Response(str(e), status=400)
+    except LDAPError as e:
+        return Response(str(e), status=400)
 
     return Response(status=200)
 
@@ -464,8 +464,8 @@ class ApplicantMembershipView(APIView):
 
         # Create an LDAP account if the application included a username and the username is not taken
         if username and not Member.objects.filter(username=username).exists():
-            with LDAPAccountManager() as lm:
-                try:
+            try:
+                with LDAPAccountManager() as lm:
                     import secrets
                     password = secrets.token_urlsafe(16)
                     lm.add_account(new_member, username, password)
@@ -478,14 +478,14 @@ class ApplicantMembershipView(APIView):
                     if not status:
                         return Response(f'LDAP account created, failed to send mail to {new_member}', status=400)
 
-                # LDAP account creation failed (e.g. if the account already exists)
-                except LDAPError as e:
-                    return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
-                # Updating the username field failed, remove the created LDAP account
-                # as it is not currently referenced by any member.
-                except IntegrityError as e:
-                    lm.delete_account(username)
-                    return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
+            # LDAP account creation failed (e.g. if the account already exists)
+            except LDAPError as e:
+                return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
+            # Updating the username field failed, remove the created LDAP account
+            # as it is not currently referenced by any member.
+            except IntegrityError as e:
+                lm.delete_account(username)
+                return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
 
         return Response(status=200)
 
