@@ -68,7 +68,7 @@ urlpatterns = [
     url(r'^accounts/ldap/change_pw/(\d+)/$', change_ldap_password),
     url(r'^accounts/bill/(\d+)/$', BILLAccountView.as_view()),
     url(r'^applicants/make-member/(\d+)/$', ApplicantMembershipView.as_view()),
-    url(r'^dump-htk/(\d+)?$', dump_htk, name='dump_htk'),
+    url(r'^dump-htk/(?:(\d+)/)?$', dump_htk, name='dump_htk'),
     url(r'^dump-modulen/$', dump_modulen, name='dump_modulen'),
     url(r'^dump-active/$', dump_active, name='dump_active'),
     url(r'^dump-arsk/$', dump_arsk, name='dump_arsk'),
