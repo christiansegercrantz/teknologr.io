@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from api.views import *
 
 class TeknologrRootView(APIRootView):
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (IsAuthenticated, )
     name = 'Katalogen root API'
     description = ''
     router_list_name = None
@@ -21,7 +21,7 @@ class TeknologrRootView(APIRootView):
         is_staff = self.request.user.is_staff
         for prefix, viewset, basename in self.router_registry:
             # Include the route unless it is staff only
-            if not is_staff and permissions.IsAdminUser in viewset.permission_classes:
+            if not is_staff and IsAdminUser in viewset.permission_classes:
                 continue
             d[prefix] = self.router_list_name.format(basename=basename)
 
@@ -74,8 +74,8 @@ urlpatterns = [
     url(r'^dump-arsk/$', dump_arsk, name='dump_arsk'),
     url(r'^dump-regemails/$', dump_reg_emails, name='dump_reg_emails'),
     url(r'^dump-studentbladet/$', dump_studentbladet, name='dump_studentbladet'),
-    # Used by BILL
+    # Used by BILL (?)
     url(r'^memberTypesForMember/(?P<mode>username|studynumber)/(?P<query>[A-Za-z0-9]+)/$', member_types_for_member),
-    # Used by Generikey
-    url(r'^membersByMemberType/([A-Z]{2})/(\w+)?$', members_by_member_type),
+    # Used by BILL and Generikey
+    url(r'^membersByMemberType/([A-Z]{2})/(?:(\w+)/?)?$', members_by_member_type),
 ]

@@ -519,7 +519,7 @@ def multi_applicant_submissions(request):
 
 # JSON API:s
 
-# Used by BILL
+# Used by BILL (?)
 @api_view(['GET'])
 def member_types_for_member(request, mode, query):
     try:
@@ -548,7 +548,7 @@ def member_types_for_member(request, mode, query):
     return Response(data, status=200)
 
 
-# Used by GeneriKey
+# Used by BILL and GeneriKey
 @api_view(['GET'])
 def members_by_member_type(request, membertype, field=None):
     member_pks = MemberType.objects.filter(type=membertype, end_date=None).values_list("member", flat=True)
@@ -678,14 +678,11 @@ def dump_active(request):
         if membership.group.begin_date < now and membership.group.end_date > now:
             grouped_by_group[membership.group].append(membership.member)
     for group, members in grouped_by_group.items():
-        content.append({
-            'position': str(group.grouptype),
-            'member': ''
-        })
-        content.extend([{
-            'position': '',
-            'member': m.common_name
-        } for m in members])
+        for m in members:
+            content.append({
+                'position': str(group.grouptype),
+                'member': m.full_name,
+            })
 
     return Response(content, status=200)
 

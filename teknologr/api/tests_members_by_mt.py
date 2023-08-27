@@ -45,7 +45,7 @@ class BaseClass(APITestCase):
     def login_superuser(self):
         self.client.login(username='superuser', password='teknolog')
 
-class GenerikeyTestCases():
+class TestCases():
     def test_get_for_anonymous_users(self):
         response = self.get('PH')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -91,7 +91,7 @@ class GenerikeyTestCases():
         self.assertEqual(response.json(), self.double)
 
 
-class GenerikeyStudynumbersTestCases(BaseClass, GenerikeyTestCases):
+class StudynumbersByMTTests(BaseClass, TestCases):
     normal = ['123456', '654321']
     null = ['123456', None]
     double = ['654321', None]
@@ -100,7 +100,7 @@ class GenerikeyStudynumbersTestCases(BaseClass, GenerikeyTestCases):
         return self.client.get(f'/api/membersByMemberType/{type}/')
 
 
-class GenerikeyUsernamesTestCases(BaseClass, GenerikeyTestCases):
+class UsernamesByMTTests(BaseClass, TestCases):
     normal = ['vonteks1', 'vonteks2']
     null = ['vonteks1', None]
     double = ['vonteks2', None]
