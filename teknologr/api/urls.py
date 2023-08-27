@@ -1,16 +1,49 @@
 from django.conf.urls import url, include
-from rest_framework import routers, permissions
+from rest_framework.routers import APIRootView, DefaultRouter
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from api.views import *
 
-class RootView(routers.APIRootView):
+class TeknologrRootView(APIRootView):
     permission_classes = (permissions.IsAuthenticated, )
     name = 'Katalogen root API'
     description = ''
+    router_list_name = None
+    router_registry = None
+
+    @property
+    def api_root_dict(self):
+        '''
+        Overriding the parent attribute to be able to filter views based on permissions.
+
+        This is accessed by the get() method and is by default provided by the router instead.
+        '''
+        d = {}
+        is_staff = self.request.user.is_staff
+        for prefix, viewset, basename in self.router_registry:
+            # Include the route unless it is staff only
+            if not is_staff and permissions.IsAdminUser in viewset.permission_classes:
+                continue
+            d[prefix] = self.router_list_name.format(basename=basename)
+
+        # Also add the other named API endpoints to the list (mainly the dumps)
+        # XXX: Is there a way to check the permissions agains the user for these too?
+        if is_staff:
+            for url in urlpatterns:
+                if hasattr(url, 'name') and url.name:
+                    d[url.name] = url.name
+
+        return d
+
+class TeknologrRouter(DefaultRouter):
+    APIRootView = TeknologrRootView
+
+    def get_api_root_view(self, api_urls=None):
+        return self.APIRootView.as_view(router_list_name=self.routes[0].name, router_registry=self.registry)
+
 
 # Routers provide an easy way of automatically determining the URL conf.
 # NOTE: Use for example {% url 'api:member-list' %} to access these urls
-router = routers.DefaultRouter()
-router.APIRootView = RootView
+router = TeknologrRouter()
 router.register(r'members', MemberViewSet)
 router.register(r'grouptypes', GroupTypeViewSet)
 router.register(r'groups', GroupViewSet)
@@ -30,7 +63,7 @@ urlpatterns = [
     url(r'^multi-groupmemberships/$', multi_group_memberships_save),
     url(r'^multi-functionaries/$', multi_functionaries_save),
     url(r'^multi-decorationownerships/$', multi_decoration_ownerships_save),
-    url(r'^multi-applicantsubmissions/$', multi_applicant_submissions, name='multi_applicant_submissions'),
+    url(r'^multi-applicantsubmissions/$', multi_applicant_submissions),
     url(r'^accounts/ldap/(\d+)/$', LDAPAccountView.as_view()),
     url(r'^accounts/ldap/change_pw/(\d+)/$', change_ldap_password),
     url(r'^accounts/bill/(\d+)/$', BILLAccountView.as_view()),

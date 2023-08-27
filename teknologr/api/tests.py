@@ -693,10 +693,10 @@ class RootAPIPageTests(BaseAPITest):
         self.login_user()
         response = self.get_all()
         self.check_status_code(response, status.HTTP_200_OK)
-        self.assertEqual(10, len(response.json()))
+        self.assertEqual(8, len(response.json()))
 
     def test_get_for_superuser(self):
         self.login_superuser()
         response = self.get_all()
         self.check_status_code(response, status.HTTP_200_OK)
-        self.assertEqual(10, len(response.json()))
+        self.assertEqual(16, len(response.json()))

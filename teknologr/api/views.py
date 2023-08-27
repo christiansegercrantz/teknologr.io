@@ -24,7 +24,7 @@ from registration.models import Applicant
 
 # ViewSets define the view behavior.
 
-class APIPermissions(permissions.BasePermission):
+class IsStaffOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         # Do not allow anything for un-authenticated users
         if not request.user.is_authenticated:
@@ -39,7 +39,7 @@ class APIPermissions(permissions.BasePermission):
 
 class BaseModelViewSet(viewsets.ModelViewSet):
     # Use custom permissions
-    permission_classes = (APIPermissions, )
+    permission_classes = (IsStaffOrReadOnly, )
 
     def get_serializer(self, *args, **kwargs):
         serializer_class = self.get_serializer_class()
