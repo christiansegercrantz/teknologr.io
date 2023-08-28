@@ -59,10 +59,7 @@ The solution is to instead read the host name from the 'X-Forwarded-Host' (https
 
 However, this will only resolve the problem with the host name, not the protocol part of the uri. Since the forwarded request can be done with HTTP, even if the original request was made with HTTPS, Django migth incorrectly deduce that a request is not secure even if the orignal request was (or vice verca). Using the SECURE_PROXY_SSL_HEADER setting Django will look a the specified header (usually the 'X-Forwarded-Proto' header: https://http.dev/x-forwarded-proto) rather than the request url to deduce if a request is secure or not. Note that the header needs to be in the format as used by request.META, i.e. all caps and (most likely) prefixed with 'HTTP_'.
 '''
-ALLOWED_HOSTS = ['localhost']
-TEKNOLOGR_HOST = env('TEKNOLOGR_HOST', None)
-if TEKNOLOGR_HOST:
-    ALLOWED_HOSTS.append(TEKNOLOGR_HOST)
+ALLOWED_HOSTS = ['localhost'] + env('ALLOWED_HOSTS', [])
 
 if env('IS_BEHIND_PROXY', False):
     USE_X_FORWARDED_HOST = True
