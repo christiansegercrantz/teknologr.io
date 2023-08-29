@@ -104,6 +104,36 @@ tr.active {
   background-color: rgb(242, 242, 242);
 }
 
-.katalogen-link {
+.clickable {
+  cursor: pointer;
+}
+
+/* Dropdown content, hidden by default */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  left: 0px;
+  top: 36px;
+  min-width: 160px;
+  z-index: 1;
+  border: #dddddd 1px solid;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  background-color: #ffffff;
   color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+  background-color: #dddddd
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
 }

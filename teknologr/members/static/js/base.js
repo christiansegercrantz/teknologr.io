@@ -224,6 +224,13 @@ $(document).ready(function () {
 	});
 
 	/**
+	 * Make elements function as clickable links.
+	 */
+	$(".clickable").click(function() {
+		window.location = $(this).data("href");
+	});
+
+	/**
 	 * Populate modal for editing a decoration ownership.
 	 * Can not be placed in functionary.js because it is needed on the member page too.
 	 */

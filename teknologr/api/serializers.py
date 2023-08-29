@@ -76,6 +76,13 @@ class MemberSerializer(BaseSerializer):
                 'end_date': gm.group.end_date,
             } for gm in instance.group_memberships.all()]
 
+            if self.is_staff:
+                data['membertypes'] = [{
+                    'type': mt.type,
+                    'begin_date': mt.begin_date,
+                    'end_date': mt.end_date,
+                } for mt in instance.member_types.all()]
+
         # Modify certain fields if necessary
         if hide:
             data['given_names'] = instance.get_given_names_with_initials()

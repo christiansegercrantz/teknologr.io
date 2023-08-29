@@ -97,7 +97,9 @@ class BaseAPITest(APITestCase):
         GroupMembership.objects.create(group=g2, member=self.m2)
         GroupMembership.objects.create(group=g2, member=self.m3)
 
-        self.mt = MemberType.objects.create(member=self.m1, type='OM', begin_date=d1)
+        self.mt = MemberType.objects.create(member=self.m1, type='PH', begin_date=d1)
+        MemberType.objects.create(member=self.m2, type='PH', begin_date=d1)
+        MemberType.objects.create(member=self.m3, type='PH', begin_date=d1)
 
         self.a = Applicant.objects.create(
             given_names='Märta',
@@ -244,6 +246,7 @@ Test case classes that extends one or many test implementation classes. Each tes
 
 # MEMBERS
 
+# Always shown
 MEMBER_PUBLIC = {
     'id': int,
     'given_names': str,
@@ -253,6 +256,7 @@ MEMBER_PUBLIC = {
     'n_groups': int,
     'n_decorations': int,
 }
+# Shown if member is not hidden
 MEMBER_PERSONAL = {
     **MEMBER_PUBLIC,
     'street_address': str,
@@ -266,6 +270,7 @@ MEMBER_PERSONAL = {
     'graduated': bool,
     'graduated_year': int,
 }
+# Shown only to admins
 MEMBER_ADMIN = {
     **MEMBER_PERSONAL,
     'created': str,
@@ -316,6 +321,11 @@ MEMBER_PERSONAL_DETAIL = {
 MEMBER_ADMIN_DETAIL = {
     **MEMBER_ADMIN,
     **MEMBER_DETAIL,
+    'membertypes': [{
+        'type': str,
+        'begin_date': str,
+        'end_date': (str, None),
+    }],
 }
 
 class MembersAPITest(BaseAPITest, GetAllMethodTests, PostMethodTests):
@@ -627,7 +637,7 @@ class MemberTypesAPITest(BaseAPITest, GetOneMethodTests, GetAllMethodTests, Post
             'created': str,
             'modified': str,
         }
-        self.n_all = 1
+        self.n_all = 3
         self.post_data = {
             'member': self.m2.id,
             'type': 'OM',
