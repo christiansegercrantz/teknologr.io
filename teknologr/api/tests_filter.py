@@ -810,6 +810,46 @@ class MemberFilterUsernameTest(BaseAPITest, TestCases):
             dead=False,
         )
 
+class MemberFilterUsernameNullTest(BaseAPITest, TestCases):
+    def setUp(self):
+        super().setUp()
+
+        self.query = 'username=-'
+        self.n_normal = 3 # Filter does not work for normal users
+        self.n_staff = 2
+
+        # Should only be found by staff
+        Member.objects.create(
+            given_names='Test',
+            surname='von Test',
+            username='',
+        )
+        Member.objects.create(
+            given_names='Test',
+            surname='von Test',
+            username=None,
+        )
+
+class MemberFilterUsernameAnyTest(BaseAPITest, TestCases):
+    def setUp(self):
+        super().setUp()
+
+        self.query = 'username=*'
+        self.n_normal = 3 # Filter does not work for normal users
+        self.n_staff = 1
+
+        # Should not be found by staff
+        Member.objects.create(
+            given_names='Test',
+            surname='von Test',
+            username='',
+        )
+        Member.objects.create(
+            given_names='Test',
+            surname='von Test',
+            username=None,
+        )
+
 
 class MemberFilterBillCodeTest(BaseAPITest, TestCases):
     def setUp(self):

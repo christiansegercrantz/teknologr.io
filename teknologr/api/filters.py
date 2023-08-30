@@ -6,11 +6,29 @@ from operator import and_
 
 class BooleanFilter(django_filters.BooleanFilter):
     '''
-    The defualt null label is for some reason 'unknown', but I want it to be ''
+    The default null label is for some reason 'unknown', but I want it to be ''
     '''
     def __init__(self, *args, **kwargs):
         kwargs['widget'] = django_filters.widgets.BooleanWidget
         super().__init__(*args, **kwargs)
+
+class CharFilterWithKeywords(django_filters.CharFilter):
+    '''
+    Take a CharFilter. You can filter on a specific phrase or leave it empty, but what if you want to filter null/empty values? This filter applies predetermined null/~null filters if the value is a certain keyword:
+        - '-' => isnull=True
+        - '*' => isnull=False
+
+    Not suitable for fields where the keywords are possible values, and does not apply if the 'method' argument is given in the constructor.
+    '''
+
+    def filter(self, qs, value):
+        q = Q(**{f'{self.field_name}__isnull': True}) | Q(**{f'{self.field_name}__exact': ''})
+        if value == '-':
+            return qs.filter(q)
+        if value == '*':
+            return qs.exclude(q)
+        return super().filter(qs, value)
+
 
 class BaseFilter(django_filters.rest_framework.FilterSet):
     '''
@@ -92,11 +110,11 @@ class MemberFilter(BaseFilter):
         method='filter_address',
         label='Adressen innehåller',
     )
-    email = django_filters.CharFilter(
+    email = CharFilterWithKeywords(
         lookup_expr='icontains',
         label='E-postadressen innehåller',
     )
-    degree_programme = django_filters.CharFilter(
+    degree_programme = CharFilterWithKeywords(
         lookup_expr='icontains',
         label='Studieprogrammet innehåller',
     )
@@ -116,7 +134,7 @@ class MemberFilter(BaseFilter):
     birth_date = django_filters.DateFromToRangeFilter(
         label='Född mellan',
     )
-    student_id = django_filters.CharFilter(
+    student_id = CharFilterWithKeywords(
         label='Studienummer',
     )
     dead = BooleanFilter(
@@ -135,10 +153,10 @@ class MemberFilter(BaseFilter):
         lookup_expr='icontains',
         label='Kommentaren innehåller',
     )
-    username = django_filters.CharFilter(
+    username = CharFilterWithKeywords(
         label='Användarnamn',
     )
-    bill_code = django_filters.CharFilter(
+    bill_code = CharFilterWithKeywords(
         label='BILL-konto',
     )
 
