@@ -6,6 +6,15 @@ import time
 
 '''All methods here can throw ldap.LDAPError'''
 
+def LDAPError_to_string(e):
+    if not isinstance(e, ldap.LDAPError):
+        return str(e)
+    data = e.args[0]
+    s = f"{data.get('desc' , '')} [{data.get('result')}]"
+    info = data.get('info')
+    if info:
+        s += f' ({info})'
+    return s
 
 class LDAPAccountManager:
     def __init__(self):

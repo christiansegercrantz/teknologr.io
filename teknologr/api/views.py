@@ -13,7 +13,7 @@ from collections import defaultdict
 from datetime import datetime
 from api.serializers import *
 from api.filters import *
-from api.ldap import LDAPAccountManager
+from api.ldap import LDAPAccountManager, LDAPError_to_string
 from api.bill import BILLAccountManager, BILLException
 from api.utils import assert_public_member_fields
 from api.mailutils import mailNewPassword, mailNewAccount
@@ -264,12 +264,12 @@ class LDAPAccountView(APIView):
             with LDAPAccountManager() as lm:
                 result = {'username': member.username, 'groups': lm.get_ldap_groups(member.username)}
         except LDAPError as e:
-            return Response(str(e), status=400)
+            return Response(LDAPError_to_string(e), status=400)
 
         return Response(result, status=200)
 
     def post(self, request, member_id):
-        # Create LDAP and BILL accounts for given user
+        # Create LDAP account for given user
         member = get_object_or_404(Member, id=member_id)
         username = request.data.get('username')
         password = request.data.get('password')
@@ -284,7 +284,7 @@ class LDAPAccountView(APIView):
             with LDAPAccountManager() as lm:
                 lm.add_account(member, username, password)
         except LDAPError as e:
-            return Response(str(e), status=400)
+            return Response(LDAPError_to_string(e), status=400)
 
         # Store account details
         member.username = username
@@ -310,7 +310,7 @@ class LDAPAccountView(APIView):
             with LDAPAccountManager() as lm:
                 lm.delete_account(member.username)
         except LDAPError as e:
-            return Response(str(e), status=400)
+            return Response(LDAPError_to_string(e), status=400)
 
         # Delete account information from user in db
         member.username = None
@@ -335,7 +335,7 @@ def change_ldap_password(request, member_id):
                 if not status:
                     return Response("Password changed, failed to send mail", status=500)
     except LDAPError as e:
-        return Response(str(e), status=400)
+        return Response(LDAPError_to_string(e), status=400)
 
     return Response(status=200)
 
@@ -480,7 +480,7 @@ class ApplicantMembershipView(APIView):
 
             # LDAP account creation failed (e.g. if the account already exists)
             except LDAPError as e:
-                return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
+                return Response(f'Error creating LDAP account for {new_member}: {LDAPError_to_string(e)}', status=400)
             # Updating the username field failed, remove the created LDAP account
             # as it is not currently referenced by any member.
             except IntegrityError as e:
