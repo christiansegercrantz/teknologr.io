@@ -112,21 +112,27 @@ def member(request, member_id):
     context['add_mt_form'] = MemberTypeForm(initial={'member': member_id})
 
     # Get user account info
-    from api.ldap import LDAPAccountManager
-    from api.bill import BILLAccountManager, BILLException
     if member.username:
+        from api.ldap import LDAPAccountManager, LDAPError_to_string
         try:
             with LDAPAccountManager() as lm:
                 context['LDAP'] = {'groups': lm.get_ldap_groups(member.username)}
-        except Exception:
-            context['LDAP'] = "error"
+        except Exception as e:
+            context['LDAP'] = {'error': LDAPError_to_string(e)}
 
     if member.bill_code:
+        from api.bill import BILLAccountManager, BILLException
         bm = BILLAccountManager()
         try:
+            context['bill_admin_url'] = bm.admin_url(member.bill_code)
             context['BILL'] = bm.get_bill_info(member.bill_code)
+
+            # Check that the username stored by BILL is the same as our
+            username = context['BILL']['id']
+            if member.username != username:
+                context['BILL']['error'] = f'LDAP användarnamnen här ({member.username}) och i BILL ({username}) matchar inte'
         except BILLException as e:
-            context['BILL'] = {"error": str(e)}
+            context['BILL'] = {'error': e}
 
     # load side list items
     set_side_context(context, 'members', member)

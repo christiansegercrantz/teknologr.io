@@ -5,6 +5,7 @@ from registration.labels import MEMBERSHIP_FORM_LABELS
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from datetime import datetime
 from members.models import Member
+import re
 
 
 def format_programmes():
@@ -63,26 +64,19 @@ class RegistrationForm(forms.ModelForm):
         cleaned_data = super().clean()
 
         preferred_name = cleaned_data.get('preferred_name')
-        if preferred_name and preferred_name not in cleaned_data.get('given_names'):
-            raise forms.ValidationError(
-                'Tilltalsnamnet måste vara ett av förnamnen',
-                code='invalid',
-                params={'preferred_name': preferred_name}
-            )
+        if preferred_name and (' ' in preferred_name or preferred_name not in cleaned_data.get('given_names')):
+            self.add_error('preferred_name', 'Tilltalsnamnet måste vara ett av förnamnen')
 
         enrolment_year = cleaned_data.get('enrolment_year')
         if enrolment_year and enrolment_year > datetime.now().year:
-            raise forms.ValidationError(
-                _('Enrolment year is larger than current year: %(enrolment_year)d'),
-                code='invalid',
-                params={'enrolment_year': enrolment_year}
-            )
+            self.add_error('enrolment_year', 'Inskrivningsåret kan inte vara i framtiden')
 
         # Check if the username is taken if one was provided in the application
         username = cleaned_data.get('username')
-        if username and Member.objects.filter(username=username).exists():
-            raise forms.ValidationError(
-                'Username is already taken: %(username)s',
-                code='invalid',
-                params={'username': username}
-            )
+        if username:
+            if Member.objects.filter(username=username).exists():
+                self.add_error('username', 'Användarnamnet är inte ledigt')
+
+            # Our convetion has always been that LDAP username is the one that is used at the university, which only has small letters and numbers
+            if not re.search(r'^[a-z0-9]+$', username):
+                self.add_error('username', 'Användarnamnet kan endast innehålla små bokstäver och siffror, som vid universitetet')

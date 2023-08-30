@@ -175,7 +175,7 @@ class Member(SuperClass):
                "".replace("", "X")    => "X"
         In addition, pre Python 3.9 the extended method A.replace(B, C, N) was bugged if B = "" was used:
             "abc".replace("", "X", 1) => "Xabc" (OK)
-               "".replace("", "X", 1) => ""     (INCONSITENT)
+               "".replace("", "X", 1) => ""     (INCONSISTENT)
         So replacing empty strings can be tricky, especially if the autobuilds run a different Python version than you.
         '''
         preferred_name = self.get_preferred_name()

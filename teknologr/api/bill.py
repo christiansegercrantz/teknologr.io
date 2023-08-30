@@ -1,4 +1,5 @@
 import requests
+import re
 from getenv import env
 
 
@@ -13,7 +14,15 @@ class BILLAccountManager:
         self.user = env("BILL_API_USER")
         self.password = env("BILL_API_PW")
 
+    def admin_url(self, bill_code):
+        if not self.api_url:
+            return ''
+        return f'{"/".join(self.api_url.split("/")[:-2])}/admin/userdata?id={bill_code}'
+
     def create_bill_account(self, username):
+        if not re.search(r'^[A-Za-z0-9]+$', username):
+            raise BILLException("Can not create a BILL account using an LDAP username containing anything other than letters and numbers")
+
         try:
             r = requests.post(self.api_url + "add?type=user&id=%s" % username, auth=(self.user, self.password))
         except:

@@ -64,9 +64,9 @@ urlpatterns = [
     url(r'^multi-functionaries/$', multi_functionaries_save),
     url(r'^multi-decorationownerships/$', multi_decoration_ownerships_save),
     url(r'^multi-applicantsubmissions/$', multi_applicant_submissions),
-    url(r'^accounts/ldap/(\d+)/$', LDAPAccountView.as_view()),
+    url(r'^accounts/ldap/(\d+)/$', LDAPAccountView.as_view(), name='ldap'),
     url(r'^accounts/ldap/change_pw/(\d+)/$', change_ldap_password),
-    url(r'^accounts/bill/(\d+)/$', BILLAccountView.as_view()),
+    url(r'^accounts/bill/(\d+)/$', BILLAccountView.as_view(), name='bill'),
     url(r'^applicants/make-member/(\d+)/$', ApplicantMembershipView.as_view()),
     url(r'^dump-htk/(?:(\d+)/)?$', dump_htk, name='dump_htk'),
     url(r'^dump-modulen/$', dump_modulen, name='dump_modulen'),
@@ -74,8 +74,8 @@ urlpatterns = [
     url(r'^dump-arsk/$', dump_arsk, name='dump_arsk'),
     url(r'^dump-regemails/$', dump_reg_emails, name='dump_reg_emails'),
     url(r'^dump-studentbladet/$', dump_studentbladet, name='dump_studentbladet'),
-    # Used by BILL (?)
-    url(r'^memberTypesForMember/(?P<mode>username|studynumber)/(?P<query>[A-Za-z0-9]+)/$', member_types_for_member),
+    # Used by BILL (?), allowing any username even if it includes "forbidden" characters
+    url(r'^memberTypesForMember/(?P<mode>username|studynumber)/(?P<query>.+)/$', member_types_for_member),
     # Used by BILL and Generikey
     url(r'^membersByMemberType/([A-Z]{2})/(?:(\w+)/?)?$', members_by_member_type),
 ]

@@ -6,8 +6,22 @@
     <div class="row mb-2">
       <div class="col-12">
         <a class="btn btn-secondary" href="{% url 'katalogen:profile' member.id %}">Katalogen</a>
-        <a class="btn btn-secondary" href="{% url 'api:member-detail' member.id %}">API</a>
-        <a class="btn btn-secondary" href="{% url 'api:dump_htk' member.id %}">HTK dump</a>
+        <div class="btn btn-secondary dropdown">
+          API <i class="fa fa-caret-down"></i>
+          <div class="dropdown-content">
+            <a href="{% url 'api:member-detail' member.id %}">Member</a>
+            <a href="{% url 'api:dump_htk' member.id %}">HTK dump</a>
+            {% if member.username %}
+            <a href="{% url 'api:ldap' member.id %}">LDAP</a>
+            {% endif %}
+            {% if member.bill_code %}
+            <a href="{% url 'api:bill' member.id %}">BILL</a>
+            {% endif %}
+            {% if bill_admin_url %}
+            <a href="{{ bill_admin_url }}">BILL admin</a>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </div>
     <h2 class="page-header">
@@ -170,23 +184,24 @@
         <div class="row mb-4">
           <div class="col-sm-6">
             <h5>LDAP</h5>
-            {% if LDAP %}
+            {% if member.username %}
+            <b>Användarnamn:</b> <span class="monospace">{{ member.username }}</span>
+            <br/>
+
             {% if LDAP.error %}
-            Kunde inte få svar av LDAP: {{ LDAP.error }}
+            <div class="alert alert-danger">{{ LDAP.error }}</div>
             {% else %}
-            <b>Användarnamn:</b> {{member.username}}
-            <br>
             <b>Grupper:</b>
             <ul>
               {% for group in LDAP.groups %}
-              <li>{{group}}</li>
+              <li>{{ group }}</li>
               {% endfor %}
             </ul>
-            <br/>
             <button class="btn btn-primary" data-toggle="modal" data-target="#changepw_modal">Ändra lösenord</button>
             {% include "modals/ldap_changepw.html" with modalname="changepw_modal" title="Ändra LDAP lösenord" member_id=member.id only %}
             <button id="delete-ldap-button" class="btn btn-danger" data-id="{{ member.id }}">Ta bort LDAP konto</button>
             {% endif %}
+
             {% else %}
             <button class="btn btn-primary" data-toggle="modal" data-target="#addldap_modal">Skapa LDAP konto</button>
             {% include "modals/ldap_add.html" with modalname="addldap_modal" title="Skapa LDAP konto" member_id=member.id only %}
@@ -194,19 +209,20 @@
           </div>
           <div class="col-sm-6">
             <h5>BILL</h5>
-            {% if BILL %}
+            {% if member.bill_code %}
+            <b>Konto:</b>
+            <span class="monospace">{{ member.bill_code }}</span>
+            <br/>
+
             {% if BILL.error %}
-            <div class="alert alert-danger">Kunde inte få svar av BILL: {{ BILL.error }}</div>
+            <div class="alert alert-danger">{{ BILL.error }}</div>
             {% else %}
-            <b>Konto:</b> {{ BILL.acc }}
-            <br>
             <b>Saldo:</b> {{ BILL.balance }}€
-            <br>
-            <br>
+            <br/>
             <button id="delete-bill-button" class="btn btn-danger" data-id="{{ member.id }}">Ta bort BILL konto</button>
             {% endif %}
-            {% else %}
 
+            {% else %}
             <button id="add-bill-button" class="btn btn-primary" {% if not LDAP %} disabled title="Skapa LDAP konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL konto</button>
             {% endif %}
           </div>

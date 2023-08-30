@@ -13,7 +13,7 @@ from collections import defaultdict
 from datetime import datetime
 from api.serializers import *
 from api.filters import *
-from api.ldap import LDAPAccountManager
+from api.ldap import LDAPAccountManager, LDAPError_to_string
 from api.bill import BILLAccountManager, BILLException
 from api.utils import assert_public_member_fields
 from api.mailutils import mailNewPassword, mailNewAccount
@@ -264,27 +264,30 @@ class LDAPAccountView(APIView):
             with LDAPAccountManager() as lm:
                 result = {'username': member.username, 'groups': lm.get_ldap_groups(member.username)}
         except LDAPError as e:
-            return Response(str(e), status=400)
+            return Response(LDAPError_to_string(e), status=400)
 
         return Response(result, status=200)
 
     def post(self, request, member_id):
-        # Create LDAP and BILL accounts for given user
+        # Create LDAP account for given user
         member = get_object_or_404(Member, id=member_id)
         username = request.data.get('username')
         password = request.data.get('password')
         mailToUser = request.data.get('mail_to_user')
         if not username or not password:
-            return Response("username or password field missing", status=400)
+            return Response('Username or password field missing', status=400)
 
         if member.username:
-            return Response("Member already has LDAP account", status=400)
+            return Response('Member already has an LDAP account', status=400)
+
+        if Member.objects.filter(username=username).exists():
+            return Response(f'Username "{username}" is already taken', status=400)
 
         try:
             with LDAPAccountManager() as lm:
                 lm.add_account(member, username, password)
         except LDAPError as e:
-            return Response(str(e), status=400)
+            return Response(LDAPError_to_string(e), status=400)
 
         # Store account details
         member.username = username
@@ -302,15 +305,15 @@ class LDAPAccountView(APIView):
         member = get_object_or_404(Member, id=member_id)
 
         if not member.username:
-            return Response("Member has no LDAP account", status=400)
+            return Response('Member has no LDAP account', status=400)
         if member.bill_code:
-            return Response("BILL account must be deleted first", status=400)
+            return Response('BILL account must be deleted first', status=400)
 
         try:
             with LDAPAccountManager() as lm:
                 lm.delete_account(member.username)
         except LDAPError as e:
-            return Response(str(e), status=400)
+            return Response(LDAPError_to_string(e), status=400)
 
         # Delete account information from user in db
         member.username = None
@@ -325,7 +328,7 @@ def change_ldap_password(request, member_id):
     password = request.data.get('password')
     mailToUser = request.data.get('mail_to_user')
     if not password:
-        return Response("password field missing", status=400)
+        return Response('Password field missing', status=400)
 
     try:
         with LDAPAccountManager() as lm:
@@ -333,9 +336,9 @@ def change_ldap_password(request, member_id):
             if mailToUser:
                 status = mailNewPassword(member, password)
                 if not status:
-                    return Response("Password changed, failed to send mail", status=500)
+                    return Response('Password changed, but failed to send mail', status=500)
     except LDAPError as e:
-        return Response(str(e), status=400)
+        return Response(LDAPError_to_string(e), status=400)
 
     return Response(status=200)
 
@@ -345,7 +348,7 @@ class BILLAccountView(APIView):
         member = get_object_or_404(Member, id=member_id)
 
         if not member.bill_code:
-            return Response("Member has no BILL account", status=400)
+            return Response('Member has no BILL account', status=400)
 
         bm = BILLAccountManager()
         try:
@@ -359,15 +362,25 @@ class BILLAccountView(APIView):
         member = get_object_or_404(Member, id=member_id)
 
         if member.bill_code:
-            return Response("BILL account already exists", status=400)
+            return Response('Member already has a BILL account', status=400)
         if not member.username:
-            return Response("LDAP account missing", status=400)
+            return Response('LDAP account missing', status=400)
 
         bm = BILLAccountManager()
+        bill_code = None
+
+        # Check if there already is a BILL account with this LDAP name
         try:
-            bill_code = bm.create_bill_account(member.username)
-        except BILLException as e:
-            return Response(str(e), status=400)
+            bill_code = bm.find_bill_code(member.username)
+        except:
+            pass
+
+        # If not, create a new BILL account
+        if not bill_code:
+            try:
+                bill_code = bm.create_bill_account(member.username)
+            except BILLException as e:
+                return Response(str(e), status=400)
 
         member.bill_code = bill_code
         member.save()
@@ -378,7 +391,7 @@ class BILLAccountView(APIView):
         member = get_object_or_404(Member, id=member_id)
 
         if not member.bill_code:
-            return Response("Member has no BILL account", status=400)
+            return Response('Member has no BILL account', status=400)
 
         bm = BILLAccountManager()
         try:
@@ -480,7 +493,7 @@ class ApplicantMembershipView(APIView):
 
             # LDAP account creation failed (e.g. if the account already exists)
             except LDAPError as e:
-                return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
+                return Response(f'Error creating LDAP account for {new_member}: {LDAPError_to_string(e)}', status=400)
             # Updating the username field failed, remove the created LDAP account
             # as it is not currently referenced by any member.
             except IntegrityError as e:
@@ -541,7 +554,7 @@ def member_types_for_member(request, mode, query):
         "given_names": member.given_names.split(),
         "surname": member.surname,
         "nickname": "",
-        "preferred_name": member.preferred_name,
+        "preferred_name": member.get_preferred_name(),
         "membertypes": membertypes
     }
 
