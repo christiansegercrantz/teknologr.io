@@ -112,7 +112,6 @@ def member(request, member_id):
     context['add_mt_form'] = MemberTypeForm(initial={'member': member_id})
 
     # Get user account info
-    from api.bill import BILLAccountManager, BILLException
     if member.username:
         from api.ldap import LDAPAccountManager, LDAPError_to_string
         try:
@@ -122,11 +121,12 @@ def member(request, member_id):
             context['LDAP'] = {'error': LDAPError_to_string(e)}
 
     if member.bill_code:
+        from api.bill import BILLAccountManager, BILLException
         bm = BILLAccountManager()
         try:
             context['BILL'] = bm.get_bill_info(member.bill_code)
         except BILLException as e:
-            context['BILL'] = {"error": str(e)}
+            context['BILL'] = {'error': e}
 
     # load side list items
     set_side_context(context, 'members', member)
