@@ -541,7 +541,7 @@ def member_types_for_member(request, mode, query):
         "given_names": member.given_names.split(),
         "surname": member.surname,
         "nickname": "",
-        "preferred_name": member.preferred_name,
+        "preferred_name": member.get_preferred_name(),
         "membertypes": membertypes
     }
 

@@ -1,5 +1,4 @@
 import ldap
-import ldap.modlist as modlist
 from getenv import env
 
 import time
@@ -73,7 +72,7 @@ class LDAPAccountManager:
         attrs['sambaPwdLastSet'] = [str(int(time.time())).encode('utf-8')]
 
         # Add the user to LDAP
-        ldif = modlist.addModlist(attrs)
+        ldif = ldap.modlist.addModlist(attrs)
         self.ldap.add_s(dn, ldif)
 
         # Add user to Members group
