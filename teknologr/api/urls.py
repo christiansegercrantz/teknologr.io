@@ -74,8 +74,8 @@ urlpatterns = [
     url(r'^dump-arsk/$', dump_arsk, name='dump_arsk'),
     url(r'^dump-regemails/$', dump_reg_emails, name='dump_reg_emails'),
     url(r'^dump-studentbladet/$', dump_studentbladet, name='dump_studentbladet'),
-    # Used by BILL (?)
-    url(r'^memberTypesForMember/(?P<mode>username|studynumber)/(?P<query>[A-Za-z0-9]+)/$', member_types_for_member),
+    # Used by BILL (?), allowing any username even if it includes "forbidden" characters
+    url(r'^memberTypesForMember/(?P<mode>username|studynumber)/(?P<query>.+)/$', member_types_for_member),
     # Used by BILL and Generikey
     url(r'^membersByMemberType/([A-Z]{2})/(?:(\w+)/?)?$', members_by_member_type),
 ]

@@ -89,6 +89,23 @@ class ByValidUsernameTests(BaseClass, ByUsernameTestCases):
         self.username = self.member.username
         self.response = RESPONSE
 
+class ByValidUsernameWithSymbolsTests(BaseClass, ByUsernameTestCases):
+    def setUp(self):
+        super().setUp()
+        m = Member.objects.create(
+            given_names='Username',
+            surname='with Symbols',
+            username='Symbols.-_-.Symbols',
+        )
+        self.username = m.username
+        self.response = {
+            'given_names': ['Username'],
+            'surname': 'with Symbols',
+            'nickname': '',
+            'preferred_name': 'Username',
+            'membertypes': {},
+        }
+
 
 class ByInvalidStudynumberTests(BaseClass, ByStudynumberTestCases):
     def setUp(self):
