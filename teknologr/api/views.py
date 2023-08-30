@@ -367,6 +367,8 @@ class BILLAccountView(APIView):
             return Response('LDAP account missing', status=400)
 
         bm = BILLAccountManager()
+        bill_code = None
+
         # Check if there already is a BILL account with this LDAP name
         try:
             bill_code = bm.find_bill_code(member.username)

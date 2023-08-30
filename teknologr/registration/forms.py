@@ -5,6 +5,7 @@ from registration.labels import MEMBERSHIP_FORM_LABELS
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from datetime import datetime
 from members.models import Member
+import re
 
 
 def format_programmes():
@@ -75,3 +76,7 @@ class RegistrationForm(forms.ModelForm):
         if username:
             if Member.objects.filter(username=username).exists():
                 self.add_error('username', 'Användarnamnet är inte ledigt')
+
+            # Our convetion has always been that LDAP username is the one that is used at the university, which only has small letters and numbers
+            if not re.search(r'^[a-z0-9]+$', username):
+                self.add_error('username', 'Användarnamnet kan endast innehålla små bokstäver och siffror, som vid universitetet')
