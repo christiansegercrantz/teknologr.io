@@ -125,6 +125,11 @@ def member(request, member_id):
         bm = BILLAccountManager()
         try:
             context['BILL'] = bm.get_bill_info(member.bill_code)
+
+            # Check that the username stored by BILL is the same as our
+            username = context['BILL']['id']
+            if member.username != username:
+                context['BILL']['error'] = f'LDAP användarnamnen här ({member.username}) och i BILL ({username}) matchar inte'
         except BILLException as e:
             context['BILL'] = {'error': e}
 
