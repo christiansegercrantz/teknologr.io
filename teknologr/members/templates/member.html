@@ -6,8 +6,22 @@
     <div class="row mb-2">
       <div class="col-12">
         <a class="btn btn-secondary" href="{% url 'katalogen:profile' member.id %}">Katalogen</a>
-        <a class="btn btn-secondary" href="{% url 'api:member-detail' member.id %}">API</a>
-        <a class="btn btn-secondary" href="{% url 'api:dump_htk' member.id %}">HTK dump</a>
+        <div class="btn btn-secondary dropdown">
+          API <i class="fa fa-caret-down"></i>
+          <div class="dropdown-content">
+            <a href="{% url 'api:member-detail' member.id %}">Member</a>
+            <a href="{% url 'api:dump_htk' member.id %}">HTK dump</a>
+            {% if member.username %}
+            <a href="{% url 'api:ldap' member.id %}">LDAP</a>
+            {% endif %}
+            {% if member.bill_code %}
+            <a href="{% url 'api:bill' member.id %}">BILL</a>
+            {% endif %}
+            {% if bill_admin_url %}
+            <a href="{{ bill_admin_url }}">BILL admin</a>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </div>
     <h2 class="page-header">
@@ -196,13 +210,8 @@
           <div class="col-sm-6">
             <h5>BILL</h5>
             {% if member.bill_code %}
-
             <b>Konto:</b>
-            {% if BILL.url %}
-            <a class="monospace" href="{{ BILL.url }}" style="color: black;">{{ member.bill_code }}</a>
-            {% else %}
             <span class="monospace">{{ member.bill_code }}</span>
-            {% endif %}
             <br/>
 
             {% if BILL.error %}

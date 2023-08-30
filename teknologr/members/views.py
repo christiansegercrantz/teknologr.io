@@ -124,6 +124,7 @@ def member(request, member_id):
         from api.bill import BILLAccountManager, BILLException
         bm = BILLAccountManager()
         try:
+            context['bill_admin_url'] = bm.admin_url(member.bill_code)
             context['BILL'] = bm.get_bill_info(member.bill_code)
 
             # Check that the username stored by BILL is the same as our
