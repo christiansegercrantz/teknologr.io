@@ -198,7 +198,11 @@
             {% if member.bill_code %}
 
             <b>Konto:</b>
+            {% if BILL.url %}
+            <a class="monospace" href="{{ BILL.url }}" style="color: black;">{{ member.bill_code }}</a>
+            {% else %}
             <span class="monospace">{{ member.bill_code }}</span>
+            {% endif %}
             <br/>
 
             {% if BILL.error %}

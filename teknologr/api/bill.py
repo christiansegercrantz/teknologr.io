@@ -59,7 +59,10 @@ class BILLAccountManager:
             error = int(r.text)
         except ValueError:
             # The returned string is not an integer, so presumably we have the json we want
-            return json.loads(r.text)
+            return {
+                **json.loads(r.text),
+                "url": f'{"/".join(self.api_url.split("/")[:-2])}/admin/userdata?id={bill_code}',
+            }
         raise BILLException("BILL returned error code: " + r.text)
 
     def find_bill_code(self, username):
