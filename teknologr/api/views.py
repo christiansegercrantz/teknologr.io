@@ -275,10 +275,13 @@ class LDAPAccountView(APIView):
         password = request.data.get('password')
         mailToUser = request.data.get('mail_to_user')
         if not username or not password:
-            return Response("username or password field missing", status=400)
+            return Response('Username or password field missing', status=400)
 
         if member.username:
-            return Response("Member already has LDAP account", status=400)
+            return Response('Member already has an LDAP account', status=400)
+
+        if Member.objects.filter(username=username).exists():
+            return Response(f'Username "{username}" is already taken', status=400)
 
         try:
             with LDAPAccountManager() as lm:
@@ -302,9 +305,9 @@ class LDAPAccountView(APIView):
         member = get_object_or_404(Member, id=member_id)
 
         if not member.username:
-            return Response("Member has no LDAP account", status=400)
+            return Response('Member has no LDAP account', status=400)
         if member.bill_code:
-            return Response("BILL account must be deleted first", status=400)
+            return Response('BILL account must be deleted first', status=400)
 
         try:
             with LDAPAccountManager() as lm:
@@ -325,7 +328,7 @@ def change_ldap_password(request, member_id):
     password = request.data.get('password')
     mailToUser = request.data.get('mail_to_user')
     if not password:
-        return Response("password field missing", status=400)
+        return Response('Password field missing', status=400)
 
     try:
         with LDAPAccountManager() as lm:
@@ -333,7 +336,7 @@ def change_ldap_password(request, member_id):
             if mailToUser:
                 status = mailNewPassword(member, password)
                 if not status:
-                    return Response("Password changed, failed to send mail", status=500)
+                    return Response('Password changed, but failed to send mail', status=500)
     except LDAPError as e:
         return Response(LDAPError_to_string(e), status=400)
 
@@ -345,7 +348,7 @@ class BILLAccountView(APIView):
         member = get_object_or_404(Member, id=member_id)
 
         if not member.bill_code:
-            return Response("Member has no BILL account", status=400)
+            return Response('Member has no BILL account', status=400)
 
         bm = BILLAccountManager()
         try:
@@ -359,9 +362,9 @@ class BILLAccountView(APIView):
         member = get_object_or_404(Member, id=member_id)
 
         if member.bill_code:
-            return Response("BILL account already exists", status=400)
+            return Response('Member already has a BILL account', status=400)
         if not member.username:
-            return Response("LDAP account missing", status=400)
+            return Response('LDAP account missing', status=400)
 
         bm = BILLAccountManager()
         # Check if there already is a BILL account with this LDAP name
@@ -386,7 +389,7 @@ class BILLAccountView(APIView):
         member = get_object_or_404(Member, id=member_id)
 
         if not member.bill_code:
-            return Response("Member has no BILL account", status=400)
+            return Response('Member has no BILL account', status=400)
 
         bm = BILLAccountManager()
         try:
