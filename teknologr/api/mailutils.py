@@ -6,19 +6,19 @@ def mailNewPassword(member, password, sender=env('EMAIL_LDAP_SENDER')):
 
     subject = 'Ditt nya TF-lösenord'
 
-    message = '''Hej,
+    message = f'''Hej,
 
     Här är ditt nya TF-lösenord:
 
-    %s
+    {password}
 
-    Vänligen logga in på TF:s hemsida och byt lösenordet så snabbt som möjligt:
-    https://medlem.teknologforeningen.fi/index.php/aendra-loesenord
+    Vänligen logga in och byt lösenordet så snabbt som möjligt:
+    https://id.tf.fi/realms/tf-medlemmar/account/#/security/signingin
 
-    Vid frågor eller ifall du inte begärt detta, kontakta %s
+    Vid frågor eller ifall du inte begärt detta, kontakta {sender}
 
     Detta är ett automatiskt meddelande, du behöver inte svara på det.
-    ''' % (password, sender)
+    '''
 
     receiver = member.email
 
@@ -41,8 +41,8 @@ def mailNewAccount(member, password, sender=env('EMAIL_LDAP_SENDER')):
     Användarnamn: {member.username}
     Lösenord: {password}
 
-    Vänligen logga in på TF:s hemsida och byt lösenordet så snabbt som möjligt:
-    https://medlem.teknologforeningen.fi/index.php/aendra-loesenord
+    Vänligen logga in och byt lösenordet så snabbt som möjligt:
+    https://id.tf.fi/realms/tf-medlemmar/account/#/security/signingin
 
     Vid frågor eller ifall du inte begärt detta, kontakta {sender}
 
