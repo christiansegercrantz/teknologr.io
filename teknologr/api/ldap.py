@@ -1,4 +1,5 @@
 import ldap
+import ldap.modlist
 from getenv import env
 
 import time
