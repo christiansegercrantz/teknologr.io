@@ -53,17 +53,17 @@ class MemberManager(models.Manager):
         if staff_search:
             # Search within comments too since that can include old names or nicknames
             filters = [(
-                  Q(given_names__icontains=q)
-                | Q(preferred_name__icontains=q)
-                | Q(surname__icontains=q)
-                | Q(comment__icontains=q)
-                | Q(email__icontains=q)
+                Q(given_names__icontains=q) |
+                Q(preferred_name__icontains=q) |
+                Q(surname__icontains=q) |
+                Q(comment__icontains=q) |
+                Q(email__icontains=q)
             ) for q in queries]
         else:
             filters = [(
-                  Q(given_names__icontains=q)
-                | Q(preferred_name__icontains=q)
-                | Q(surname__icontains=q)
+                Q(given_names__icontains=q) |
+                Q(preferred_name__icontains=q) |
+                Q(surname__icontains=q)
             ) for q in queries]
         members = self.filter(*filters)
         members = list(members)
