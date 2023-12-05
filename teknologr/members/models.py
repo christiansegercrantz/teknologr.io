@@ -6,8 +6,7 @@ from django_countries.fields import CountryField
 from django.shortcuts import get_object_or_404
 from django.utils.html import format_html
 from locale import strxfrm
-from operator import attrgetter, and_
-from functools import reduce
+from operator import attrgetter
 from datetime import date
 from katalogen.utils import *
 from members.utils import *
@@ -46,19 +45,32 @@ class MemberManager(models.Manager):
     def get_prefetched_or_404(self, member_id):
         return get_object_or_404(self.all_with_related(), id=member_id)
 
-    def search_by_name(self, queries, include_hidden=False):
+    def search_by_name(self, queries, staff_search=False):
         if not queries:
             return []
 
-        # XXX: Would be nice to be able to filter on preferred_name on hidden users, but that is not always set in the database
         queries = [q.lower() for q in queries]
-        filters = [(Q(given_names__icontains=q) | Q(surname__icontains=q)) for q in queries]
-        members = self.filter(reduce(and_, filters))
+        if staff_search:
+            # Search within comments too since that can include old names or nicknames
+            filters = [(
+                  Q(given_names__icontains=q)
+                | Q(preferred_name__icontains=q)
+                | Q(surname__icontains=q)
+                | Q(comment__icontains=q)
+                | Q(email__icontains=q)
+            ) for q in queries]
+        else:
+            filters = [(
+                  Q(given_names__icontains=q)
+                | Q(preferred_name__icontains=q)
+                | Q(surname__icontains=q)
+            ) for q in queries]
+        members = self.filter(*filters)
         members = list(members)
 
         # Need to remove hidden Members that were matched on a non-preferred given name
-        if not include_hidden:
-            members = [m for m in members if m.allow_publish_info or any([q in m.surname.lower() or q in m.get_preferred_name().lower() for q in queries])]
+        if not staff_search:
+            members = [m for m in members if m.allow_publish_info or all([q in m.surname.lower() or q in m.get_preferred_name().lower() for q in queries])]
 
         return members
 
