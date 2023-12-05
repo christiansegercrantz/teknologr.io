@@ -158,6 +158,14 @@ class MemberTest(TestCase):
         self.assertEqual('Foo Bar Baz Tester', str(self.member2))
         self.assertEqual('F-B Biz-Baz von der Tester', str(self.member3))
 
+    def test_search_by_name(self):
+        Member.objects.create(given_names='Bar Foo', surname='von Test', allow_publish_info=False)
+        Member.objects.create(given_names='Test', surname='Test', allow_publish_info=False, comment="foo")
+        self.assertEqual(3, len(Member.objects.search_by_name(["foo"], False)))
+        self.assertEqual(5, len(Member.objects.search_by_name(["foo"], True)))
+        self.assertEqual(1, len(Member.objects.search_by_name(["foo", "von"], False)))
+        self.assertEqual(2, len(Member.objects.search_by_name(["foo", "von"], True)))
+
     def test_member_type(self):
         member = Member(given_names='Svatta', surname='Teknolog')
         member.save()
