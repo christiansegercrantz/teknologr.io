@@ -4,25 +4,8 @@ from django.db.models import Q
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.pagination import LimitOffsetPagination
 from members.models import Member
-from registration.models import Applicant
 from datetime import datetime
 from rest_framework.response import Response
-
-def findMembers(query, count=50):
-    members = Member.objects.search_by_name(query.split(), True)[:count]
-    Member.order_by(members, 'name')
-    return members
-
-def findApplicants(query, count=50):
-    args = []
-
-    for word in query.split():
-        args.append(Q(given_names__icontains=word) | Q(surname__icontains=word))
-
-    if not args:
-        return []
-
-    return Applicant.objects.filter(*args).order_by('surname', 'given_names')[:count]
 
 
 def create_dump_response(content, name, filetype):

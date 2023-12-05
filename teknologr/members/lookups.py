@@ -1,7 +1,7 @@
 from ajax_select import register, LookupChannel
 from members.models import Member
 from registration.models import Applicant
-from api.utils import findMembers, findApplicants
+from django.db.models import Q
 
 
 @register('member')
@@ -34,7 +34,13 @@ class ApplicantLookup(LookupChannel):
     model = Applicant
 
     def get_query(self, q, request):
-        return findApplicants(q)
+        if not q:
+            return []
+
+        queries = [q.lower() for q in queries]
+        filters = [(Q(given_names__icontains=q) | Q(surname__icontains=q)) for q in queries]
+
+        return Applicant.objects.filter(*filters).order_by('surname', 'given_names')[:50]
 
     def get_result(self, obj):
         return obj.full_name
