@@ -212,7 +212,7 @@
               class="btn btn-danger"
               data-id="{{ member.id }}"
               {% if LDAP.error %}disabled title="LDAP error..."{% endif %}>
-              Ta bort LDAP konto
+              Ta bort LDAP-konto
             </button>
 
             {% else %}
@@ -221,9 +221,9 @@
               class="btn btn-primary"
               data-toggle="modal"
               data-target="#addldap_modal">
-              Skapa LDAP konto
+              Skapa LDAP-konto
             </button>
-            {% include "modals/ldap_add.html" with modalname="addldap_modal" title="Skapa LDAP konto" member_id=member.id only %}
+            {% include "modals/ldap_add.html" with modalname="addldap_modal" title="Skapa LDAP-konto" member_id=member.id only %}
 
             {% endif %}
           </div>
@@ -239,11 +239,11 @@
             {% else %}
             <b>Saldo:</b> {{ BILL.balance }}€
             <br/>
-            <button id="delete-bill-button" class="btn btn-danger" data-id="{{ member.id }}">Ta bort BILL konto</button>
+            <button id="delete-bill-button" class="btn btn-danger" data-id="{{ member.id }}">Ta bort BILL-konto</button>
             {% endif %}
 
             {% else %}
-            <button id="add-bill-button" class="btn btn-primary" {% if not LDAP.exists %} disabled title="Skapa LDAP konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL konto</button>
+            <button id="add-bill-button" class="btn btn-primary" {% if not LDAP.exists %} disabled title="Skapa LDAP-konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL-konto</button>
             {% endif %}
           </div>
         </div>
