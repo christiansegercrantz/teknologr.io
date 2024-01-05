@@ -94,14 +94,26 @@ class LDAPAccountManager:
             last = uid
         return last + 1
 
+    def check_account(self, username):
+        try:
+            dn = env("LDAP_USER_DN_TEMPLATE") % {'user': username}
+            self.ldap.search_s(dn, ldap.SCOPE_BASE)
+            return True
+        except ldap.LDAPError as e:
+            # Result code 32 = noSuchObject
+            if e.args[0].get('result') == 32:
+                return False
+            raise e
+
     def delete_account(self, username):
         # Remove user from members group
         group_dn = env("LDAP_MEMBER_GROUP_DN")
         self.ldap.modify_s(group_dn, [(ldap.MOD_DELETE, 'memberUid', username.encode('utf-8'))])
 
-        # Remove user
-        dn = env("LDAP_USER_DN_TEMPLATE") % {'user': username}
-        self.ldap.delete_s(dn)
+        # Remove user, if it exists
+        if self.check_account(username):
+            dn = env("LDAP_USER_DN_TEMPLATE") % {'user': username}
+            self.ldap.delete_s(dn)
 
     def change_password(self, username, password):
         # Changes both the user password and the samba password
