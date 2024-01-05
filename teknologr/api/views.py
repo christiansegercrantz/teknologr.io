@@ -262,7 +262,11 @@ class LDAPAccountView(APIView):
         result = {}
         try:
             with LDAPAccountManager() as lm:
-                result = {'username': member.username, 'groups': lm.get_ldap_groups(member.username)}
+                result = {
+                    'username': member.username,
+                    'exists': lm.check_account(member.username),
+                    'groups': lm.get_ldap_groups(member.username),
+                }
         except LDAPError as e:
             return Response(LDAPError_to_string(e), status=400)
 
