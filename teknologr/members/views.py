@@ -6,6 +6,7 @@ from members.forms import *
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
 from registration.forms import RegistrationForm
+from api.ldap import get_ldap_account
 from getenv import env
 from locale import strxfrm
 
@@ -113,16 +114,7 @@ def member(request, member_id):
 
     # Get user account info
     if member.username:
-        from api.ldap import LDAPAccountManager, LDAPError_to_string
-        try:
-            with LDAPAccountManager() as lm:
-                # Separately check that the LDAP account exists, because get_ldap_groups does not do that
-                context['LDAP'] = {
-                    'exists': lm.check_account(member.username),
-                    'groups': lm.get_ldap_groups(member.username),
-                }
-        except Exception as e:
-            context['LDAP'] = {'error': LDAPError_to_string(e)}
+        context['LDAP'] = get_ldap_account(member.username)
 
     if member.bill_code:
         from api.bill import BILLAccountManager, BILLException

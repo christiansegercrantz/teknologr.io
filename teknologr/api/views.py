@@ -13,7 +13,7 @@ from collections import defaultdict
 from datetime import datetime
 from api.serializers import *
 from api.filters import *
-from api.ldap import LDAPAccountManager, LDAPError_to_string
+from api.ldap import LDAPAccountManager, LDAPError_to_string, get_ldap_account
 from api.bill import BILLAccountManager, BILLException
 from api.utils import assert_public_member_fields
 from api.mailutils import mailNewPassword, mailNewAccount
@@ -259,18 +259,7 @@ class MemberTypeViewSet(BaseModelViewSet):
 class LDAPAccountView(APIView):
     def get(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)
-        result = {}
-        try:
-            with LDAPAccountManager() as lm:
-                result = {
-                    'username': member.username,
-                    'exists': lm.check_account(member.username),
-                    'groups': lm.get_ldap_groups(member.username),
-                }
-        except LDAPError as e:
-            return Response(LDAPError_to_string(e), status=400)
-
-        return Response(result, status=200)
+        return Response(get_ldap_account(member.username), status=200)
 
     def post(self, request, member_id):
         # Create LDAP account for given user
