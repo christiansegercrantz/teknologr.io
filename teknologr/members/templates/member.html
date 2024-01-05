@@ -211,7 +211,11 @@
               id="delete-ldap-button"
               class="btn btn-danger"
               data-id="{{ member.id }}"
-              {% if LDAP.error %}disabled title="LDAP error..."{% endif %}>
+              {% if LDAP.error %}
+              disabled title="LDAP error..."
+              {% elif member.bill_code %}
+              disabled title="Ta bort BILL-konto först"
+              {% endif %}>
               Ta bort LDAP-konto
             </button>
 

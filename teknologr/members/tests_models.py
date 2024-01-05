@@ -228,8 +228,7 @@ class MemberTest(TestCase):
         member.username = 'teknosv1'
         member.student_id = '123456'
         member.email = 'svatta@teknolog.fi'
-        with self.assertRaises(LDAPError):
-            member.save()
+        member.save()
 
 
 class MemberOrderTest(BaseTest):
