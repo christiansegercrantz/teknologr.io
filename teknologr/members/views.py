@@ -116,7 +116,11 @@ def member(request, member_id):
         from api.ldap import LDAPAccountManager, LDAPError_to_string
         try:
             with LDAPAccountManager() as lm:
-                context['LDAP'] = {'groups': lm.get_ldap_groups(member.username)}
+                # Separately check that the LDAP account exists, because get_ldap_groups does not do that
+                context['LDAP'] = {
+                    'exists': lm.check_account(member.username),
+                    'groups': lm.get_ldap_groups(member.username),
+                }
         except Exception as e:
             context['LDAP'] = {'error': LDAPError_to_string(e)}
 
