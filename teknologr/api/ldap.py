@@ -123,11 +123,16 @@ class LDAPAccountManager:
             raise e
 
     def delete_account(self, username):
-        # Remove user from members group
-        group_dn = env("LDAP_MEMBER_GROUP_DN")
-        self.ldap.modify_s(group_dn, [(ldap.MOD_DELETE, 'memberUid', username.encode('utf-8'))])
+        # Remove user from the members LDAP group, but do not throw if the user it not part of it
+        try:
+            group_dn = env("LDAP_MEMBER_GROUP_DN")
+            self.ldap.modify_s(group_dn, [(ldap.MOD_DELETE, 'memberUid', username.encode('utf-8'))])
+        except ldap.LDAPError as e:
+            # Result code 16 = noSuchAttribute
+            if e.args[0].get('result') != 16:
+                raise e
 
-        # Remove user, if it exists
+        # Removing non-existent user would fail, so checking that first
         if self.check_account(username):
             dn = env("LDAP_USER_DN_TEMPLATE") % {'user': username}
             self.ldap.delete_s(dn)
