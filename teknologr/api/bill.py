@@ -61,7 +61,7 @@ class BILLAccountManager:
             raise BILLException(error)
 
         # If the BILL account does not exist all is ok
-        if info.get('exists') == False:
+        if info.get('exists') is False:
             return
 
         result = self.__request(f"del?type=user&acc={bill_code}")
