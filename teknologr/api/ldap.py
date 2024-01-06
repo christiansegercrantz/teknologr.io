@@ -18,24 +18,17 @@ def LDAPError_to_string(e):
 
 def get_ldap_account(username):
     '''
-    Get the info for a certain LDAP account. Does never throw LDAPError.
+    Get the info for a certain LDAP account. Never throws.
     '''
-    result = {
-        'username': username,
-        'exists': False,
-        'groups': [],
-    }
     if not username:
-        return result
+        return {'username': None, 'exists': False, 'groups': []}
     try:
         with LDAPAccountManager() as lm:
             exists = lm.check_account(username)
             groups = lm.get_ldap_groups(username)
-            result['exists'] = exists
-            result['groups'] = groups
+            return {'username': username, 'exists': exists, 'groups': groups}
     except ldap.LDAPError as e:
-        result['error'] = LDAPError_to_string(e)
-    return result
+        return {'username': username, 'error': LDAPError_to_string(e)}
 
 class LDAPAccountManager:
     def __init__(self):
