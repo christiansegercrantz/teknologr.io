@@ -6,6 +6,8 @@ from members.forms import *
 from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
 from registration.forms import RegistrationForm
+from api.ldap import get_ldap_account
+from api.bill import BILLAccountManager
 from getenv import env
 from locale import strxfrm
 
@@ -75,10 +77,11 @@ def member(request, member_id):
         form = MemberForm(request.POST, instance=member)
         if form.is_valid():
             from ldap import LDAPError
+            from api.ldap import LDAPError_to_string
             try:
                 form.save()
-            except LDAPError:
-                form.add_error("email", "Could not sync to LDAP")
+            except LDAPError as e:
+                form.add_error('email', f'Could not sync to LDAP: {LDAPError_to_string(e)}')
             context['result'] = 'success'
         else:
             context['result'] = 'failure'
@@ -113,26 +116,15 @@ def member(request, member_id):
 
     # Get user account info
     if member.username:
-        from api.ldap import LDAPAccountManager, LDAPError_to_string
-        try:
-            with LDAPAccountManager() as lm:
-                context['LDAP'] = {'groups': lm.get_ldap_groups(member.username)}
-        except Exception as e:
-            context['LDAP'] = {'error': LDAPError_to_string(e)}
+        context['LDAP'] = get_ldap_account(member.username)
 
     if member.bill_code:
-        from api.bill import BILLAccountManager, BILLException
         bm = BILLAccountManager()
-        try:
-            context['bill_admin_url'] = bm.admin_url(member.bill_code)
-            context['BILL'] = bm.get_bill_info(member.bill_code)
-
-            # Check that the username stored by BILL is the same as our
-            username = context['BILL']['id']
-            if member.username != username:
-                context['BILL']['error'] = f'LDAP användarnamnen här ({member.username}) och i BILL ({username}) matchar inte'
-        except BILLException as e:
-            context['BILL'] = {'error': e}
+        context['bill_admin_url'] = bm.admin_url(member.bill_code)
+        context['BILL'] = bm.get_bill_info(member.bill_code)
+        username = context['BILL'].get('id')
+        if username and member.username != username:
+            context['BILL']['error'] = f'LDAP användarnamnen här ({member.username}) och i BILL ({username}) matchar inte'
 
     # load side list items
     set_side_context(context, 'members', member)

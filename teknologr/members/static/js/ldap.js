@@ -27,7 +27,7 @@ $(document).ready(function() {
     selector: "#delete-ldap-button",
     method: "DELETE",
     url: element => `/api/accounts/ldap/${element.data('id')}/`,
-    confirmMessage: "Vill du ta bort detta LDAP konto?",
+    confirmMessage: "Vill du ta bort detta LDAP-konto?",
   });
   // Change the LDAP password for the selected user
   add_request_listener({
@@ -48,6 +48,6 @@ $(document).ready(function() {
     selector: "#delete-bill-button",
     method: "DELETE",
     url: element => `/api/accounts/bill/${element.data('id')}/`,
-    confirmMessage: "Vill du ta bort detta BILL konto?",
+    confirmMessage: "Vill du ta bort detta BILL-konto?",
   });
 });

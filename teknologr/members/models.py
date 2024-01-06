@@ -267,7 +267,9 @@ class Member(SuperClass):
             from ldap import LDAPError
             try:
                 with LDAPAccountManager() as lm:
-                    lm.change_email(self.username, self.email)
+                    # Skip syncing email to LDAP if the LDAP account does not exist
+                    if lm.check_account(self.username):
+                        lm.change_email(self.username, self.email)
             except LDAPError as e:
                 # Could not update LDAP, save other fields but keep original email
                 self.email = self._original_email

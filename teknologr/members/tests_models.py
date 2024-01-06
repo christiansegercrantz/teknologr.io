@@ -217,20 +217,6 @@ class MemberTest(TestCase):
         self.assertEquals('StÄlM', member.current_member_type)
         self.assertFalse(member.shouldBeStalm())
 
-    def test_saving(self):
-        member = Member(
-            given_names='Svatta',
-            surname='Teknolog',
-        )
-        member.save()
-
-        # try to cover lines missed by conditions.
-        member.username = 'teknosv1'
-        member.student_id = '123456'
-        member.email = 'svatta@teknolog.fi'
-        with self.assertRaises(LDAPError):
-            member.save()
-
 
 class MemberOrderTest(BaseTest):
     def test_order_by(self):

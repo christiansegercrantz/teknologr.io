@@ -10,11 +10,25 @@ def LDAPError_to_string(e):
     if not isinstance(e, ldap.LDAPError):
         return str(e)
     data = e.args[0]
-    s = f"{data.get('desc' , '')} [{data.get('result')}]"
+    s = f"{data.get('desc' , '')} [LDAP result code {data.get('result')}]"
     info = data.get('info')
     if info:
         s += f' ({info})'
     return s
+
+def get_ldap_account(username):
+    '''
+    Get the info for a certain LDAP account. Never throws.
+    '''
+    if not username:
+        return {'username': None, 'exists': False, 'groups': []}
+    try:
+        with LDAPAccountManager() as lm:
+            exists = lm.check_account(username)
+            groups = lm.get_ldap_groups(username)
+            return {'username': username, 'exists': exists, 'groups': sorted(groups)}
+    except ldap.LDAPError as e:
+        return {'username': username, 'error': LDAPError_to_string(e)}
 
 class LDAPAccountManager:
     def __init__(self):
@@ -94,14 +108,29 @@ class LDAPAccountManager:
             last = uid
         return last + 1
 
+    def check_account(self, username):
+        '''
+        Check if a certain LDAP account exists.
+        '''
+        try:
+            dn = env("LDAP_USER_DN_TEMPLATE") % {'user': username}
+            self.ldap.search_s(dn, ldap.SCOPE_BASE)
+            return True
+        except ldap.LDAPError as e:
+            # Result code 32 = noSuchObject
+            if e.args[0].get('result') == 32:
+                return False
+            raise e
+
     def delete_account(self, username):
         # Remove user from members group
         group_dn = env("LDAP_MEMBER_GROUP_DN")
         self.ldap.modify_s(group_dn, [(ldap.MOD_DELETE, 'memberUid', username.encode('utf-8'))])
 
-        # Remove user
-        dn = env("LDAP_USER_DN_TEMPLATE") % {'user': username}
-        self.ldap.delete_s(dn)
+        # Remove user, if it exists
+        if self.check_account(username):
+            dn = env("LDAP_USER_DN_TEMPLATE") % {'user': username}
+            self.ldap.delete_s(dn)
 
     def change_password(self, username, password):
         # Changes both the user password and the samba password
