@@ -340,17 +340,7 @@ def change_ldap_password(request, member_id):
 class BILLAccountView(APIView):
     def get(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)
-
-        if not member.bill_code:
-            return Response('Member has no BILL account', status=400)
-
-        bm = BILLAccountManager()
-        try:
-            result = bm.get_bill_info(member.bill_code)
-        except BILLException as e:
-            return Response(str(e), status=400)
-
-        return Response(result, status=200)
+        return Response(BILLAccountManager().get_bill_info(member.bill_code), status=200)
 
     def post(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)

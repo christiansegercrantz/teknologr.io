@@ -234,17 +234,29 @@
           <div class="col-sm-6">
             <h5>BILL</h5>
             {% if member.bill_code %}
+
+            {% if BILL.error %}
+              <div class="alert alert-danger">{{ BILL.error }}</div>
+            {% elif not BILL.exists %}
+              <div class="alert alert-danger">BILL-konto "{{ member.bill_code }}" existerar inte</div>
+            {% endif %}
+
             <b>Konto:</b>
             <span class="monospace">{{ member.bill_code }}</span>
             <br/>
 
-            {% if BILL.error %}
-            <div class="alert alert-danger">{{ BILL.error }}</div>
-            {% else %}
+            {% if BILL.exists %}
             <b>Saldo:</b> {{ BILL.balance }}€
             <br/>
-            <button id="delete-bill-button" class="btn btn-danger" data-id="{{ member.id }}">Ta bort BILL-konto</button>
             {% endif %}
+
+            <button
+              id="delete-bill-button"
+              class="btn btn-danger"
+              data-id="{{ member.id }}"
+              {% if BILL.error %}disabled title="BILL error..."{% endif %}>
+              Ta bort BILL-konto
+            </button>
 
             {% else %}
             <button id="add-bill-button" class="btn btn-primary" {% if not LDAP.exists %} disabled title="Skapa LDAP-konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL-konto</button>

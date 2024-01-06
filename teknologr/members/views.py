@@ -7,6 +7,7 @@ from members.programmes import DEGREE_PROGRAMME_CHOICES
 from registration.models import Applicant
 from registration.forms import RegistrationForm
 from api.ldap import get_ldap_account
+from api.bill import BILLAccountManager
 from getenv import env
 from locale import strxfrm
 
@@ -118,18 +119,12 @@ def member(request, member_id):
         context['LDAP'] = get_ldap_account(member.username)
 
     if member.bill_code:
-        from api.bill import BILLAccountManager, BILLException
         bm = BILLAccountManager()
-        try:
-            context['bill_admin_url'] = bm.admin_url(member.bill_code)
-            context['BILL'] = bm.get_bill_info(member.bill_code)
-
-            # Check that the username stored by BILL is the same as our
-            username = context['BILL']['id']
-            if member.username != username:
-                context['BILL']['error'] = f'LDAP användarnamnen här ({member.username}) och i BILL ({username}) matchar inte'
-        except BILLException as e:
-            context['BILL'] = {'error': e}
+        context['bill_admin_url'] = bm.admin_url(member.bill_code)
+        context['BILL'] = bm.get_bill_info(member.bill_code)
+        username = context['BILL'].get('id')
+        if username and member.username != username:
+            context['BILL']['error'] = f'LDAP användarnamnen här ({member.username}) och i BILL ({username}) matchar inte'
 
     # load side list items
     set_side_context(context, 'members', member)

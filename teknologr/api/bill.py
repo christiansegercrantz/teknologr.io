@@ -1,5 +1,6 @@
 import requests
 import re
+import json
 from getenv import env
 
 
@@ -8,6 +9,7 @@ class BILLException(Exception):
 
 
 class BILLAccountManager:
+    ERROR_ACCOUNT_DOES_NOT_EXIST = "BILL account does not exist"
 
     def __init__(self):
         self.api_url = env("BILL_API_URL")
@@ -19,70 +21,72 @@ class BILLAccountManager:
             return ''
         return f'{"/".join(self.api_url.split("/")[:-2])}/admin/userdata?id={bill_code}'
 
+    def __request(self, path):
+        try:
+            r = requests.post(self.api_url + path, auth=(self.user, self.password))
+        except:
+            raise BILLException("Could not connect to BILL server")
+
+        if r.status_code != 200:
+            raise BILLException(f"BILL returned status code {r.status_code}")
+
+        number = 0
+        try:
+            number = int(r.text)
+        except ValueError:
+            # Not a number, return as text
+            return r.text
+
+        # A negative number means an error code
+        if number == -3:
+            raise BILLException(BILLAccountManager.ERROR_ACCOUNT_DOES_NOT_EXIST)
+        if number < 0:
+            raise BILLException(f"BILL returned error code: {number}")
+
+        return number
+
     def create_bill_account(self, username):
         if not re.search(r'^[A-Za-z0-9]+$', username):
             raise BILLException("Can not create a BILL account using an LDAP username containing anything other than letters and numbers")
 
-        try:
-            r = requests.post(self.api_url + "add?type=user&id=%s" % username, auth=(self.user, self.password))
-        except:
-            raise BILLException("Could not connect to BILL server")
-        if r.status_code != 200:
-            raise BILLException("BILL returned status: %d" % r.status_code)
-        try:
-            number = int(r.text)
-        except ValueError:
-            # Returned value not a BILL code or error code
-            raise BILLException("BILL returned error: " + r.text)
-        if number < 0:
-            raise BILLException("BILL returned error code: " + r.text)
-        return number
+        result = self.__request(f"add?type=user&id={username}")
+        if type(result) == int:
+            return result
+        raise BILLException(f"BILL returned error: {result}")
 
     def delete_bill_account(self, bill_code):
-        try:
-            r = requests.post(self.api_url + "del?type=user&acc=%s" % bill_code, auth=(self.user, self.password))
-        except:
-            raise BILLException("Could not connect to BILL server")
-        if r.status_code != 200:
-            raise BILLException("BILL returned status: %d" % r.status_code)
-        try:
-            number = int(r.text)
-        except ValueError:
-            # Returned value not a number, unknown error occurred
-            raise BILLException("BILL returned error: " + r.text)
-        if number == 0:
-            pass  # All is good
-        else:
-            raise BILLException("BILL returned error code: %d" % number)
+        info = self.get_bill_info(bill_code)
+        error = info.get('error')
+        if error:
+            raise BILLException(error)
 
-    def get_bill_info(self, bill_code):
-        import json
-        try:
-            r = requests.get(self.api_url + "get?type=user&acc=%s" % bill_code, auth=(self.user, self.password))
-        except:
-            raise BILLException("Could not connect to BILL server")
-        if r.status_code != 200:
-            raise BILLException("BILL returned status: %d" % r.status_code)
-        # BILL API does not use proper http status codes
-        try:
-            error = int(r.text)
-        except ValueError:
-            # The returned string is not an integer, so presumably we have the json we want
-            return json.loads(r.text)
-        raise BILLException("BILL returned error code: " + r.text)
+        # If the BILL account does not exist all is ok
+        if info.get('exists') == False:
+            return
+
+        result = self.__request(f"del?type=user&acc={bill_code}")
+
+        if result != 0:
+            raise BILLException(f"BILL returned error: {result}")
 
     def find_bill_code(self, username):
-        import json
+        result = self.__request(f"get?type=user&id={username}")
+        return json.loads(result)["acc"]
+
+    def get_bill_info(self, bill_code):
+        '''
+        Get the info for a certain BILL account. Never throws.
+        '''
+        if not bill_code:
+            return {'acc': None, 'exists': False}
         try:
-            r = requests.get(self.api_url + "get?type=user&id=%s" % username, auth=(self.user, self.password))
-        except:
-            raise BILLException("Could not connect to BILL server")
-        if r.status_code != 200:
-            raise BILLException("BILL returned status: %d" % r.status_code)
-        # BILL API does not use proper http status codes
-        try:
-            error = int(r.text)
-        except ValueError:
-            # The returned string is not an integer, so presumably we have the json we want
-            return json.loads(r.text)["acc"]
-        raise BILLException("BILL returned error code: " + r.text + " for username: " + username)
+            result = self.__request(f"get?type=user&acc={bill_code}")
+            return {
+                **json.loads(result),
+                'exists': True,
+            }
+        except BILLException as e:
+            s = str(e)
+            if s == BILLAccountManager.ERROR_ACCOUNT_DOES_NOT_EXIST:
+                return {'acc': bill_code, 'exists': False}
+            return {'acc': bill_code, 'error': s}
