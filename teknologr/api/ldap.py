@@ -26,7 +26,7 @@ def get_ldap_account(username):
         with LDAPAccountManager() as lm:
             exists = lm.check_account(username)
             groups = lm.get_ldap_groups(username)
-            return {'username': username, 'exists': exists, 'groups': groups}
+            return {'username': username, 'exists': exists, 'groups': sorted(groups)}
     except ldap.LDAPError as e:
         return {'username': username, 'error': LDAPError_to_string(e)}
 
