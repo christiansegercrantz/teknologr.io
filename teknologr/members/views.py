@@ -76,10 +76,11 @@ def member(request, member_id):
         form = MemberForm(request.POST, instance=member)
         if form.is_valid():
             from ldap import LDAPError
+            from api.ldap import LDAPError_to_string
             try:
                 form.save()
-            except LDAPError:
-                form.add_error("email", "Could not sync to LDAP")
+            except LDAPError as e:
+                form.add_error('email', f'Could not sync to LDAP: {LDAPError_to_string(e)}')
             context['result'] = 'success'
         else:
             context['result'] = 'failure'

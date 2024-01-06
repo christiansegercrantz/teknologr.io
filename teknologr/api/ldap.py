@@ -10,7 +10,7 @@ def LDAPError_to_string(e):
     if not isinstance(e, ldap.LDAPError):
         return str(e)
     data = e.args[0]
-    s = f"{data.get('desc' , '')} [{data.get('result')}]"
+    s = f"{data.get('desc' , '')} [LDAP result code {data.get('result')}]"
     info = data.get('info')
     if info:
         s += f' ({info})'

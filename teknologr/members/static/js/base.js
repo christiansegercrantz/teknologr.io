@@ -52,8 +52,8 @@ const add_request_listener = ({ selector, method, url, data, confirmMessage, new
 				else location.reload();
 			});
 			// XXX: The error message is not very helpful for the user, so should probably change this to something else
-			request.fail((jqHXR, textStatus) => {
-				alert(`Request failed (${textStatus}): ${jqHXR.responseText}`);
+			request.fail((jqHXR, _textStatus) => {
+				alert(`Request failed with status ${jqHXR.status} (${jqHXR.statusText}): ${jqHXR.responseText}`);
 			});
 		});
 	});

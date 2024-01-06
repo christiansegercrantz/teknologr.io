@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.db import connection
 from django.db.models import Q
 from django.db.utils import IntegrityError
+from django.http import HttpResponse
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
@@ -150,7 +151,7 @@ def multi_group_memberships_save(request):
         # get_or_create is used to ignore duplicates
         GroupMembership.objects.get_or_create(member_id=mid, group_id=int(gid))
 
-    return Response(status=200)
+    return HttpResponse(status=200)
 
 
 @api_view(['POST'])
@@ -170,7 +171,7 @@ def multi_functionaries_save(request):
             begin_date=begin_date
         )
 
-    return Response(status=200)
+    return HttpResponse(status=200)
 
 
 @api_view(['POST'])
@@ -184,7 +185,7 @@ def multi_decoration_ownerships_save(request):
         # get_or_create is used to ignore duplicates
         DecorationOwnership.objects.get_or_create(member_id=mid, decoration_id=int(did), acquired=acquired)
 
-    return Response(status=200)
+    return HttpResponse(status=200)
 
 
 # FunctionaryTypes and Functionaries
@@ -268,19 +269,19 @@ class LDAPAccountView(APIView):
         password = request.data.get('password')
         mailToUser = request.data.get('mail_to_user')
         if not username or not password:
-            return Response('Username or password field missing', status=400)
+            return HttpResponse('Username or password field missing', status=400)
 
         if member.username:
-            return Response('Member already has an LDAP account', status=400)
+            return HttpResponse('Member already has an LDAP account', status=400)
 
         if Member.objects.filter(username=username).exists():
-            return Response(f'Username "{username}" is already taken', status=400)
+            return HttpResponse(f'Username "{username}" is already taken', status=400)
 
         try:
             with LDAPAccountManager() as lm:
                 lm.add_account(member, username, password)
         except LDAPError as e:
-            return Response(LDAPError_to_string(e), status=400)
+            return HttpResponse(LDAPError_to_string(e), status=400)
 
         # Store account details
         member.username = username
@@ -289,30 +290,30 @@ class LDAPAccountView(APIView):
         if mailToUser:
             status = mailNewAccount(member, password)
             if not status:
-                return Response(f'Account created, failed to send mail to {member}', status=500)
+                return HttpResponse(f'Account created, failed to send mail to {member}', status=500)
 
-        return Response(status=200)
+        return HttpResponse(status=200)
 
     def delete(self, request, member_id):
         # Delete LDAP account for a given user
         member = get_object_or_404(Member, id=member_id)
 
         if not member.username:
-            return Response('Member has no LDAP account', status=400)
+            return HttpResponse('Member has no LDAP account', status=400)
         if member.bill_code:
-            return Response('BILL account must be deleted first', status=400)
+            return HttpResponse('BILL account must be deleted first', status=400)
 
         try:
             with LDAPAccountManager() as lm:
                 lm.delete_account(member.username)
         except LDAPError as e:
-            return Response(LDAPError_to_string(e), status=400)
+            return HttpResponse(LDAPError_to_string(e), status=400)
 
         # Delete account information from user in db
         member.username = None
         member.save()
 
-        return Response(status=200)
+        return HttpResponse(status=200)
 
 
 @api_view(['POST'])
@@ -321,7 +322,7 @@ def change_ldap_password(request, member_id):
     password = request.data.get('password')
     mailToUser = request.data.get('mail_to_user')
     if not password:
-        return Response('Password field missing', status=400)
+        return HttpResponse('Password field missing', status=400)
 
     try:
         with LDAPAccountManager() as lm:
@@ -329,11 +330,11 @@ def change_ldap_password(request, member_id):
             if mailToUser:
                 status = mailNewPassword(member, password)
                 if not status:
-                    return Response('Password changed, but failed to send mail', status=500)
+                    return HttpResponse('Password changed, but failed to send mail', status=500)
     except LDAPError as e:
-        return Response(LDAPError_to_string(e), status=400)
+        return HttpResponse(LDAPError_to_string(e), status=400)
 
-    return Response(status=200)
+    return HttpResponse(status=200)
 
 
 class BILLAccountView(APIView):
@@ -355,9 +356,9 @@ class BILLAccountView(APIView):
         member = get_object_or_404(Member, id=member_id)
 
         if member.bill_code:
-            return Response('Member already has a BILL account', status=400)
+            return HttpResponse('Member already has a BILL account', status=400)
         if not member.username:
-            return Response('LDAP account missing', status=400)
+            return HttpResponse('LDAP account missing', status=400)
 
         bm = BILLAccountManager()
         bill_code = None
@@ -373,29 +374,29 @@ class BILLAccountView(APIView):
             try:
                 bill_code = bm.create_bill_account(member.username)
             except BILLException as e:
-                return Response(str(e), status=400)
+                return HttpResponse(str(e), status=400)
 
         member.bill_code = bill_code
         member.save()
 
-        return Response(status=200)
+        return HttpResponse(status=200)
 
     def delete(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)
 
         if not member.bill_code:
-            return Response('Member has no BILL account', status=400)
+            return HttpResponse('Member has no BILL account', status=400)
 
         bm = BILLAccountManager()
         try:
             bm.delete_bill_account(member.bill_code)
         except BILLException as e:
-            return Response(str(e), status=400)
+            return HttpResponse(str(e), status=400)
 
         member.bill_code = None
         member.save()
 
-        return Response(status=200)
+        return HttpResponse(status=200)
 
 
 # Registration/Applicant
@@ -457,7 +458,7 @@ class ApplicantMembershipView(APIView):
             new_member.save()
             applicant.delete()
         except IntegrityError as err:
-            return Response(f'Error accepting application with id {applicant_id}: {str(err)}', status=400)
+            return HttpResponse(f'Error accepting application with id {applicant_id}: {str(err)}', status=400)
 
         # Add MemberTypes if set
         membership_date = request.data.get('membership_date')
@@ -482,18 +483,18 @@ class ApplicantMembershipView(APIView):
 
                     status = mailNewAccount(new_member, password)
                     if not status:
-                        return Response(f'LDAP account created, failed to send mail to {new_member}', status=400)
+                        return HttpResponse(f'LDAP account created, failed to send mail to {new_member}', status=400)
 
             # LDAP account creation failed (e.g. if the account already exists)
             except LDAPError as e:
-                return Response(f'Error creating LDAP account for {new_member}: {LDAPError_to_string(e)}', status=400)
+                return HttpResponse(f'Error creating LDAP account for {new_member}: {LDAPError_to_string(e)}', status=400)
             # Updating the username field failed, remove the created LDAP account
             # as it is not currently referenced by any member.
             except IntegrityError as e:
                 lm.delete_account(username)
-                return Response(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
+                return HttpResponse(f'Error creating LDAP account for {new_member}: {str(e)}', status=400)
 
-        return Response(status=200)
+        return HttpResponse(status=200)
 
     def _create_member_type(self, member, date, type):
         try:
@@ -518,9 +519,9 @@ def multi_applicant_submissions(request):
             errors.append(response.data)
 
     if len(errors) > 0:
-        return Response(f'{len(errors)} error(s) occured when accepting submissions: {" ".join(errors)}', status=400)
+        return HttpResponse(f'{len(errors)} error(s) occured when accepting submissions: {" ".join(errors)}', status=400)
 
-    return Response(status=200)
+    return HttpResponse(status=200)
 
 
 # JSON API:s
