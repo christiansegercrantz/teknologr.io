@@ -161,8 +161,9 @@ class MemberTest(TestCase):
     def test_search_by_name(self):
         Member.objects.create(given_names='Bar Foo', surname='von Test', allow_publish_info=False)
         Member.objects.create(given_names='Test', surname='Test', allow_publish_info=False, comment="foo")
+        Member.objects.create(given_names='Test', surname='Test', allow_publish_info=False, username="afood")
         self.assertEqual(3, len(Member.objects.search_by_name(["foo"], False)))
-        self.assertEqual(5, len(Member.objects.search_by_name(["foo"], True)))
+        self.assertEqual(6, len(Member.objects.search_by_name(["foo"], True)))
         self.assertEqual(1, len(Member.objects.search_by_name(["foo", "von"], False)))
         self.assertEqual(2, len(Member.objects.search_by_name(["foo", "von"], True)))
 

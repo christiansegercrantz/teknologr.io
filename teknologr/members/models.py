@@ -57,7 +57,8 @@ class MemberManager(models.Manager):
                 Q(preferred_name__icontains=q) |
                 Q(surname__icontains=q) |
                 Q(comment__icontains=q) |
-                Q(email__icontains=q)
+                Q(email__icontains=q) |
+                Q(username__icontains=q)
             ) for q in queries]
         else:
             filters = [(
