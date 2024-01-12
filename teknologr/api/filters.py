@@ -334,6 +334,9 @@ class ApplicantFilter(MemberFilter):
     dead = None
     bill_code = None
     created = None
+    n_functionaries = None
+    n_groups = None
+    n_decorations = None
 
     # Add all extra fields
     motivation = django_filters.CharFilter(
@@ -344,4 +347,4 @@ class ApplicantFilter(MemberFilter):
         lookup_expr='icontains',
         label='Modersmålet innehåller',
     )
-    created_at = django_filters.DateFromToRangeFilter(label='Ansökningsdatum är mellan')
+    created_at = django_filters.DateFromToRangeFilter(label='Ansökningsdatumet är mellan')

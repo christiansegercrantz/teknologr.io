@@ -245,6 +245,8 @@ class MemberTypeSerializer(BaseSerializer):
 # Applicant
 
 class ApplicantSerializer(BaseSerializer):
+    country = SerializableCountryField(allow_blank=True, choices=Countries(), required=False)
+
     class Meta:
         model = Applicant
         fields = '__all__'
