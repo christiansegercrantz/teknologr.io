@@ -28,7 +28,9 @@
       {% include "modals/grouptype_edit.html" with modalname="edit-gt-modal" title="Editera grupp" form=edit_gt_form grouptype=grouptype only %}
     </div>
   </div>
-  <h1 class="page-header">{{ grouptype.name }}</h1>
+  <h1 class="page-header" title="Skapad: {{ grouptype.created }}&#013;Ändrad: {{ grouptype.modified }}">
+    {{ grouptype.name }}
+  </h1>
 </div>
 
 <div class="container-fluid">
@@ -76,7 +78,7 @@
           <thead class="no-border">
             <tr>
               <th>
-                <h4>
+                <h4 title="Skapad: {{ group.created }}&#013;Ändrad: {{ group.modified }}">
                   {{ group.begin_date }}<br>- {{ group.end_date }}<br>
                   <span>
                     <i class="far fa-edit text-info icon-20" role="button" title="Editera undergrupp" data-toggle="modal" data-target="#edit-g-modal"></i>

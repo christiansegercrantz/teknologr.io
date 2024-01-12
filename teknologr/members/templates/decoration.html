@@ -12,7 +12,9 @@
       {% include "modals/decoration_edit.html" with modalname="edit-d-modal" title="Editera betygelse" form=edit_d_form decoration=decoration only %}
     </div>
   </div>
-  <h1 class="page-header">{{ decoration.name }}</h1>
+  <h1 class="page-header" title="Skapad: {{ decoration.created }}&#013;Ändrad: {{ decoration.modified }}">
+    {{ decoration.name }}
+  </h1>
 </div>
 
 

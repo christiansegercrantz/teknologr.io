@@ -12,7 +12,9 @@
       {% include "modals/functionarytype_edit.html" with modalname="edit-ft-modal" title="Editera post" form=edit_ft_form functionary_type=functionary_type only %}
     </div>
   </div>
-  <h1 class="page-header">{{ functionary_type.name }}</h1>
+  <h1 class="page-header" title="Skapad: {{ functionary_type.created }}&#013;Ändrad: {{ functionary_type.modified }}">
+    {{ functionary_type.name }}
+  </h1>
 </div>
 
 <div class="container-fluid">
