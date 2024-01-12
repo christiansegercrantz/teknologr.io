@@ -1,6 +1,7 @@
 {% extends "home.html" %}
 
 {% block content %}
+{% include "searchbar.html" with search=1 placeholder="Sök personer" %}
 <div class="container-fluid">
   <h1 class="page-header">
     {% if is_staff %}

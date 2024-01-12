@@ -91,4 +91,22 @@ $(document).ready(() => {
             handleIcon(tbody, icon, true, reverse);
         }
     });
+
+    /**
+     * Make the searchbox into a filter too, filtering all table rows on the page.
+     */
+    $("#searchbox").on("input", event => {
+        const queries = event.target.value.toLowerCase().split(" ").filter(s => s);
+        $("tbody tr").each((_, e) => {
+            const str = e.children[0].textContent.toLowerCase();
+            let ok = true;
+            for (const q of queries) {
+                if (!str.includes(q)) {
+                    ok = false;
+                    break;
+                }
+            }
+            e.style.display = ok ? "" : "none";
+        });
+    });
 });

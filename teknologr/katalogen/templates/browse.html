@@ -1,6 +1,11 @@
 {% extends "home.html" %}
 
 {% block content %}
+{% if home %}
+{% include "searchbar.html" with search=1 placeholder="Sök personer" %}
+{% else %}
+{% include "searchbar.html" with search=1 placeholder="Filtrera eller sök personer" %}
+{% endif %}
 <div class="row">
   {% if home %}
     <div class="text-center col-12">

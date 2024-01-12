@@ -1,9 +1,15 @@
+.navbar {
+    margin-bottom: 20px;
+}
+
 .searchbar {
-    padding: 20px 15px 0 15px;
+    padding: 20px;
+    padding-top: 0px;
 }
 
 .alphabet {
     padding: 20px;
+    padding-top: 0px;
     font-size: 130%;
 }
 

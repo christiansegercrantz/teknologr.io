@@ -59,27 +59,6 @@
     </nav>
 
     <div class="container">
-      <div class="row">
-        <div class="col-sm-12 col-md-8 offset-md-2">
-          <div class="searchbar text-center">
-            <form id="searchform" action="{% url 'katalogen:search' %}" method="get" accept-charset="utf-8">
-              <div class="input-group" id="adv-search">
-                <input type="text" class="form-control" placeholder="Sök personer" name="q" autofocus/>
-                <div class="input-group-append">
-                  <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="alphabet text-center col-12">
-          {% for letter in abc %}
-          <a href="{% url 'katalogen:startswith' letter %}">{{letter}}</a>
-          {% endfor %}
-        </div>
-      </div>
 
       {% block content %}
       {% endblock %}
