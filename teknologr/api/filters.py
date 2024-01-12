@@ -334,6 +334,7 @@ class ApplicantFilter(MemberFilter):
     dead = None
     bill_code = None
     created = None
+    modified = None
     n_functionaries = None
     n_groups = None
     n_decorations = None
