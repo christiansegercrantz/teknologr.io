@@ -12,7 +12,7 @@
             <a href="{% url 'api:member-detail' member.id %}">Member</a>
             <a href="{% url 'api:dump_htk' member.id %}">HTK dump</a>
             {% if member.username %}
-            <a href="{% url 'api:ldap' member.id %}">LDAP</a>
+            <a href="{% url 'api:ldap_account' member.id %}">LDAP</a>
             {% endif %}
             {% if member.bill_code %}
             <a href="{% url 'api:bill' member.id %}">BILL</a>
@@ -188,7 +188,7 @@
 
             {% if LDAP.error %}
               <div class="alert alert-danger">{{ LDAP.error }}</div>
-            {% elif not LDAP.exists %}
+            {% elif not LDAP.username %}
               <div class="alert alert-danger">LDAP-konto "{{ member.username }}" existerar inte</div>
             {% endif %}
             <b>Användarnamn:</b> <span class="monospace">{{ member.username }}</span>
@@ -196,7 +196,7 @@
             <b>Grupper:</b>
             <ul>
               {% for group in LDAP.groups %}
-              <li>{{ group }}</li>
+              <li><a href="{% url 'api:ldap_group' group %}">{{ group }}</a></li>
               {% endfor %}
             </ul>
             <button

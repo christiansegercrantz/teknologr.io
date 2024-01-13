@@ -16,20 +16,6 @@ def LDAPError_to_string(e):
         s += f' ({info})'
     return s
 
-def get_ldap_account(username):
-    '''
-    Get the info for a certain LDAP account. Never throws.
-    '''
-    if not username:
-        return {'username': None, 'exists': False, 'groups': []}
-    try:
-        with LDAPAccountManager() as lm:
-            exists = lm.check_account(username)
-            groups = lm.get_ldap_groups(username)
-            return {'username': username, 'exists': exists, 'groups': sorted(groups)}
-    except ldap.LDAPError as e:
-        return {'username': username, 'error': LDAPError_to_string(e)}
-
 class LDAPAccountManager:
     def __init__(self):
         # Don't require certificates
@@ -173,8 +159,67 @@ class LDAPAccountManager:
         digest = hashlib.md5((password + salt).encode('utf-8')).hexdigest()
         return b"{SMD5}" + base64.b64encode(binascii.unhexlify(digest) + salt.encode('utf-8'))
 
-    def get_ldap_groups(self, username):
-        dn = env("LDAP_GROUP_DN")
-        query = "(&(objectClass=posixGroup)(memberUid=%s))" % username
-        output = self.ldap.search_s(dn, ldap.SCOPE_SUBTREE, query, ['cn', ])
-        return [group[1]['cn'][0].decode('utf-8') for group in output]
+    def __get_key(self, d, key, default=None):
+        value = d.get(key)
+        if value is None:
+            return default
+        return value[0].decode('utf-8')
+
+    def get_user_list(self):
+        result = self.ldap.search_s(
+            env('LDAP_USER_DN'),
+            ldap.SCOPE_ONELEVEL,
+            attrlist=['uid'])
+        return sorted([self.__get_key(user[1], 'uid') for user in result])
+
+    def get_user_details(self, username):
+        result = self.ldap.search_s(
+            env('LDAP_USER_DN'),
+            ldap.SCOPE_ONELEVEL,
+            f'(uid={username})',
+            ['uidNumber', 'givenName', 'sn', 'mail'])
+        if not result:
+            return None
+        user = result[0][1]
+        id = self.__get_key(user, 'uidNumber', '')
+        return {
+            'username': username,
+            'id': int(id) if id.isdecimal() else None,
+            'given_name': self.__get_key(user, 'givenName'),
+            'surname': self.__get_key(user, 'sn'),
+            'email': self.__get_key(user, 'mail'),
+            'groups': self.get_user_groups(username),
+        }
+
+    def get_user_groups(self, username):
+        result = self.ldap.search_s(
+            env('LDAP_GROUP_DN'),
+            ldap.SCOPE_SUBTREE,
+            f'(&(objectClass=posixGroup)(memberUid={username}))',
+            ['cn'])
+        return sorted([self.__get_key(group[1], 'cn') for group in result])
+
+    def get_group_list(self):
+        result = self.ldap.search_s(
+            env('LDAP_GROUP_DN'),
+            ldap.SCOPE_ONELEVEL,
+            '(objectClass=posixGroup)',
+            ['cn'])
+        return sorted([self.__get_key(group[1], 'cn') for group in result])
+
+    def get_group_details(self, group_name):
+        result = self.ldap.search_s(
+            env('LDAP_GROUP_DN'),
+            ldap.SCOPE_ONELEVEL,
+            f'(&(objectClass=posixGroup)(cn={group_name}))',
+            ['gidNumber', 'description', 'memberUid'])
+        if not result:
+            return None
+        group = result[0][1]
+        id = self.__get_key(group, 'gidNumber', '')
+        return {
+            'name': group_name,
+            'description': self.__get_key(group, 'description'),
+            'id': int(id) if id.isdecimal() else None,
+            'members': group.get('memberUid', []),
+        }
