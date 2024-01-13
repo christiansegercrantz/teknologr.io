@@ -12,7 +12,7 @@
             <a href="{% url 'api:member-detail' member.id %}">Member</a>
             <a href="{% url 'api:dump_htk' member.id %}">HTK dump</a>
             {% if member.username %}
-            <a href="{% url 'api:ldap' member.id %}">LDAP</a>
+            <a href="{% url 'api:ldap_account' member.id %}">LDAP</a>
             {% endif %}
             {% if member.bill_code %}
             <a href="{% url 'api:bill' member.id %}">BILL</a>
@@ -188,7 +188,7 @@
 
             {% if LDAP.error %}
               <div class="alert alert-danger">{{ LDAP.error }}</div>
-            {% elif not LDAP.exists %}
+            {% elif not LDAP.username %}
               <div class="alert alert-danger">LDAP-konto "{{ member.username }}" existerar inte</div>
             {% endif %}
             <b>Användarnamn:</b> <span class="monospace">{{ member.username }}</span>
@@ -196,14 +196,14 @@
             <b>Grupper:</b>
             <ul>
               {% for group in LDAP.groups %}
-              <li>{{ group }}</li>
+              <li><a href="{% url 'api:ldap_group' group %}">{{ group }}</a></li>
               {% endfor %}
             </ul>
             <button
               class="btn btn-primary"
               data-toggle="modal"
               data-target="#changepw_modal"
-              {% if not LDAP.exists %}disabled title="LDAP-konto existerar inte"{% endif %}>
+              {% if not LDAP.username %}disabled title="LDAP-konto existerar inte"{% endif %}>
               Ändra lösenord
             </button>
             {% include "modals/ldap_changepw.html" with modalname="changepw_modal" title="Ändra LDAP lösenord" member_id=member.id only %}
@@ -237,7 +237,7 @@
 
             {% if BILL.error %}
               <div class="alert alert-danger">{{ BILL.error }}</div>
-            {% elif not BILL.exists %}
+            {% elif not BILL.acc %}
               <div class="alert alert-danger">BILL-konto "{{ member.bill_code }}" existerar inte</div>
             {% endif %}
 
@@ -245,7 +245,7 @@
             <span class="monospace">{{ member.bill_code }}</span>
             <br/>
 
-            {% if BILL.exists %}
+            {% if BILL.acc %}
             <b>Saldo:</b> {{ BILL.balance }}€
             <br/>
             {% endif %}
@@ -259,7 +259,7 @@
             </button>
 
             {% else %}
-            <button id="add-bill-button" class="btn btn-primary" {% if not LDAP.exists %} disabled title="Skapa LDAP-konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL-konto</button>
+            <button id="add-bill-button" class="btn btn-primary" {% if not LDAP.username %} disabled title="Skapa LDAP-konto först"{% endif %} data-id="{{ member.id }}">Skapa BILL-konto</button>
             {% endif %}
           </div>
         </div>

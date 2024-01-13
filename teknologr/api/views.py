@@ -14,7 +14,7 @@ from collections import defaultdict
 from datetime import datetime
 from api.serializers import *
 from api.filters import *
-from api.ldap import LDAPAccountManager, LDAPError_to_string, get_ldap_account
+from api.ldap import LDAPAccountManager, LDAPError_to_string
 from api.bill import BILLAccountManager, BILLException
 from api.utils import assert_public_member_fields
 from api.mailutils import mailNewPassword, mailNewAccount
@@ -260,7 +260,7 @@ class MemberTypeViewSet(BaseModelViewSet):
 class LDAPAccountView(APIView):
     def get(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)
-        return Response(get_ldap_account(member.username), status=200)
+        return get_ldap_user_details_method(member.username)
 
     def post(self, request, member_id):
         # Create LDAP account for given user
@@ -315,6 +315,46 @@ class LDAPAccountView(APIView):
 
         return HttpResponse(status=200)
 
+@api_view(['GET'])
+def get_ldap_user_list(_):
+    try:
+        with LDAPAccountManager() as lm:
+            return Response(lm.get_user_list())
+    except LDAPError as e:
+        return Response({'detail': LDAPError_to_string(e)}, status=500)
+
+def get_ldap_user_details_method(username):
+    try:
+        with LDAPAccountManager() as lm:
+            user = lm.get_user_details(username)
+    except LDAPError as e:
+        return Response({'detail': LDAPError_to_string(e)}, status=500)
+    if not user:
+        return Response({'detail': 'Could not find LDAP user.'}, status=404)
+    return Response(user)
+
+@api_view(['GET'])
+def get_ldap_user_details(_, username):
+    return get_ldap_user_details_method(username)
+
+@api_view(['GET'])
+def get_ldap_group_list(_):
+    try:
+        with LDAPAccountManager() as lm:
+            return Response(lm.get_group_list())
+    except LDAPError as e:
+        return Response({'detail': LDAPError_to_string(e)}, status=500)
+
+@api_view(['GET'])
+def get_ldap_group_details(_, group_name):
+    try:
+        with LDAPAccountManager() as lm:
+            group = lm.get_group_details(group_name)
+    except LDAPError as e:
+        return Response({'detail': LDAPError_to_string(e)}, status=500)
+    if not group:
+        return Response({'detail': 'Could not find LDAP group.'}, status=404)
+    return Response(group)
 
 @api_view(['POST'])
 def change_ldap_password(request, member_id):
@@ -340,7 +380,13 @@ def change_ldap_password(request, member_id):
 class BILLAccountView(APIView):
     def get(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)
-        return Response(BILLAccountManager().get_bill_info(member.bill_code), status=200)
+        try:
+            account = BILLAccountManager().get_account_by_code(member.bill_code)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=500)
+        if not account:
+            return Response({'detail': 'Could not find BILL account.'}, status=404)
+        return Response(account)
 
     def post(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)
@@ -355,7 +401,7 @@ class BILLAccountView(APIView):
 
         # Check if there already is a BILL account with this LDAP name
         try:
-            bill_code = bm.find_bill_code(member.username)
+            bill_code = bm.get_account_by_username(member.username).get('acc')
         except:
             pass
 

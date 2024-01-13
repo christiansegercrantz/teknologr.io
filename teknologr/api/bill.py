@@ -30,11 +30,10 @@ class BILLAccountManager:
         if r.status_code != 200:
             raise BILLException(f"BILL returned status code {r.status_code}")
 
-        number = 0
+        # Not a number, return as text
         try:
             number = int(r.text)
         except ValueError:
-            # Not a number, return as text
             return r.text
 
         # A negative number means an error code
@@ -55,13 +54,10 @@ class BILLAccountManager:
         raise BILLException(f"BILL returned error: {result}")
 
     def delete_bill_account(self, bill_code):
-        info = self.get_bill_info(bill_code)
-        error = info.get('error')
-        if error:
-            raise BILLException(error)
+        info = self.get_account_by_code(bill_code)
 
         # If the BILL account does not exist all is ok
-        if info.get('exists') is False:
+        if not info:
             return
 
         result = self.__request(f"del?type=user&acc={bill_code}")
@@ -69,24 +65,28 @@ class BILLAccountManager:
         if result != 0:
             raise BILLException(f"BILL returned error: {result}")
 
-    def find_bill_code(self, username):
-        result = self.__request(f"get?type=user&id={username}")
-        return json.loads(result)["acc"]
-
-    def get_bill_info(self, bill_code):
+    def get_account_by_username(self, username):
         '''
-        Get the info for a certain BILL account. Never throws.
+        Get the info for a certain BILL account. Returns None if the account does not exist.
         '''
-        if not bill_code:
-            return {'acc': None, 'exists': False}
         try:
-            result = self.__request(f"get?type=user&acc={bill_code}")
-            return {
-                **json.loads(result),
-                'exists': True,
-            }
+            result = self.__request(f"get?type=user&id={username}")
+            return json.loads(result)
         except BILLException as e:
             s = str(e)
             if s == BILLAccountManager.ERROR_ACCOUNT_DOES_NOT_EXIST:
-                return {'acc': bill_code, 'exists': False}
-            return {'acc': bill_code, 'error': s}
+                return None
+            raise e
+
+    def get_account_by_code(self, bill_code):
+        '''
+        Get the info for a certain BILL account. Returns None if the account does not exist.
+        '''
+        try:
+            result = self.__request(f"get?type=user&acc={bill_code}")
+            return json.loads(result)
+        except BILLException as e:
+            s = str(e)
+            if s == BILLAccountManager.ERROR_ACCOUNT_DOES_NOT_EXIST:
+                return None
+            raise e
