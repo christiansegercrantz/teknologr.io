@@ -380,7 +380,13 @@ def change_ldap_password(request, member_id):
 class BILLAccountView(APIView):
     def get(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)
-        return Response(BILLAccountManager().get_bill_info(member.bill_code), status=200)
+        try:
+            account = BILLAccountManager().get_account_by_code(member.bill_code)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=500)
+        if not account:
+            return Response({'detail': 'Could not find BILL account.'}, status=404)
+        return Response(account)
 
     def post(self, request, member_id):
         member = get_object_or_404(Member, id=member_id)
@@ -395,7 +401,7 @@ class BILLAccountView(APIView):
 
         # Check if there already is a BILL account with this LDAP name
         try:
-            bill_code = bm.find_bill_code(member.username)
+            bill_code = bm.get_account_by_username(member.username).get('acc')
         except:
             pass
 

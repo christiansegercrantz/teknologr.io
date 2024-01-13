@@ -117,19 +117,21 @@ def member(request, member_id):
     # Get user account info
     if member.username:
         try:
-            context['LDAP'] = {}
             with LDAPAccountManager() as lm:
                 context['LDAP'] = lm.get_user_details(member.username)
         except LDAPError as e:
-            context['LDAP']['error'] = LDAPError_to_string(e)
+            context['LDAP'] = {'error': LDAPError_to_string(e)}
 
     if member.bill_code:
         bm = BILLAccountManager()
         context['bill_admin_url'] = bm.admin_url(member.bill_code)
-        context['BILL'] = bm.get_bill_info(member.bill_code)
-        username = context['BILL'].get('id')
-        if username and member.username != username:
-            context['BILL']['error'] = f'LDAP användarnamnen här ({member.username}) och i BILL ({username}) matchar inte'
+        try:
+            context['BILL'] = bm.get_account_by_code(member.bill_code) or {}
+            username = context['BILL'].get('id')
+            if username and member.username != username:
+                context['BILL']['error'] = f'LDAP användarnamnen här ({member.username}) och i BILL ({username}) matchar inte'
+        except Exception as e:
+            context['BILL'] = {'error': str(e)}
 
     # load side list items
     set_side_context(context, 'members', member)
