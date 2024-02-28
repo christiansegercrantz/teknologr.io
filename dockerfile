@@ -2,14 +2,16 @@
 FROM ubuntu:22.04
 USER root
 
-#Required for older version of docker. Try removing first and if it works don't worry.
+# Required for older version of docker to solve problem with `RUN apt update`.
+# Try removing first and if it works don't worry.
 RUN sed -i -e 's/^APT/# APT/' -e 's/^DPkg/# DPkg/' \
     /etc/apt/apt.conf.d/docker-clean
 
-RUN apt update
-RUN apt install -y python3.10
-RUN apt install -y python3-pip 
-# RUN pip install --upgrade pip
+RUN apt update && \
+    apt install -y python3.10 && \
+    apt install -y python3-pip --upgrade pip && \
+    apt install -y git && \ 
+    apt install -y locales locales-all
 
 RUN apt install -y  \
     libsasl2-dev  \
@@ -18,16 +20,16 @@ RUN apt install -y  \
     libssl-dev \
     libpq-dev
 
-RUN apt install -y git
-
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt
+RUN pip install --progress-bar off -r requirements.txt
 
 COPY . .
 
-RUN ["python", "manage.py", "migrate"]
-
 EXPOSE 8080
 
-CMD [ "python", "manage.py", "runserver", "8888" ]
+ENTRYPOINT [ "python3" ]
+
+RUN ["python3", "teknologr/manage.py", "migrate"]
+
+CMD ["teknologr/manage.py", "runserver", "8888" ]
