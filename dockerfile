@@ -32,4 +32,6 @@ ENTRYPOINT [ "python3" ]
 
 RUN ["python3", "teknologr/manage.py", "migrate"]
 
+RUN ["python3", "teknologr/manage.py", "makemigrations", "--check", "--dry-run"]
+
 CMD ["teknologr/manage.py", "runserver", "8888" ]
